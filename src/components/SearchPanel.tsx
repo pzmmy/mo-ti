@@ -330,6 +330,7 @@ export function SearchPanel({
   } = useSearchPanelController({ open, vaultPath, entries, onSelectNote, onClose })
   const deferredQuery = useDeferredValue(query)
   const isStale = query !== deferredQuery
+  const vaultHasChinese = useMemo(() => vaultHasChineseContent(entries), [entries])
   const handleResultHover = useCallback((index: number, event: React.MouseEvent<HTMLDivElement>) => {
     if (shouldApplySearchResultHover(event)) setSelectedIndex(index)
   }, [setSelectedIndex])
@@ -383,6 +384,7 @@ export function SearchPanel({
           listRef={listRef}
           onSelect={handleSelect}
           onHover={handleResultHover}
+          vaultHasChinese={vaultHasChinese}
         />
       </div>
     </div>
@@ -442,6 +444,7 @@ interface SearchContentProps {
   listRef: React.RefObject<HTMLDivElement | null>
   onSelect: (result: SearchResult) => void
   onHover: (index: number, event: React.MouseEvent<HTMLDivElement>) => void
+  vaultHasChinese: boolean
 }
 
 interface SearchResultRowProps {
@@ -586,10 +589,40 @@ function SearchLoadingSkeleton() {
   )
 }
 
-function SearchNoResultsMessage() {
+/** Check if a string contains Latin alphabetic characters (a-z, A-Z). */
+function hasLatin(s: string): boolean {
+  return /[a-zA-Z]/.test(s)
+}
+
+/** Check if a string contains CJK (Chinese/Japanese/Korean) characters. */
+function hasCJK(s: string): boolean {
+  // eslint-disable-next-line no-control-regex
+  return /[\u3400-\u9FFF\u2E80-\u2EFF\u3000-\u303F\uFF00-\uFFEF\u3040-\u309F\u30A0-\u30FF\uAC00-\uD7AF]/.test(s)
+}
+
+/** Check if any vault entry has Chinese (CJK) content in its title. */
+function vaultHasChineseContent(entries: VaultEntry[]): boolean {
+  return entries.some((e) => hasCJK(e.title))
+}
+
+interface SearchNoResultsMessageProps {
+  query: string
+  vaultHasChinese: boolean
+}
+
+function SearchNoResultsMessage({ query, vaultHasChinese }: SearchNoResultsMessageProps) {
+  const queryHasLatin = hasLatin(query)
+  const showPolyphoneHint = queryHasLatin && vaultHasChinese
+
   return (
     <div className="px-4 py-8 text-center">
       <p className="text-[13px] text-muted-foreground">No results found</p>
+      {showPolyphoneHint && (
+        <p className="mt-2 text-[11px] text-muted-foreground/60 leading-relaxed">
+          Try &lsquo;beijing&rsquo; instead of &lsquo;hang&rsquo;? Pinyin search doesn&apos;t support
+          polyphone (多音字) context disambiguation.
+        </p>
+      )}
     </div>
   )
 }
@@ -606,7 +639,7 @@ function SearchResultsHeader({ count, elapsedMs, isStale }: { count: number; ela
 }
 
 function SearchContent({
-  query, results, selectedIndex, loading, isStale, elapsedMs, entryLookup, typeEntryMap, showWorkspace, dateDisplayFormat, listRef, onSelect, onHover,
+  query, results, selectedIndex, loading, isStale, elapsedMs, entryLookup, typeEntryMap, showWorkspace, dateDisplayFormat, listRef, onSelect, onHover, vaultHasChinese,
 }: SearchContentProps) {
   const hasQuery = query.trim().length > 0
   const hasResults = results.length > 0
@@ -614,7 +647,7 @@ function SearchContent({
     <div className="flex-1 overflow-y-auto">
       {!hasQuery && <SearchIdleMessage />}
       {hasQuery && !hasResults && (loading || isStale) && <SearchLoadingSkeleton />}
-      {hasQuery && !hasResults && !loading && !isStale && <SearchNoResultsMessage />}
+      {hasQuery && !hasResults && !loading && !isStale && <SearchNoResultsMessage query={query} vaultHasChinese={vaultHasChinese} />}
       {hasResults && (
         <>
           <SearchResultsHeader count={results.length} elapsedMs={elapsedMs} isStale={isStale} />

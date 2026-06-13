@@ -147,13 +147,13 @@ pub(super) fn spawn_command(mut cmd: std::process::Command, label_args: &[&str])
 
 /// Kill a process by PID.
 ///
-/// On Unix we use `kill -TERM`; on Windows we use `taskkill /F`.
+/// On Unix we use `nix::sys::signal::kill`; on Windows we use `taskkill /F`.
 fn kill_process(pid: u32) {
     #[cfg(unix)]
     {
-        let _ = std::process::Command::new("kill")
-            .args(["-TERM", &pid.to_string()])
-            .output();
+        use nix::sys::signal::{kill, Signal};
+        use nix::unistd::Pid;
+        let _ = kill(Pid::from_raw(pid as i32), Signal::SIGTERM);
     }
     #[cfg(not(unix))]
     {

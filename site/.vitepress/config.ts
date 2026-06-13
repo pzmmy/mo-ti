@@ -77,6 +77,13 @@ export default defineConfig({
         ],
       },
       {
+        text: "功能",
+        items: [
+          { text: "拼音搜索", link: "/features/pinyin-search" },
+          { text: "WebDAV 同步", link: "/features/webdav-sync" },
+        ],
+      },
+      {
         text: "Templates",
         items: [
           { text: "Portent", link: "/templates/portent" },
