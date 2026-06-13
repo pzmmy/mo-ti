@@ -236,6 +236,7 @@ export function InlineWikilinkInput({
   })
   const pendingPasteRef = useRef<PendingPasteState | null>(null)
   const pendingCompositionInputRef = useRef(false)
+  const compositionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const handledFileDropRef = useRef(false)
   const pendingFocusAfterRemountRef = useRef<InlineSelectionRange | null>(null)
   const pendingScrollTopAfterRemountRef = useRef<number | null>(null)
@@ -507,9 +508,29 @@ export function InlineWikilinkInput({
   }
   const handleCompositionStart = () => {
     isComposingRef.current = true
+    // Safety timeout: force-flush composition input if IME never fires compositionEnd
+    // Fixes issues with some IMEs (e.g. Sogou on Windows WebView2)
+    if (compositionTimeoutRef.current) clearTimeout(compositionTimeoutRef.current)
+    compositionTimeoutRef.current = setTimeout(() => {
+      if (isComposingRef.current) {
+        isComposingRef.current = false
+        pendingCompositionInputRef.current = false
+        syncValueFromEditor()
+      }
+    }, 3000)
+  }
+  const handleCompositionUpdate = (e: React.CompositionEvent<HTMLDivElement>) => {
+    // Track intermediate IME composition state (improves compatibility)
+    if (isComposingRef.current) {
+      pendingCompositionInputRef.current = true
+    }
   }
   const handleCompositionEnd = (compositionEditor: HTMLDivElement) => {
     isComposingRef.current = false
+    if (compositionTimeoutRef.current) {
+      clearTimeout(compositionTimeoutRef.current)
+      compositionTimeoutRef.current = null
+    }
     queueMicrotask(() => flushPendingCompositionInput(compositionEditor))
   }
   const handleInput = () => {
@@ -567,6 +588,7 @@ export function InlineWikilinkInput({
       editorStyle={editorStyle}
       onCompositionEnd={handleCompositionEnd}
       onCompositionStart={handleCompositionStart}
+      onCompositionUpdate={handleCompositionUpdate}
       onInput={handleInput}
       onKeyDown={handleKeyDown}
       onCut={cutSelectedContent}

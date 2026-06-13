@@ -83,6 +83,7 @@
     },
     "updater": {
       "endpoints": [
+        "https://mo-ti.oss-cn-hangzhou.aliyuncs.com/stable/latest.json",
         "https://pzmmy.github.io/mo-ti/stable/latest.json"
       ],
       "windows": {

@@ -153,13 +153,14 @@ async function main() {
     const raw = await readFile(path.join(siteRoot, relativePath), 'utf8')
     const content = stripFrontmatter(raw).trim()
     const fallbackTitle = titleFromSlug(path.basename(relativePath, '.md'))
-    docs.push({
+    const doc = {
       content,
       path: relativePath,
       section: sectionForFile(relativePath),
       title: firstHeading(content, fallbackTitle),
       url: docUrl(relativePath),
-    })
+    }
+    docs.push(doc)
   }
 
   await rm(outputRoot, { force: true, recursive: true })
