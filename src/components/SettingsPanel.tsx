@@ -647,13 +647,16 @@ function SettingsBodyFromDraft({
         password: draft.webdavPassword,
         remotePath: draft.webdavRemotePath,
       })}
-      onWebdavSyncNow={() => invoke('sync_webdav', {
-        vaultPath: 'current_vault_path', // Will be replaced with actual vault path
-        url: draft.webdavUrl,
-        username: draft.webdavUsername,
-        password: draft.webdavPassword,
-        remotePath: draft.webdavRemotePath,
-      })}
+      onWebdavSyncNow={() => {
+        const activeVault = vaults?.find(v => v.mounted !== false) || vaults?.[0]
+        return invoke('sync_webdav', {
+          vaultPath: activeVault?.path || '',
+          url: draft.webdavUrl,
+          username: draft.webdavUsername,
+          password: draft.webdavPassword,
+          remotePath: draft.webdavRemotePath,
+        })
+      }}
     />
   )
 }

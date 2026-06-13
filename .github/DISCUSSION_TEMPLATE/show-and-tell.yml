@@ -1,0 +1,68 @@
+name: Show & Tell
+description: 分享你用 mo-ti 做的东西、工作流或插件
+title: "[Show & Tell] "
+labels: ["show-and-tell"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 欢迎分享 🎉
+
+        在这里展示你用 mo-ti 创建的内容、自定义工作流、插件或任何有趣的项目！
+
+  - type: input
+    id: title
+    attributes:
+      label: 标题
+      description: 给你的分享取个名字
+      placeholder: 我的 mo-ti 工作流
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 介绍
+      description: 描述你做了什么，以及它是如何工作的
+      placeholder: 我用 mo-ti 搭建了一个……
+    validations:
+      required: true
+
+  - type: textarea
+    id: media
+    attributes:
+      label: 截图 / 视频
+      description: 贴张图或视频链接，让大家直观感受
+      placeholder: 截图链接或 YouTube / Bilibili 视频地址
+    validations:
+      required: false
+
+  - type: textarea
+    id: code
+    attributes:
+      label: 相关代码 / 配置
+      description: 如果有配置、插件代码或脚本，贴在这里
+      render: yaml
+      placeholder: |
+        # 配置片段
+        key: value
+    validations:
+      required: false
+
+  - type: input
+    id: link
+    attributes:
+      label: 项目链接
+      description: 如果有公开的仓库、Gist 或博客文章链接
+      placeholder: https://github.com/yourname/your-project
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: 确认
+      options:
+        - label: 我确认这是基于 mo-ti 创建的内容，不包含违规信息
+    validations:
+      required: true
