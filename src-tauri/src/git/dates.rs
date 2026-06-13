@@ -68,7 +68,8 @@ fn parse_git_log_output(stdout: &str) -> HashMap<String, GitDates> {
             continue;
         }
 
-        let ts = current_ts.unwrap();
+        let ts = current_ts
+            .expect("current_ts is None guard above guarantees this branch is unreachable for None");
         map.entry(path.to_string())
             .and_modify(|d| d.created_at = ts)
             .or_insert(GitDates {

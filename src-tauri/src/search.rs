@@ -360,7 +360,10 @@ pub fn search_vault_with_options(options: SearchOptions<'_>) -> Result<SearchRes
 
         // Single CJK character fallback: match any note containing that character
         let single_cjk_match = if query_has_single_cjk {
-            let c = query_lower.chars().find(|&c| is_cjk(c)).unwrap();
+            let c = query_lower
+                .chars()
+                .find(|&c| is_cjk(c))
+                .expect("query_has_single_cjk guard guarantees at least one CJK char");
             title_lower.contains(c) || content_lower.contains(c)
         } else {
             false
