@@ -54,20 +54,11 @@
 
 #### 📥 OSS 镜像（国内加速）
 
-直接从阿里云 OSS 下载最新版本：
-
-| 平台 | 下载链接 |
-|------|----------|
-| **Windows** | [📦 MSI 安装包](https://mo-ti.oss-cn-hangzhou.aliyuncs.com/releases/latest/xxx.msi) / [📦 NSIS 安装包](https://mo-ti.oss-cn-hangzhou.aliyuncs.com/releases/latest/xxx.exe) |
-| **Linux** | [📦 AppImage](https://mo-ti.oss-cn-hangzhou.aliyuncs.com/releases/latest/xxx.AppImage) / [📦 DEB](https://mo-ti.oss-cn-hangzhou.aliyuncs.com/releases/latest/xxx.deb) / [📦 RPM](https://mo-ti.oss-cn-hangzhou.aliyuncs.com/releases/latest/xxx.rpm) |
-| **macOS (Intel)** | [📦 DMG (x64)](https://mo-ti.oss-cn-hangzhou.aliyuncs.com/releases/latest/xxx.dmg) |
-| **macOS (Apple Silicon)** | [📦 DMG (arm64)](https://mo-ti.oss-cn-hangzhou.aliyuncs.com/releases/latest/xxx-arm64.dmg) |
-
-> ⚠️ 以上链接中的 `xxx` 为占位符，实际文件名为版本号格式。各版本的具体下载链接请查看对应的 [GitHub Release](https://github.com/pzmmy/mo-ti/releases) 页面。
+最新版本已自动同步到阿里云 OSS。各平台具体下载链接请查看 [GitHub Release 页面](https://github.com/pzmmy/mo-ti/releases/latest) 的 Assets 列表——每发布版本都会同步到 OSS `releases/<version>/` 目录，加载无需代理。
 
 #### 📦 GitHub Releases（备用）
 
-如果 OSS 镜像不可用，从 [GitHub Releases 页面](https://github.com/pzmmy/mo-ti/releases) 下载对应平台的安装包（需要 GitHub 可访问）：
+从 [GitHub Releases 页面](https://github.com/pzmmy/mo-ti/releases) 下载对应平台的安装包（需要 GitHub 可访问）：
 
 | 平台 | 格式 |
 |------|------|

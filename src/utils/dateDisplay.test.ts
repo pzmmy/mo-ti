@@ -20,6 +20,7 @@ describe('dateDisplay', () => {
     expect(formatDatePartsForDisplay(parts, 'european')).toBe('11/5/2026')
     expect(formatDatePartsForDisplay(parts, 'friendly')).toBe('May 11, 2026')
     expect(formatDatePartsForDisplay(parts, 'iso')).toBe('2026-05-11')
+    expect(formatDatePartsForDisplay(parts, 'zh-cn')).toBe('2026年5月11日 周一')
   })
 
   it('formats ISO and slash date values without changing non-dates', () => {

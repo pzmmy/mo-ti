@@ -776,4 +776,73 @@ mod tests {
         .score();
         assert!(score >= 2.0, "Pinyin content match should score at least 2.0");
     }
+
+    #[test]
+    fn test_pinyin_and_bigram_mixed_query() {
+        let dir = Builder::new()
+            .prefix("pinyin-bigram-mixed-")
+            .tempdir_in(std::env::current_dir().unwrap())
+            .unwrap();
+        fs::write(
+            dir.path().join("北大.md"),
+            "# 北京大学\n北京大学位于北京",
+        )
+        .unwrap();
+        fs::write(
+            dir.path().join("上海.md"),
+            "# 上海大学\n上海大学位于上海",
+        )
+        .unwrap();
+        fs::write(
+            dir.path().join("english.md"),
+            "# English Notes\nBeijing is the capital",
+        )
+        .unwrap();
+
+        // Mixed query "beijing 大学" triggers both code paths:
+        //   - has_latin → pinyin conversion is computed for all files
+        //   - has_cjk  → CJK bigrams are extracted: [" 大", "大学"]
+        //
+        // Both Chinese notes match via the bigram "大学":
+        //   - "北京大学" contains bigram "大学" in title and content
+        //   - "上海大学" contains bigram "大学" in title and content
+        // english.md has no CJK content → no bigram match.
+
+        let response =
+            search_vault(dir.path().to_str().unwrap(), "beijing 大学", "keyword", 10).unwrap();
+
+        // Both Chinese notes should be returned (bigram "大学" matches both)
+        assert_eq!(
+            response.results.len(),
+            2,
+            "should return both Chinese notes via bigram match"
+        );
+
+        let beida = response
+            .results
+            .iter()
+            .find(|r| r.title == "北京大学")
+            .expect("北大.md should be in results");
+        let shanghai = response
+            .results
+            .iter()
+            .find(|r| r.title == "上海大学")
+            .expect("上海.md should be in results");
+
+        // english.md should NOT match (no CJK bigram, and no exact/pinyin match)
+        let english = response.results.iter().find(|r| r.title == "English Notes");
+        assert!(english.is_none(), "english.md should not match");
+
+        // Both files should have positive scores from bigram overlap
+        assert!(beida.score > 0.0, "北大.md should have a positive score");
+        assert!(shanghai.score > 0.0, "上海.md should have a positive score");
+
+        // 北大.md's score >= 上海.md's score
+        // (Bigrams are identical for both files with this data, so scores are equal;
+        //  this assertion would still pass on equal scores.)
+        assert!(
+            beida.score >= shanghai.score,
+            "北大.md should score at least as high as 上海.md"
+        );
+    }
 }
