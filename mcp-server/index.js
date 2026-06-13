@@ -44,8 +44,18 @@ let reconnectTimer = null
 let shutdownStarted = false
 const RECONNECT_INTERVAL_MS = 3000
 
+function isStandaloneMode() {
+  // Standalone mode: no Tauri UI WS dependency.
+  // Triggered by MCP_STANDALONE=true env var, or when VAULT_PATH is set directly.
+  return process.env.MCP_STANDALONE === 'true' || !!process.env.VAULT_PATH
+}
+
 function connectUiBridge() {
   if (shutdownStarted) return
+  if (isStandaloneMode()) {
+    console.error('[mcp] Standalone mode — skipping UI bridge connection')
+    return
+  }
 
   try {
     const ws = new WebSocket(WS_UI_URL)

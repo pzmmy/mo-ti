@@ -75,12 +75,16 @@ export function requireVaultPaths(env = process.env, options = {}) {
     env.VAULT_PATH?.trim() ?? '',
     ...parseVaultPathList(env.VAULT_PATHS),
   ])
-  if (vaultPaths.length === 0) {
-    const configuredPaths = configuredVaultPaths(options)
-    if (configuredPaths.length > 0) return configuredPaths
-    throw new Error('VAULT_PATH is required. Open a vault in Tolaria before starting MCP tools.')
+  if (vaultPaths.length > 0) return vaultPaths
+
+  // In standalone mode, do NOT fall back to Tauri config file
+  if (env.MCP_STANDALONE === 'true') {
+    throw new Error('VAULT_PATH is required in standalone mode. Set VAULT_PATH=/path/to/vault and restart.')
   }
-  return vaultPaths
+
+  const configuredPaths = configuredVaultPaths(options)
+  if (configuredPaths.length > 0) return configuredPaths
+  throw new Error('VAULT_PATH is required. Open a vault in Tolaria before starting MCP tools.')
 }
 
 export function requireVaultPath(env = process.env, options = {}) {

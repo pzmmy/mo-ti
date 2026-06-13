@@ -41,11 +41,12 @@ export function createMcpToolService({
     const results = []
 
     for (const vaultPath of activeVaultPaths()) {
-      const vaultResults = await searchVaultNotes(vaultPath, args.query, requestedLimit)
+      const vaultResults = await searchVaultNotes(vaultPath, args.query, requestedLimit * 2)
       results.push(...vaultResults.map((result) => withVaultMetadata(result, vaultPath)))
-      if (results.length >= requestedLimit) break
     }
 
+    // Sort all results across vaults by score descending
+    results.sort((a, b) => b.score - a.score)
     return results.slice(0, requestedLimit)
   }
 
