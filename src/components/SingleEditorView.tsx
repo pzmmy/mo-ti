@@ -23,6 +23,7 @@ import { useDocumentThemeMode } from '../hooks/useDocumentThemeMode'
 import { repairMalformedEditorBlocks } from '../hooks/editorBlockRepair'
 import { useEditorTheme } from '../hooks/useTheme'
 import { useImageDrop } from '../hooks/useImageDrop'
+import { useClipboardImagePaste } from '../hooks/useClipboardImagePaste'
 import { useImageLightbox } from '../hooks/useImageLightbox'
 import { createTranslator, type AppLocale } from '../lib/i18n'
 import { writeClipboardText } from '../utils/clipboardText'
@@ -1204,6 +1205,7 @@ export function SingleEditorView({ editor, entries, onNavigateWikilink, onChange
   const handleEditorChange = useCompositionAwareEditorChange({ containerRef, onChange })
   const onImageUrl = useInsertImageCallback(editor)
   const { isDragOver } = useImageDrop({ containerRef, onImageUrl, vaultPath })
+  useClipboardImagePaste({ containerRef, vaultPath, onImageUrl, editable })
   const lightbox = useImageLightbox({ containerRef })
   const {
     clearCopyTarget,

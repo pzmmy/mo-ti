@@ -1,6 +1,6 @@
 import { useRef, useState, useCallback, useEffect, useMemo } from 'react'
-import { trackEvent } from '../lib/telemetry'
 import type { EditorView } from '@codemirror/view'
+import { trackEvent } from '../lib/telemetry'
 import { MIN_QUERY_LENGTH } from '../utils/wikilinkSuggestions'
 import { buildTypeEntryMap } from '../utils/typeColors'
 import { NoteSearchList } from './NoteSearchList'
@@ -22,6 +22,9 @@ import {
   registerPlainTextPasteTarget,
   type PlainTextPasteTarget,
 } from '../utils/plainTextPaste'
+import { uploadImageFile } from '../hooks/useImageDrop'
+import { portableAttachmentPathFromCurrentVaultAssetUrl } from '../utils/vaultAttachments'
+import { isTauri } from '../mock-tauri'
 
 export interface RawEditorViewProps {
   content: string
@@ -436,16 +439,69 @@ export function RawEditorView({ content, path, entries, sourceEntry, onContentCh
 
     const activatePasteTarget = () => activatePlainTextPaste()
     const handleKeyDown = (event: KeyboardEvent) => handleAutocompleteKey(event)
+    const handleRawEditorPaste = (event: ClipboardEvent) => {
+      if (!vaultPath) return
+      const dt = event.clipboardData
+      if (!dt) return
+
+      // Look for image data in clipboard
+      let imageFile: File | null = null
+      for (let i = 0; i < dt.files.length; i++) {
+        const file = dt.files.item(i)
+        if (file && file.type.startsWith('image/')) {
+          imageFile = file
+          break
+        }
+      }
+      if (!imageFile) {
+        for (let i = 0; i < dt.items.length; i++) {
+          const item = dt.items[i]
+          if (item.kind === 'file' && item.type.startsWith('image/')) {
+            imageFile = item.getAsFile()
+            break
+          }
+        }
+      }
+      if (!imageFile) return
+
+      event.preventDefault()
+      event.stopPropagation()
+
+      void uploadImageFile(imageFile, vaultPath).then((url) => {
+        const view = viewRef.current
+        if (!view) return
+
+        let markdownLink: string
+        if (isTauri() && vaultPath) {
+          // Convert asset URL to portable relative path
+          const portable = portableAttachmentPathFromCurrentVaultAssetUrl({ url, vaultPath })
+          markdownLink = portable ? `![](${portable})` : `![](${url})`
+        } else {
+          markdownLink = `![](${url})`
+        }
+
+        const cursor = view.state.selection.main.head
+        view.dispatch({
+          changes: { from: cursor, insert: markdownLink },
+          selection: { anchor: cursor + markdownLink.length },
+        })
+        view.focus()
+      }).catch((error) => {
+        console.warn('[raw-editor] Failed to paste clipboard image:', error)
+      })
+    }
 
     root.addEventListener('focusin', activatePasteTarget)
     root.addEventListener('mousedown', activatePasteTarget, { capture: true })
     root.addEventListener('keydown', handleKeyDown)
+    root.addEventListener('paste', handleRawEditorPaste, { capture: true })
     return () => {
       root.removeEventListener('focusin', activatePasteTarget)
       root.removeEventListener('mousedown', activatePasteTarget, { capture: true })
       root.removeEventListener('keydown', handleKeyDown)
+      root.removeEventListener('paste', handleRawEditorPaste, { capture: true })
     }
-  }, [activatePlainTextPaste, handleAutocompleteKey])
+  }, [activatePlainTextPaste, handleAutocompleteKey, vaultPath])
 
   useRawEditorWikilinkInsertion({
     debounceRef: pendingChanges.debounceRef,
