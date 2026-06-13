@@ -1,0 +1,156 @@
+[
+  {
+    "kind": "ollama",
+    "name": "Ollama",
+    "label_key": "settings.aiProviders.kind.ollama",
+    "base_url": "http://localhost:11434/v1",
+    "runtime_base_url": "http://localhost:11434/v1",
+    "default_model_id": "llama3.2",
+    "api_key_storage": "none",
+    "api_key_env_var": null,
+    "local": true
+  },
+  {
+    "kind": "lm_studio",
+    "name": "LM Studio",
+    "label_key": "settings.aiProviders.kind.lmStudio",
+    "base_url": "http://127.0.0.1:1234/v1",
+    "runtime_base_url": "http://127.0.0.1:1234/v1",
+    "default_model_id": "llama3.2",
+    "api_key_storage": "none",
+    "api_key_env_var": null,
+    "local": true
+  },
+  {
+    "kind": "open_ai",
+    "name": "OpenAI",
+    "label_key": "settings.aiProviders.kind.openAi",
+    "base_url": "https://api.openai.com/v1",
+    "runtime_base_url": "https://api.openai.com/v1",
+    "default_model_id": "gpt-4.1-mini",
+    "api_key_storage": "local_file",
+    "api_key_env_var": "OPENAI_API_KEY",
+    "local": false
+  },
+  {
+    "kind": "anthropic",
+    "name": "Anthropic",
+    "label_key": "settings.aiProviders.kind.anthropic",
+    "base_url": "https://api.anthropic.com/v1",
+    "runtime_base_url": "https://api.anthropic.com/v1",
+    "default_model_id": "claude-3-5-sonnet-latest",
+    "api_key_storage": "local_file",
+    "api_key_env_var": "ANTHROPIC_API_KEY",
+    "local": false
+  },
+  {
+    "kind": "gemini",
+    "name": "Gemini",
+    "label_key": "settings.aiProviders.kind.gemini",
+    "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+    "runtime_base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+    "default_model_id": "gemini-2.5-flash",
+    "api_key_storage": "local_file",
+    "api_key_env_var": "GEMINI_API_KEY",
+    "local": false
+  },
+  {
+    "kind": "open_router",
+    "name": "OpenRouter",
+    "label_key": "settings.aiProviders.kind.openRouter",
+    "base_url": "https://openrouter.ai/api/v1",
+    "runtime_base_url": "https://openrouter.ai/api/v1",
+    "default_model_id": "openai/gpt-4.1-mini",
+    "api_key_storage": "local_file",
+    "api_key_env_var": "OPENROUTER_API_KEY",
+    "local": false
+  },
+  {
+    "kind": "deepseek",
+    "name": "DeepSeek",
+    "label_key": "settings.aiProviders.kind.deepseek",
+    "base_url": "https://api.deepseek.com/v1",
+    "runtime_base_url": "https://api.deepseek.com/v1",
+    "default_model_id": "deepseek-chat",
+    "api_key_storage": "local_file",
+    "api_key_env_var": "DEEPSEEK_API_KEY",
+    "local": false
+  },
+  {
+    "kind": "dashscope",
+    "name": "阿里通义千问",
+    "label_key": "settings.aiProviders.kind.dashscope",
+    "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    "runtime_base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    "default_model_id": "qwen-plus",
+    "api_key_storage": "local_file",
+    "api_key_env_var": "DASHSCOPE_API_KEY",
+    "local": false
+  },
+  {
+    "kind": "zhipu",
+    "name": "智谱 GLM",
+    "label_key": "settings.aiProviders.kind.zhipu",
+    "base_url": "https://open.bigmodel.cn/api/paas/v4",
+    "runtime_base_url": "https://open.bigmodel.cn/api/paas/v4",
+    "default_model_id": "glm-4-plus",
+    "api_key_storage": "local_file",
+    "api_key_env_var": "ZHIPU_API_KEY",
+    "local": false
+  },
+  {
+    "kind": "moonshot",
+    "name": "月之暗面 Kimi",
+    "label_key": "settings.aiProviders.kind.moonshot",
+    "base_url": "https://api.moonshot.cn/v1",
+    "runtime_base_url": "https://api.moonshot.cn/v1",
+    "default_model_id": "moonshot-v1-8k",
+    "api_key_storage": "local_file",
+    "api_key_env_var": "MOONSHOT_API_KEY",
+    "local": false
+  },
+  {
+    "kind": "ernie",
+    "name": "百度文心一言",
+    "label_key": "settings.aiProviders.kind.ernie",
+    "base_url": "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions",
+    "runtime_base_url": "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions",
+    "default_model_id": "ernie-4.0-8k",
+    "api_key_storage": "local_file",
+    "api_key_env_var": "ERNIE_API_KEY",
+    "local": false
+  },
+  {
+    "kind": "baichuan",
+    "name": "百川智能",
+    "label_key": "settings.aiProviders.kind.baichuan",
+    "base_url": "https://api.baichuan-ai.com/v1",
+    "runtime_base_url": "https://api.baichuan-ai.com/v1",
+    "default_model_id": "Baichuan4",
+    "api_key_storage": "local_file",
+    "api_key_env_var": "BAICHUAN_API_KEY",
+    "local": false
+  },
+  {
+    "kind": "ark",
+    "name": "字节豆包 (Ark)",
+    "label_key": "settings.aiProviders.kind.ark",
+    "base_url": "https://ark.cn-beijing.volces.com/api/v3",
+    "runtime_base_url": "https://ark.cn-beijing.volces.com/api/v3",
+    "default_model_id": "doubao-pro-32k",
+    "api_key_storage": "local_file",
+    "api_key_env_var": "ARK_API_KEY",
+    "local": false
+  },
+  {
+    "kind": "open_ai_compatible",
+    "name": "Custom provider",
+    "label_key": "settings.aiProviders.kind.compatible",
+    "base_url": "https://api.example.com/v1",
+    "runtime_base_url": null,
+    "default_model_id": "gpt-4.1-mini",
+    "api_key_storage": "local_file",
+    "api_key_env_var": "OPENAI_API_KEY",
+    "local": false
+  }
+]
