@@ -1,49 +1,49 @@
-# Contributing to Tolaria
+# 为 Tolaria 做贡献
 
-Thanks for being here! Tolaria is still early, and every bug report, idea, and contribution genuinely helps shape the app.
+感谢你的到来！Tolaria 仍处于早期阶段，每一个 Bug 报告、想法和贡献都能真正帮助塑造这个应用。
 
-## 🗳️ Where to share what
+## 🗳️ 在哪里分享什么
 
-To keep things clean:
+为了保持整洁：
 
-- 🐛 Bugs → GitHub Issues
-- 💡 Feature requests / ideas → Canny • <https://tolaria.canny.io/>
+- 🐛 Bug → GitHub Issues
+- 💡 功能请求 / 想法 → Canny • <https://tolaria.canny.io/>
 
-If you have a feature idea, please check Canny first and upvote it if it already exists.
+如果你有一个功能想法，请先在 Canny 上查看，如果已存在请点赞。
 
-## 📥 Pull requests are welcome
+## 📥 欢迎 Pull Requests
 
-PRs are very welcome.
+非常欢迎 Pull Requests。
 
-A few things to keep in mind before opening one:
+在提交 PR 之前，有几点需要注意：
 
-- Bug fixes are always great
-- Small improvements are great too
-- For bigger features, please check Canny first before building
-  - Try to avoid things that are already marked **in progress**
-  - Requests marked **planned** are usually great contribution targets
-- Keep PRs small, focused, and easy to review
-- Include a short explanation of the problem and your solution
-- Follow the dev process described in Tolaria’s `AGENTS.md` (tests, code health, etc.)
-- Avoid bundling unrelated refactors into the same PR
+- Bug 修复永远是受欢迎的
+- 小的改进也很好
+- 对于较大的功能，请在开始构建之前先查看 Canny
+  - 尽量避免那些已标记为 **进行中** 的事项
+  - 标记为 **已规划** 的请求通常是很好的贡献目标
+- 保持 PR 小巧、专注、易于审查
+- 包含对问题和你解决方案的简短说明
+- 遵循 Tolaria 的 `AGENTS.md` 中描述的开发流程（测试、代码健康等）
+- 避免将不相关的重构捆绑在同一个 PR 中
 
-If you want to contribute a feature, the best place to start is here: <https://tolaria.canny.io/>
+如果你想贡献一个功能，最好的起点在这里：<https://tolaria.canny.io/>
 
-## 📋 What makes a good bug report
+## 📋 什么是一个好的 Bug 报告
 
-If you open a bug report on GitHub, it really helps to include:
+如果你在 GitHub 上提交 Bug 报告，请务必包含：
 
-- your Tolaria version
-- your OS version
-- steps to reproduce
-- what you expected to happen
-- what actually happened
-- screenshots or screen recordings if useful
+- 你的 Tolaria 版本
+- 你的操作系统版本
+- 复现步骤
+- 你期望发生什么
+- 实际发生了什么
+- 如果有用的话，附上截图或屏幕录制
 
-The clearer the report, the easier it is for us to reproduce and fix it.
+报告越清晰，我们就越容易复现和修复它。
 
-## 🙏 Thank you
+## 🙏 感谢
 
-Tolaria is getting better because people care enough to try it, report what’s broken, suggest what’s missing, and contribute improvements.
+Tolaria 正在变得更好，因为有你们愿意尝试它、报告问题、提出缺失的功能并贡献改进。
 
-That means a lot. Thanks for helping build it.
+这意义重大。感谢你帮助构建它。

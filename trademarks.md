@@ -1,45 +1,47 @@
-# Tolaria Trademark Policy
+# Tolaria 商标政策
 
-This policy covers the **Tolaria** name, the Tolaria logo, and related branding assets.
+本政策涵盖 **Tolaria** 名称、Tolaria 标志及相关品牌资产。
 
-## Code license vs. trademarks
+## 代码许可与商标的区别
 
-Tolaria's source code is licensed under the GNU Affero General Public License v3.0 or later (AGPL-3.0-or-later).
+Tolaria 的源代码根据 GNU Affero General Public License v3.0 或更高版本（AGPL-3.0-or-later）进行许可。
 
-That license applies to the code. It does **not** grant any right to use the Tolaria name, logo, or branding.
+该许可仅适用于代码，**不**授予使用 Tolaria 名称、标志或品牌的任何权利。
 
-## Allowed without asking
+## 无需事先许可即可使用的情况
 
-You may, without prior permission:
-- refer to Tolaria truthfully in commentary, documentation, blog posts, reviews, comparisons, or tutorials
-- say that your project is based on, compatible with, or derived from Tolaria, as long as that statement is accurate
-- redistribute unmodified official releases while preserving existing notices
-- make nominative use of the Tolaria name to explain that you are discussing the original project
+您无需事先许可即可：
 
-## Not allowed without prior written permission
+- 在评论、文档、博客文章、评测、对比或教程中如实引用 Tolaria
+- 声明您的项目基于、兼容或衍生自 Tolaria，前提是该声明准确无误
+- 在保留现有声明的前提下重新分发未经修改的官方版本
+- 为说明您讨论的是原始项目而对 Tolaria 名称进行提名性使用
 
-You may not, without prior written permission:
-- use the Tolaria name or logo for a modified fork in a way that suggests it is the official project
-- rebrand a hosted or commercial offering as "Tolaria" if it is not the official Tolaria service or product
-- use the Tolaria logo in product branding, app icons, domains, marketing pages, or store listings for a fork or derivative product
-- imply endorsement, affiliation, sponsorship, or approval by the Tolaria project, Luca Rossi, or Refactoring when none exists
+## 未经事先书面许可不得使用的情况
 
-## Forks and modified versions
+未经事先书面许可，您不得：
 
-If you fork or modify Tolaria, you are welcome to do so under the AGPL, but you must choose your own name and branding for any redistributed or hosted version unless you have written permission to use the Tolaria marks.
+- 将 Tolaria 名称或标志用于修改版分支，以暗示其为官方项目
+- 将非官方 Tolaria 服务或产品的托管或商业产品重新命名为"Tolaria"
+- 在分支或衍生产品的产品品牌、应用图标、域名、营销页面或应用商店列表中使用 Tolaria 标志
+- 暗示获得 Tolaria 项目、Luca Rossi 或 Refactoring 的背书、关联关系、赞助或认可，而事实上并不存在
 
-Good examples:
-- "Fork of Tolaria"
-- "Based on Tolaria"
-- "Internal knowledge app derived from Tolaria"
+## 分支和修改版本
 
-Bad examples:
-- calling your modified product "Tolaria"
-- using the Tolaria logo for your fork
-- presenting your hosted fork as the official Tolaria product
+如果您对 Tolaria 进行分支或修改，欢迎您在 AGPL 许可下进行，但除非获得使用 Tolaria 标志的书面许可，否则您必须为任何重新分发或托管版本选择自己的名称和品牌。
 
-## Reservation of rights
+良好示例：
+- "Tolaria 的分支"
+- "基于 Tolaria"
+- "衍生自 Tolaria 的内部知识应用"
 
-All trademark rights in the Tolaria name, logo, and branding are reserved.
+不良示例：
+- 将您的修改版产品称为"Tolaria"
+- 为您的分支使用 Tolaria 标志
+- 将您的托管分支呈现为官方 Tolaria 产品
 
-Questions or permission requests should be directed to the project maintainer.
+## 权利保留
+
+Tolaria 名称、标志和品牌的所有商标权利均予保留。
+
+如有疑问或许可请求，请联系项目维护者。

@@ -77,13 +77,13 @@
     "deep-link": {
       "desktop": {
         "schemes": [
-          "tolaria"
+          "mo-ti"
         ]
       }
     },
     "updater": {
       "endpoints": [
-        "https://refactoringhq.github.io/tolaria/stable/latest.json"
+        "https://pzmmy.github.io/mo-ti/stable/latest.json"
       ],
       "windows": {
         "installMode": "passive"

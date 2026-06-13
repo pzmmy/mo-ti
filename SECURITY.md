@@ -1,55 +1,55 @@
-# Security Policy
+# 安全策略
 
-Thanks for helping keep Tolaria safe.
+感谢您帮助维护 Tolaria 的安全。
 
-If you believe you have found a security vulnerability, **please do not open a public GitHub issue**. Report it privately instead.
+如果您认为自己发现了安全漏洞，**请不要在 GitHub 上公开提交 issue**。请改为私下报告。
 
-## Supported versions
+## 支持的版本
 
-We currently support security fixes for:
+我们目前为以下版本提供安全修复支持：
 
-| Version | Supported |
+| 版本 | 支持情况 |
 | --- | --- |
-| Latest stable release | ✅ |
-| `main` branch | Best effort |
-| Older releases / prereleases | ❌ |
+| 最新稳定版 | ✅ |
+| `main` 分支 | 尽力而为 |
+| 旧版本 / 预发布版 | ❌ |
 
-## Reporting a vulnerability
+## 报告漏洞
 
-Please use GitHub's private vulnerability reporting flow for this repository.
+请使用本仓库的 GitHub 私有漏洞报告流程。
 
-Include as much of the following as you can:
+请尽可能提供以下信息：
 
-- a short description of the issue
-- reproduction steps or a proof of concept
-- affected version / commit, if known
-- impact assessment
-- any suggested mitigation
+- 问题的简要描述
+- 复现步骤或概念验证
+- 受影响的版本/提交（如已知）
+- 影响评估
+- 任何建议的缓解措施
 
-If the issue involves sensitive user data, credentials, or a working exploit, keep the report private and do not post details publicly.
+如果问题涉及敏感用户数据、凭据或可实际利用的漏洞，请保持报告私密，不要公开披露细节。
 
-## What to expect
+## 预期处理流程
 
-We will try to:
+我们将尽力：
 
-- acknowledge receipt within a few business days
-- reproduce and assess the report
-- work on a fix or mitigation if the issue is valid
-- coordinate public disclosure after users have had a reasonable chance to update
+- 在几个工作日内确认收到报告
+- 复现并评估报告内容
+- 如果问题属实，着手修复或制定缓解措施
+- 在用户获得合理时间更新后，协调公开披露
 
-## Disclosure guidelines
+## 披露指南
 
-Please give us a reasonable amount of time to investigate and ship a fix before publishing details.
+请在公开披露细节之前，给予我们合理的时间进行调查和发布修复。
 
-We appreciate responsible disclosure and good-faith research.
+我们感谢负责任的披露和善意的安全研究。
 
-## Out of scope
+## 不适用范围的说明
 
-The following are generally out of scope unless they demonstrate a real security impact:
+以下情况通常不纳入考虑范围，除非能证明其具有实际安全影响：
 
-- missing best-practice headers or hardening with no practical exploit
-- self-XSS or editor behavior that requires unrealistic user actions
-- reports that only affect unsupported old builds
-- purely theoretical issues with no plausible attack path
+- 缺少最佳实践的标头或加固措施，但无实际可利用的漏洞
+- 需要用户做出不切实际操作的自 XSS 或编辑器行为
+- 仅影响不受支持的旧版本构建的报告
+- 纯理论性问题，无合理攻击路径
 
-If you are unsure whether something qualifies, please still report it privately.
+如果您不确定某问题是否属于安全范畴，仍请私下报告。

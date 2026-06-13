@@ -1,92 +1,92 @@
 # AGENTS.md — Tolaria App
 
-## 1. Development Process
+## 1. 开发流程
 
-### Start working on a task
+### 开始处理任务
 
-**Before writing a single line of code:** run `mcp__codescene__code_health_score` to check the current codebase health against `.codescene-thresholds`. If the score is already below the threshold, **stop and refactor first** — find the worst files with the MCP, improve them, commit, then start the task. Never start feature work on a codebase that is already below the gate.
+**在编写任何代码之前：** 运行 `mcp__codescene__code_health_score` 检查当前代码库健康度是否满足 `.codescene-thresholds` 的要求。如果分数已低于阈值，**请先停下来进行重构**——通过 MCP 找出最差的文件，改进它们，提交后再开始任务。切勿在代码库已低于关卡阈值时开始新功能开发。
 
-- Read task description and all comments fully
-- For To Rework: the ❌ QA failed comment tells you exactly what to fix
-- Check `docs/adr/` for relevant architecture decisions before structural choices
-- Check `docs/ARCHITECTURE.md` and `docs/ABSTRACTIONS.md` for relevant structural information
-- For UI tasks: study app visual language and components first. Prioritize reusing existing components, assets, and variables over recreating them.
-- If working on a Todoist task, add a comment: `🚀 Starting work on this task. [Brief description of approach]`
+- 完整阅读任务描述和所有注释
+- 对于待返工任务：❌ QA 失败的注释会明确告诉你需要修复什么
+- 在做出架构决策前，先检查 `docs/adr/` 中相关的架构决策记录
+- 检查 `docs/ARCHITECTURE.md` 和 `docs/ABSTRACTIONS.md` 获取相关结构信息
+- 对于 UI 任务：先研究应用的视觉语言和组件。优先复用现有组件、资源和变量，而不是重新创建
+- 如果正在处理 Todoist 任务，添加一条评论：`🚀 开始处理此任务。[方法简要描述]`
 
-### Commits & pushes
+### 提交与推送
 
-- Push directly to `main` — no PRs, no branches. Pre-push blocks non-`main` pushes.
-- Commit every 20–30 min: `feat:`, `fix:`, `refactor:`, `test:`, `docs:`
-- Pre-push hook runs full check suite (build + tests + core Playwright smoke + CodeScene)
-- **A task is NOT done until `git push origin main` succeeds.** If the hook blocks: read the error, fix it (clippy, tests, CodeScene, build), commit the fix, push again. **⛔ NEVER use --no-verify**
+- 直接推送到 `main`——没有 PR，没有分支。推送前钩子会阻止非 `main` 分支的推送
+- 每 20–30 分钟提交一次：`feat:`、`fix:`、`refactor:`、`test:`、`docs:`
+- 推送前钩子会运行完整的检查套件（构建 + 测试 + 核心 Playwright 冒烟测试 + CodeScene）
+- **在 `git push origin main` 成功之前，任务不算完成。** 如果钩子拦截了：阅读错误信息，修复它（clippy、测试、CodeScene、构建），提交修复，再次推送。**⛔ 切勿使用 --no-verify**
 
-### TDD (mandatory)
+### TDD（强制要求）
 
-Red → Green → Refactor → Commit. One cycle per commit. For bugs: write failing regression test first, then fix. Exception: pure CSS/layout changes.
+红 → 绿 → 重构 → 提交。每个提交一个循环。对于缺陷：先编写失败的回归测试，然后再修复。纯 CSS/布局变更除外。
 
-**Test quality (Kent Beck's Desiderata):** Isolated · Deterministic · Fast · Behavioral · Structure-insensitive · Specific · Predictive. Fix flaky tests first. Prefer E2E over unit tests for user flows.
+**测试质量（Kent Beck 的期望标准）：** 隔离的 · 确定性的 · 快速的 · 行为驱动的 · 结构不敏感的 · 特定的 · 可预测的。先修复不稳定的测试。用户流程优先使用 E2E 测试而非单元测试。
 
-### Localization (mandatory for UI copy)
+### 国际化（UI 文案强制要求）
 
-All user-facing UI labels/copy must live in `src/lib/locales/en.json` and be translated into every target listed in `lara.yaml`. When adding or changing interface copy:
+所有面向用户的 UI 标签/文案必须放在 `src/lib/locales/en.json` 中，并翻译成 `lara.yaml` 中列出的每一种目标语言。添加或修改界面文案时：
 
 ```bash
 pnpm l10n:translate
 ```
 
-Use `pnpm l10n:translate:force` only when intentionally regenerating existing translations. Commit `src/lib/locales/*.json`, `lara.yaml`/`lara.lock` changes if produced, and verify placeholders/product names stayed intact.
+仅在有意识地重新生成现有翻译时使用 `pnpm l10n:translate:force`。提交生成的 `src/lib/locales/*.json`、`lara.yaml`/`lara.lock` 更改，并验证占位符/产品名称保持不变。
 
-### Product analytics (mandatory for meaningful features)
+### 产品分析（有意义的功能强制要求）
 
-New features should almost always emit a PostHog event so we can see whether users actually discover and use them. Skip instrumentation only for very small changes where a dedicated event would create noise. Use clear, stable event names, avoid PII or note content, and include only safe metadata that helps evaluate adoption and failures.
+新功能通常应发送 PostHog 事件，以便我们了解用户是否真正发现并使用它们。仅对于非常小的、专用事件会造成噪音的更改，可以跳过埋点。使用清晰、稳定的事件名称，避免包含 PII 或笔记内容，只包含有助于评估采用率和失败情况的安全元数据。
 
-When adding or changing a meaningful user-facing feature, include the event name(s) in the Todoist completion comment alongside QA, docs, and code health. If intentionally not instrumenting a feature, explain why in the completion comment.
+在添加或更改有意义的面向用户功能时，在 Todoist 完成评论中包含事件名称，同时附上 QA、文档和代码健康信息。如果有意不对某个功能进行埋点，请在完成评论中说明原因。
 
-### Code health (mandatory)
+### 代码健康（强制要求）
 
-Pre-commit and pre-push hooks enforce **Hotspot Code Health** and **Average Code Health** ≥ thresholds in `.codescene-thresholds`. Both gates block commit/push. Thresholds are a **ratchet** — only go up. When pre-push sees improved remote scores, it updates `.codescene-thresholds`, stages it, and stops so you can commit the new floor with normal verified hooks before pushing again. Never add `// eslint-disable`, `#[allow(...)]`, or `as any`.
+提交前和推送前钩子会强制执行**热点代码健康度**和**平均代码健康度** ≥ `.codescene-thresholds` 中的阈值。两个关卡都会阻止提交/推送。阈值是**棘轮机制**——只会上升。当推送前钩子发现远程分数有提升时，它会更新 `.codescene-thresholds`，暂存该更改，然后停止，以便你可以在再次推送前使用正常的已验证钩子提交新的下限。切勿添加 `// eslint-disable`、`#[allow(...)]` 或 `as any`。
 
-**Release rule:** CodeScene is a before/after gate, not just a final score. Every task must record the starting CodeScene state before edits and the final state after edits. If touched code gets worse, refactor before committing.
+**发布规则：** CodeScene 是一个前后关卡，而不仅仅是最终分数。每个任务必须在编辑前记录 CodeScene 起始状态，并在编辑后记录最终状态。如果被触及的代码变差了，在提交前进行重构。
 
-**⛔ NEVER edit `.codescene-thresholds` to lower the values.** If the gate blocks you, improve the code — do not lower the bar.
+**⛔ 切勿编辑 `.codescene-thresholds` 来降低数值。** 如果关卡阻止了你，请改进代码——不要降低标准。
 
-**CodeScene access order:** use CodeScene MCP tools if available. If MCP is unavailable, use the installed `cs` CLI for file-level review/delta work, and use the CodeScene API (`CODESCENE_PAT` + `CODESCENE_PROJECT_ID`) for project-wide Hotspot/Average threshold checks from `.codescene-thresholds`.
+**CodeScene 访问顺序：** 如果可用，优先使用 CodeScene MCP 工具。如果 MCP 不可用，使用已安装的 `cs` CLI 进行文件级别的审查/差异分析，并使用 CodeScene API（`CODESCENE_PAT` + `CODESCENE_PROJECT_ID`）从 `.codescene-thresholds` 进行项目范围的 Hotspot/Average 阈值检查。
 
-**Before editing any existing code file:** capture its current file-level CodeScene score. After your edits, re-run the same file-level review and verify the score is higher. If the file already starts at `10.0`, it must remain `10.0`.
+**在编辑任何现有代码文件之前：** 捕获其当前的 CodeScene 文件级分数。编辑完成后，重新运行相同的文件级审查，并验证分数已提高。如果文件起始分数已经是 `10.0`，则必须保持 `10.0`。
 
-**New files:** every new **scorable code file** must reach CodeScene score `10.0` before commit. If CodeScene reports `null` / "no scorable code" for a new file, it must still have zero CodeScene findings/warnings.
+**新文件：** 每个新的**可评分代码文件**在提交前必须达到 CodeScene 分数 `10.0`。如果 CodeScene 对新文件报告 `null` / "no scorable code"，则它仍必须具有零个 CodeScene 发现/警告。
 
-**Before every commit:** run CodeScene file-level review on every touched or newly created code file and verify the rule above. **Boy Scout Rule:** every file you touch must leave with a higher score, unless it was already `10.0`, in which case it must stay `10.0`.
+**每次提交前：** 对每个被触及或新创建的代码文件运行 CodeScene 文件级审查，并验证上述规则。**童子军规则：** 你接触的每个文件离开时必须具有更高的分数，除非它已经是 `10.0`，在这种情况下它必须保持 `10.0`。
 
-**If CodeScene gate blocks your push:** use `mcp__codescene__code_health_score` to find the worst file, refactor it, commit, push again. Do NOT stop or wait for laputa-refactor — that is a background loop, not a substitute for fixing your own regressions.
+**如果 CodeScene 关卡阻止了你的推送：** 使用 `mcp__codescene__code_health_score` 找出最差的文件，重构它，提交，再次推送。不要停下来等待 laputa-refactor——那是一个后台循环，不能替代修复你自己的回归问题。
 
-### Security scan with Codacy (mandatory)
+### Codacy 安全扫描（强制要求）
 
-Use Codacy as a security and static-analysis gate before a task is considered releasable.
+在任务被认为可发布之前，将 Codacy 作为安全和静态分析关卡来使用。
 
-- Prefer the Codacy MCP inside Codex to inspect repository/file issues for every touched code file.
-- If MCP is unavailable, use the local CLI wrapper, e.g. `.codacy/cli.sh analyze <path> --format sarif`; choose the relevant tool when useful (`eslint`, `opengrep`, `trivy`, `lizard`).
-- **Always fix Critical and High severity findings introduced by your change.** Do not move the task to In Review with new Critical/High Codacy issues.
-- Review Medium findings. Fix them when they are real defects or security-sensitive; otherwise explain why they are acceptable in the completion comment.
-- Never silence a Codacy rule just to pass the scan. Prefer small code changes that remove the finding.
+- 优先使用 Codex 中的 Codacy MCP 来检查每个被触及代码文件的仓库/文件问题
+- 如果 MCP 不可用，使用本地 CLI 包装器，例如 `.codacy/cli.sh analyze <path> --format sarif`；在有用时选择合适的工具（`eslint`、`opengrep`、`trivy`、`lizard`）
+- **始终修复由你的更改引入的 Critical 和 High 严重性发现。** 不要带着新的 Critical/High Codacy 问题将任务移至 In Review。
+- 审查 Medium 发现。如果是真实的缺陷或安全问题，请修复它们；否则在完成评论中说明为什么它们是可以接受的。
+- 切勿仅仅为了通过扫描而静默 Codacy 规则。优先选择能够消除发现的小型代码更改。
 
-### Check suite (runs on every push)
+### 检查套件（每次推送时运行）
 ```bash
-pnpm lint && npx tsc --noEmit && pnpm test && pnpm test:coverage  # frontend ≥70%
+pnpm lint && npx tsc --noEmit && pnpm test && pnpm test:coverage  # 前端 ≥70%
 cargo test && cargo llvm-cov --manifest-path src-tauri/Cargo.toml --no-clean --fail-under-lines 85
 ```
 
-Coverage is a release gate, not a vanity metric:
-- Frontend coverage must stay ≥70%.
-- Rust line coverage must stay ≥85%.
-- For bug fixes, add a regression test when practical.
-- For new behavior, add targeted coverage close to the changed code; do not rely only on broad E2E coverage.
+覆盖率是发布关卡，而不是虚荣指标：
+- 前端覆盖率必须保持 ≥70%
+- Rust 行覆盖率必须保持 ≥85%
+- 对于缺陷修复，在可行时添加回归测试
+- 对于新行为，在变更代码附近添加有针对性的覆盖测试；不要仅依赖广泛的 E2E 覆盖
 
-### UI and native QA
+### UI 与原生 QA
 
-**Phase 1 — Playwright (only for core user flows):**
+**阶段 1 — Playwright（仅限核心用户流程）：**
 
-Write Playwright test in `tests/smoke/<slug>.spec.ts` only if feature touches: vault open, note create/save/delete, search, wikilink navigation, git commit/push, conflict resolution. Tag a test with `@smoke` only if it protects a core pre-push workflow. Do NOT tag cosmetic or mock-heavy checks — keep those in the full regression lane. The curated `pnpm playwright:smoke` suite must stay under **5 minutes**; use `pnpm playwright:regression` for the full Playwright pass.
+仅当功能涉及以下内容时，才在 `tests/smoke/<slug>.spec.ts` 中编写 Playwright 测试：保险库打开、笔记创建/保存/删除、搜索、维基链接导航、git 提交/推送、冲突解决。仅在测试保护核心推送前工作流时才标记为 `@smoke`。不要标记纯外观或大量模拟的检查——将这些保留在完整回归通道中。精心策划的 `pnpm playwright:smoke` 套件必须保持在 **5 分钟以内**；对于完整的 Playwright 测试，使用 `pnpm playwright:regression`。
 
 ```bash
 pnpm dev --port 5201 &
@@ -94,7 +94,7 @@ sleep 3
 BASE_URL="http://localhost:5201" npx playwright test tests/smoke/<slug>.spec.ts
 ```
 
-**Phase 2 — Native app QA:**
+**阶段 2 — 原生应用 QA：**
 
 ```bash
 pnpm tauri dev &
@@ -103,85 +103,85 @@ bash ~/.openclaw/skills/tolaria-qa/scripts/focus-app.sh laputa
 bash ~/.openclaw/skills/tolaria-qa/scripts/screenshot.sh /tmp/qa-native.png
 ```
 
-Use computer-use/browser-control style interaction for native UI QA when available: click, hover, drag, select, scroll, and type the way a real user would with the mouse and trackpad. For every UI feature, test the primary mouse-driven path first, then verify any relevant keyboard shortcut or keyboard-first workflow still works. Tolaria is still a keyboard-first app, but QA must not assume users only interact by keyboard.
+在可用时，使用 computer-use/browser-control 风格的交互进行原生 UI QA：像真实用户使用鼠标和触控板一样进行点击、悬停、拖拽、选择、滚动和输入。对于每个 UI 功能，先测试主要的鼠标驱动路径，然后验证任何相关的键盘快捷键或键盘优先工作流仍然有效。Tolaria 仍然是一个键盘优先的应用，但 QA 不能假设用户只通过键盘交互。
 
-Use `osascript` for app focus, keyboard shortcuts, and keyboard-specific checks. **⚠️ WKWebView:** `osascript keystroke` can be blocked inside editor content — use computer use for native editor interaction when possible, and rely on Playwright for deterministic text-input coverage. Write result as Todoist comment (✅ or ❌).
+使用 `osascript` 进行应用聚焦、键盘快捷键和键盘特定检查。**⚠️ WKWebView：** `osascript keystroke` 可能在编辑器内容中被阻塞——尽可能使用 computer use 进行原生编辑器交互，并依赖 Playwright 进行确定性的文本输入覆盖。在 Todoist 中将结果写为评论（✅ 或 ❌）。
 
-### Release-readiness checklist
+### 发布就绪检查清单
 
-Before pushing or moving a task to In Review, verify the release gates and add a **completion comment** to the Todoist task. The comment must include:
+在推送或将任务移至 In Review 之前，验证发布关卡并添加一条**完成评论**到 Todoist 任务。评论必须包含：
 
-- What was implemented (a few lines covering logic and UX/UI).
-- QA: what was tested and how (Playwright / native screenshot / osascript).
-- Tests/coverage: commands run and final coverage result.
-- CodeScene: before/after touched-file checks plus final Hotspot and Average scores after push; final scores must pass `.codescene-thresholds`.
-- Coverage commands passed (`pnpm test:coverage` and `cargo llvm-cov ... --fail-under-lines 85`) or the change is docs-only.
-- Codacy: MCP/CLI scan summary; confirm no new Critical/High findings.
-- Localization: any user-facing copy lives in `src/lib/locales/en.json`, `pnpm l10n:translate` was run, and `pnpm l10n:validate` passes. If no copy changed, say “Localization: no UI copy changes”.
-- PostHog: meaningful new user actions/events are instrumented with safe metadata; noisy/minor changes explicitly say “PostHog: no event needed because …”.
-- Refactoring: any files refactored to meet the CodeScene gate, or "none needed".
-- ADRs: any new/updated ADRs, or "none".
-- Docs: any updated docs (`ARCHITECTURE.md`, `ABSTRACTIONS.md`, etc.), or "none".
-- Demo vault dirt checked: `git status --short -- demo-vault demo-vault-v2` is empty unless fixture changes are intentional.
+- 实现了什么（涵盖逻辑和 UX/UI 的几行说明）
+- QA：测试了什么以及如何测试的（Playwright / 原生截图 / osascript）
+- 测试/覆盖率：运行的命令和最终覆盖率结果
+- CodeScene：被触及文件的修改前后检查结果，以及推送后的最终 Hotspot 和 Average 分数；最终分数必须通过 `.codescene-thresholds`
+- 覆盖率命令已通过（`pnpm test:coverage` 和 `cargo llvm-cov ... --fail-under-lines 85`），或者变更仅涉及文档
+- Codacy：MCP/CLI 扫描摘要；确认没有新的 Critical/High 发现
+- 国际化：所有面向用户的文案都在 `src/lib/locales/en.json` 中，已运行 `pnpm l10n:translate`，并且 `pnpm l10n:validate` 通过。如果没有文案变更，则说明 "Localization: no UI copy changes"
+- PostHog：有意义的用户操作/事件已使用安全元数据进行埋点；嘈杂/微小的变更明确说明 "PostHog: no event needed because …"
+- 重构：为满足 CodeScene 关卡而重构的任何文件，或 "none needed"
+- ADR：任何新增/更新的 ADR，或 "none"
+- 文档：任何更新的文档（`ARCHITECTURE.md`、`ABSTRACTIONS.md` 等），或 "none"
+- 演示仓库脏文件检查：除非是有意更改测试数据，否则 `git status --short -- demo-vault demo-vault-v2` 应为空
 
-### ADRs & docs
+### ADR 与文档
 
-ADRs live in `docs/adr/`. Create in the same commit as the code. Never edit existing — create a new one that supersedes. Use `/create-adr`. **When:** new dependency, storage strategy, platform target, core abstraction, cross-cutting pattern. **Not for:** bug fixes, styling, refactors.
+ADR 存放在 `docs/adr/` 中。在与代码相同的提交中创建。切勿编辑已有的 ADR——创建一个新的来取代它。使用 `/create-adr`。**何时需要：** 新依赖、存储策略、平台目标、核心抽象、跨切面模式。**不需要的情况：** 缺陷修复、样式调整、重构。
 
-After any Tauri command, new component/hook, data model change, or new integration: update `docs/ARCHITECTURE.md`, `docs/ABSTRACTIONS.md`, and/or `docs/GETTING-STARTED.md` in the same commit.
+在添加任何 Tauri 命令、新组件/钩子、数据模型更改或新集成之后，在同一提交中更新 `docs/ARCHITECTURE.md`、`docs/ABSTRACTIONS.md` 和/或 `docs/GETTING-STARTED.md`。
 
 ---
 
-## 2. Product Rules
+## 2. 产品规则
 
-### Demo vault hygiene (`demo-vault/`, `demo-vault-v2/`)
+### 演示仓库卫生（`demo-vault/`、`demo-vault-v2/`）
 
-Default to `demo-vault-v2/` for testing.
+默认使用 `demo-vault-v2/` 进行测试。
 
-- Treat `demo-vault/` and `demo-vault-v2/` as disposable QA fixtures unless the task explicitly changes demo content.
-- If you create untracked notes, attachments, or other temporary files there for testing, delete them before the task is complete.
-- If you modify tracked demo-vault files only to test or QA behavior, revert those edits before the final commit.
-- Before declaring a task done, make sure `git status --short -- demo-vault demo-vault-v2` is empty unless demo fixture changes are part of the task.
-- If a fresh run starts and the only local dirt is inside `demo-vault/` or `demo-vault-v2/`, clean those paths first and continue. That case is recoverable QA residue, not a blocker.
+- 将 `demo-vault/` 和 `demo-vault-v2/` 视为一次性 QA 测试数据，除非任务明确要求更改演示内容
+- 如果你在那里创建了未追踪的笔记、附件或其他临时文件用于测试，请在任务完成前删除它们
+- 如果你修改了已追踪的演示仓库文件仅用于测试或 QA 行为，请在最终提交前撤销这些修改
+- 在宣布任务完成之前，确保 `git status --short -- demo-vault demo-vault-v2` 为空，除非演示测试数据变更是任务的一部分
+- 如果开始新的运行且唯一的本地脏文件位于 `demo-vault/` 或 `demo-vault-v2/` 内，请先清理这些路径然后继续。这种情况是可恢复的 QA 残留，不是阻塞项
 
-### User vault (`~/Laputa/`)
+### 用户仓库（`~/Laputa/`）
 
-Default to `demo-vault-v2/`. If you must use `~/Laputa/` for testing:
-- **Never commit or push** any test notes to the remote vault
-- **Delete all test notes from disk** when done — do not leave untitled or temporary notes on the filesystem. Run `cd ~/Laputa && git checkout -- . && git clean -fd` to restore the vault to its last committed state.
-- **Rationale:** test notes pollute the local vault over time, making it a collection of nonsensical untitled files. The vault must stay clean on disk, not just on the remote.
+默认使用 `demo-vault-v2/`。如果你必须使用 `~/Laputa/` 进行测试：
+- **切勿提交或推送**任何测试笔记到远程仓库
+- **完成后删除磁盘上的所有测试笔记**——不要留下无标题或临时笔记。运行 `cd ~/Laputa && git checkout -- . && git clean -fd` 将仓库恢复到上次提交的状态
+- **理由：** 测试笔记会随着时间的推移污染本地仓库，使其变成一堆无意义的无标题文件。仓库必须在磁盘上保持干净，而不仅仅是在远程
 
-### UI components — mandatory rules
+### UI 组件——强制规则
 
-**Always use shadcn/ui components.** Never use raw HTML form elements (`<input>`, `<select>`, `<button>`, native `<input type="date">`, etc.) for user-facing UI. Every interactive element must use the shadcn/ui equivalent:
+**始终使用 shadcn/ui 组件。** 切勿在面向用户的 UI 中使用原始 HTML 表单元素（`<input>`、`<select>`、`<button>`、原生 `<input type="date">` 等）。每个交互元素必须使用 shadcn/ui 的对应组件：
 
-| Need | Use |
+| 需求 | 使用 |
 |---|---|
-| Text input | `Input` from shadcn/ui |
-| Dropdown/select | `Select` from shadcn/ui |
-| Date picker | `Calendar` + `Popover` from shadcn/ui (NOT native `<input type="date">`) |
-| Button | `Button` from shadcn/ui |
-| Autocomplete/combobox | Reuse existing combobox components from the app (check `src/components/`) |
-| Wikilink picker | Reuse the wikilink autocomplete component already used in the editor and Properties panel |
-| Emoji picker | Reuse the emoji picker component already used for note/type icons |
-| Color picker | Reuse the color swatch picker used for type customization |
-| Toggle/switch | `Switch` or `ToggleGroup` from shadcn/ui |
-| Dialog/modal | `Dialog` from shadcn/ui |
+| 文本输入 | shadcn/ui 的 `Input` |
+| 下拉菜单/选择 | shadcn/ui 的 `Select` |
+| 日期选择器 | shadcn/ui 的 `Calendar` + `Popover`（不要使用原生 `<input type="date">`） |
+| 按钮 | shadcn/ui 的 `Button` |
+| 自动完成/组合框 | 复用应用中现有的组合框组件（检查 `src/components/`） |
+| 维基链接选择器 | 复用编辑器和属性面板中已使用的维基链接自动完成组件 |
+| 表情选择器 | 复用于笔记/类型图标的表情选择器组件 |
+| 颜色选择器 | 复用于类型自定义的颜色样本选择器 |
+| 切换/开关 | shadcn/ui 的 `Switch` 或 `ToggleGroup` |
+| 对话框/模态框 | shadcn/ui 的 `Dialog` |
 
-**When in doubt:** search `src/components/` for an existing component before building new. **Visual language:** all new UI must feel native to Tolaria — if it looks like a browser default, it's wrong.
+**有疑问时：** 在构建新组件之前，先搜索 `src/components/` 中已有的组件。**视觉语言：** 所有新 UI 必须感觉像是 Tolaria 原生的——如果看起来像浏览器默认样式，那就是错的。
 
 ---
 
-## 3. Reference
+## 3. 参考
 
-### macOS / Tauri gotchas
+### macOS / Tauri 注意事项
 
-- `Option+N` → special chars on macOS. Use `e.code` or `Cmd+N`
-- Tauri menu accelerators: `MenuItemBuilder::new(label).accelerator("CmdOrCtrl+1")`
-- `app.set_menu()` replaces the ENTIRE menu bar — include all submenus
-- `mock-tauri.ts` silently swallows Tauri calls — not a substitute for native testing
+- `Option+N` → macOS 上的特殊字符。使用 `e.code` 或 `Cmd+N`
+- Tauri 菜单快捷键：`MenuItemBuilder::new(label).accelerator("CmdOrCtrl+1")`
+- `app.set_menu()` 会替换**整个**菜单栏——需要包含所有子菜单
+- `mock-tauri.ts` 会静默吞掉 Tauri 调用——不能替代原生测试
 
-### QA scripts
+### QA 脚本
 
 ```bash
 bash ~/.openclaw/skills/tolaria-qa/scripts/focus-app.sh Tolaria
@@ -189,6 +189,6 @@ bash ~/.openclaw/skills/tolaria-qa/scripts/screenshot.sh /tmp/out.png
 bash ~/.openclaw/skills/tolaria-qa/scripts/shortcut.sh "command" "s"
 ```
 
-### Diagrams
+### 图表
 
-Prefer Mermaid (`flowchart`, `sequenceDiagram`, `classDiagram`, `stateDiagram-v2`). ASCII only for spatial wireframe layouts.
+优先使用 Mermaid（`flowchart`、`sequenceDiagram`、`classDiagram`、`stateDiagram-v2`）。仅空间线框图布局使用 ASCII。
