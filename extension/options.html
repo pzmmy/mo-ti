@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>剪藏到墨屉 - 设置</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      font-size: 14px;
+      color: #333;
+      background: #f5f5f5;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .header-icon {
+      width: 48px;
+      height: 48px;
+      background: #3c3c8c;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+
+    .header h1 {
+      font-size: 20px;
+      color: #1a1a2e;
+      margin-bottom: 4px;
+    }
+
+    .header p {
+      font-size: 13px;
+      color: #999;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 6px;
+    }
+
+    .form-label .hint {
+      font-weight: 400;
+      color: #999;
+      font-size: 12px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d0d0d0;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #333;
+      background: #fafafa;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #3c3c8c;
+      box-shadow: 0 0 0 3px rgba(60, 60, 140, 0.1);
+      background: #fff;
+    }
+
+    .form-input::placeholder {
+      color: #bbb;
+    }
+
+    .form-input.code {
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 13px;
+    }
+
+    .form-help {
+      font-size: 12px;
+      color: #999;
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background: #3c3c8c;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #2e2e70;
+    }
+
+    .btn-secondary {
+      background: #e8e8f0;
+      color: #444;
+      border: 1px solid #d0d0d0;
+    }
+
+    .btn-secondary:hover {
+      background: #dddde8;
+    }
+
+    .btn-success {
+      background: #43a047;
+      color: #fff;
+    }
+
+    .btn-success:hover {
+      background: #388e3c;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .status {
+      margin-top: 16px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.4;
+      display: none;
+    }
+
+    .status.show {
+      display: block;
+    }
+
+    .status.success {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #c8e6c9;
+    }
+
+    .status.error {
+      background: #ffebee;
+      color: #c62828;
+      border: 1px solid #ffcdd2;
+    }
+
+    .status.info {
+      background: #e3f2fd;
+      color: #1565c0;
+      border: 1px solid #bbdefb;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #eee;
+      margin: 24px 0;
+    }
+
+    .info-box {
+      background: #f0f0f8;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: #666;
+      line-height: 1.6;
+      margin-top: 16px;
+    }
+
+    .info-box strong {
+      color: #3c3c8c;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="header">
+        <div class="header-icon">墨</div>
+        <h1>剪藏到墨屉</h1>
+        <p>配置 WebDAV 服务器连接</p>
+      </div>
+
+      <!-- WebDAV Server URL -->
+      <div class="form-group">
+        <label class="form-label" for="serverUrl">WebDAV 服务器地址</label>
+        <input type="url" class="form-input code" id="serverUrl"
+          placeholder="https://example.com/dav/" />
+        <div class="form-help">
+          墨屉 WebDAV 服务的根 URL，如 https://example.com/dav/
+        </div>
+      </div>
+
+      <!-- Username -->
+      <div class="form-group">
+        <label class="form-label" for="username">用户名</label>
+        <input type="text" class="form-input" id="username"
+          placeholder="用户名（可选）" />
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label class="form-label" for="password">密码</label>
+        <input type="password" class="form-input" id="password"
+          placeholder="密码（可选）" />
+      </div>
+
+      <!-- Default Path -->
+      <div class="form-group">
+        <label class="form-label" for="defaultPath">
+          默认保存路径 <span class="hint">（可选）</span>
+        </label>
+        <input type="text" class="form-input code" id="defaultPath"
+          placeholder="/clippings/" />
+        <div class="form-help">
+          剪藏文件的默认保存目录，如 /clippings/
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- Actions -->
+      <div class="actions">
+        <button class="btn btn-secondary" id="testBtn">测试连接</button>
+        <button class="btn btn-primary" id="saveBtn">保存设置</button>
+      </div>
+
+      <!-- Status -->
+      <div class="status" id="status"></div>
+
+      <!-- Info -->
+      <div class="info-box">
+        <strong>💡 什么是 WebDAV？</strong><br>
+        WebDAV 是一种网络文件系统协议。墨屉提供 WebDAV 服务，剪藏扩展通过该协议将网页内容保存到墨屉 vault 中。
+        请确保你的 WebDAV 服务器支持 <strong>PUT</strong> 和 <strong>MKCOL</strong> 方法。
+      </div>
+    </div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>
