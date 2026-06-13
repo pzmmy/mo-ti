@@ -42,6 +42,8 @@ struct MatchScoreRequest<'a> {
     title_lower: &'a str,
     content_lower: &'a str,
     query_lower: &'a str,
+    /// CJK bigrams of the query (empty if query has no CJK)
+    query_bigrams: &'a [String],
 }
 
 impl Utf8Boundary<'_> {
@@ -95,8 +97,58 @@ impl SnippetRequest<'_> {
     }
 }
 
+/// Check if a string contains CJK (Chinese/Japanese/Korean) characters.
+fn has_cjk(s: &str) -> bool {
+    s.chars().any(|c| {
+        let cat = c as u32;
+        (cat >= 0x4E00 && cat <= 0x9FFF)   // CJK Unified Ideographs
+        || (cat >= 0x3400 && cat <= 0x4DBF)  // CJK Extension A
+        || (cat >= 0x2E80 && cat <= 0x2EFF)  // CJK Radicals
+        || (cat >= 0x3000 && cat <= 0x303F)  // CJK Symbols and Punctuation
+        || (cat >= 0xFF00 && cat <= 0xFFEF)  // Fullwidth forms
+        || (cat >= 0x3040 && cat <= 0x309F)  // Hiragana
+        || (cat >= 0x30A0 && cat <= 0x30FF)  // Katakana
+        || (cat >= 0xAC00 && cat <= 0xD7AF)  // Hangul Syllables
+    })
+}
+
+/// Extract overlapping CJK bigrams (2-char sequences) from text.
+/// "北京大学" → ["北京", "京大", "大学"]
+/// Returns empty vec if text has no CJK content.
+fn extract_cjk_bigrams(s: &str) -> Vec<String> {
+    let chars: Vec<char> = s.chars().collect();
+    let mut bigrams = Vec::new();
+    for i in 0..chars.len().saturating_sub(1) {
+        // Only generate bigrams that contain at least one CJK character
+        if is_cjk(chars[i]) || is_cjk(chars[i + 1]) {
+            bigrams.push(format!("{}{}", chars[i], chars[i + 1]));
+        }
+    }
+    bigrams
+}
+
+fn is_cjk(c: char) -> bool {
+    let cat = c as u32;
+    (cat >= 0x4E00 && cat <= 0x9FFF)
+    || (cat >= 0x3400 && cat <= 0x4DBF)
+    || (cat >= 0x2E80 && cat <= 0x2EFF)
+    || (cat >= 0x3040 && cat <= 0x309F)
+    || (cat >= 0x30A0 && cat <= 0x30FF)
+    || (cat >= 0xAC00 && cat <= 0xD7AF)
+}
+
+/// Count how many bigrams from `query_bigrams` appear in `content_bigrams`.
+fn cjk_bigram_overlap(query_bigrams: &[String], content_bigrams: &[String]) -> usize {
+    query_bigrams.iter()
+        .filter(|qb| content_bigrams.contains(qb))
+        .count()
+}
+
 impl MatchScoreRequest<'_> {
     fn score(&self) -> f64 {
+        let mut score = 0.0;
+
+        // --- Standard (Latin/CJK exact) matching ---
         let title_exact = self.title_lower.contains(self.query_lower);
         let title_word = self
             .title_lower
@@ -104,13 +156,39 @@ impl MatchScoreRequest<'_> {
             .any(|word| word == self.query_lower);
         let content_count = self.content_lower.matches(self.query_lower).count();
 
-        let mut score = 0.0;
         if title_word {
             score += 10.0;
         } else if title_exact {
             score += 5.0;
         }
         score += (content_count as f64).min(20.0) * 0.5;
+
+        // --- CJK bigram overlap scoring ---
+        // When the query contains CJK characters, also score by bigram overlap.
+        // This enables partial/fuzzy matching for Chinese text:
+        //   e.g. "北京" matches "北京大学" (shared bigram: "北京")
+        if !self.query_bigrams.is_empty() {
+            let title_bigrams = extract_cjk_bigrams(self.title_lower);
+            let content_bigrams = extract_cjk_bigrams(self.content_lower);
+
+            let title_overlap = cjk_bigram_overlap(self.query_bigrams, &title_bigrams);
+            let content_overlap = cjk_bigram_overlap(self.query_bigrams, &content_bigrams);
+
+            if title_overlap > 0 {
+                let ratio = title_overlap as f64 / self.query_bigrams.len() as f64;
+                score += 8.0 * ratio;
+            }
+            if content_overlap > 0 {
+                let ratio = content_overlap as f64 / self.query_bigrams.len() as f64;
+                score += 3.0 * ratio;
+            }
+
+            // Boost files that match ALL query bigrams (perfect match)
+            if content_overlap >= self.query_bigrams.len() {
+                score += 5.0;
+            }
+        }
+
         score
     }
 }
@@ -177,6 +255,13 @@ pub fn search_vault_with_options(options: SearchOptions<'_>) -> Result<SearchRes
     let query_lower = options.query.to_lowercase();
     let vault_dir = Path::new(options.vault_path);
 
+    // Pre-compute CJK bigrams if the query contains CJK characters
+    let query_bigrams: Vec<String> = if has_cjk(&query_lower) {
+        extract_cjk_bigrams(&query_lower)
+    } else {
+        Vec::new()
+    };
+
     let mut results: Vec<SearchResult> = Vec::new();
 
     for path in collect_markdown_paths(vault_dir, options.hide_gitignored_files) {
@@ -194,7 +279,20 @@ pub fn search_vault_with_options(options: SearchOptions<'_>) -> Result<SearchRes
         let title = crate::vault::derive_markdown_title_from_content(&content, filename);
         let title_lower = title.to_lowercase();
 
-        if !title_lower.contains(&query_lower) && !content_lower.contains(&query_lower) {
+        // Standard match check
+        let standard_match = title_lower.contains(&query_lower) || content_lower.contains(&query_lower);
+
+        // CJK bigram match check
+        let bigram_match = if !query_bigrams.is_empty() {
+            let title_bigrams = extract_cjk_bigrams(&title_lower);
+            let content_bigrams = extract_cjk_bigrams(&content_lower);
+            cjk_bigram_overlap(&query_bigrams, &title_bigrams) > 0
+                || cjk_bigram_overlap(&query_bigrams, &content_bigrams) > 0
+        } else {
+            false
+        };
+
+        if !standard_match && !bigram_match {
             continue;
         }
 
@@ -202,13 +300,24 @@ pub fn search_vault_with_options(options: SearchOptions<'_>) -> Result<SearchRes
             title_lower: &title_lower,
             content_lower: &content_lower,
             query_lower: &query_lower,
+            query_bigrams: &query_bigrams,
         }
         .score();
-        let snippet = SnippetRequest {
-            content: searchable_content,
-            query_lower: &query_lower,
-        }
-        .extract();
+
+        // For bigram-only matches (no exact substring match), use a position-based snippet
+        let snippet = if standard_match {
+            SnippetRequest {
+                content: searchable_content,
+                query_lower: &query_lower,
+            }
+            .extract()
+        } else {
+            // For bigram matches, return the beginning of the content as snippet
+            let snippet = &searchable_content[..searchable_content.len().min(200)];
+            let end = Utf8Boundary { text: snippet }.floor(200.min(snippet.len()));
+            format!("{}…", &snippet[..end])
+        };
+
         let full_path = path.to_string_lossy().to_string();
 
         results.push(SearchResult {
@@ -267,6 +376,7 @@ mod tests {
                 title_lower: $title_lower,
                 content_lower: $content_lower,
                 query_lower: $query_lower,
+                query_bigrams: &[],
             }
             .score()
         };
@@ -303,7 +413,7 @@ mod tests {
         let long_line = "a".repeat(300);
         let content = format!("start\n{}keyword{}\nend", long_line, long_line);
         let snippet = snippet!(&content, "keyword");
-        assert!(snippet.len() <= 203); // 200 + "…" (3 bytes UTF-8)
+        assert!(snippet.len() <= 203);
     }
 
     #[test]
@@ -346,6 +456,56 @@ mod tests {
 
         assert!(snippet.starts_with("İstanbul"));
         assert!(snippet.is_char_boundary(snippet.len()));
+    }
+
+    #[test]
+    fn test_has_cjk_detection() {
+        assert!(has_cjk("你好世界"));
+        assert!(has_cjk("hello 你好"));
+        assert!(!has_cjk("hello world"));
+        assert!(has_cjk("日本語テスト"));
+        assert!(has_cjk("한글테스트"));
+    }
+
+    #[test]
+    fn test_cjk_bigram_extraction() {
+        let bigrams = extract_cjk_bigrams("北京大学");
+        assert_eq!(bigrams, vec!["北京".to_string(), "京大".to_string(), "大学".to_string()]);
+    }
+
+    #[test]
+    fn test_cjk_bigram_mixed_content() {
+        let bigrams = extract_cjk_bigrams("hello北京world");
+        assert!(bigrams.contains(&"北京".to_string()));
+        assert_eq!(bigrams.len(), 1);
+    }
+
+    #[test]
+    fn test_cjk_bigram_no_cjk() {
+        let bigrams = extract_cjk_bigrams("hello world");
+        assert!(bigrams.is_empty());
+    }
+
+    #[test]
+    fn test_cjk_bigram_overlap_scoring() {
+        let query = "北京";
+        let title = "北京大学介绍";
+        let content = "这是关于北京大学的内容。";
+
+        let query_bigrams = extract_cjk_bigrams(query);
+        let title_bigrams = extract_cjk_bigrams(title);
+        let content_bigrams = extract_cjk_bigrams(content);
+
+        let overlap = cjk_bigram_overlap(&query_bigrams, &title_bigrams);
+        assert!(overlap > 0, "北京大学 should contain bigram 北京");
+
+        let score = MatchScoreRequest {
+            title_lower: title,
+            content_lower: content,
+            query_lower: query,
+            query_bigrams: &query_bigrams,
+        }.score();
+        assert!(score > 0.0, "CJK bigram match should produce a positive score");
     }
 
     #[test]
@@ -442,5 +602,29 @@ mod tests {
 
         assert_eq!(response.results.len(), 1);
         assert_eq!(response.results[0].title, "Body Match");
+    }
+
+    #[test]
+    fn test_cjk_search_returns_chinese_results() {
+        let dir = Builder::new()
+            .prefix("cjk-search-")
+            .tempdir_in(std::env::current_dir().unwrap())
+            .unwrap();
+        fs::write(
+            dir.path().join("peking.md"),
+            "# 北京大学\n\n北京大学位于北京海淀区。",
+        )
+        .unwrap();
+        fs::write(
+            dir.path().join("shanghai.md"),
+            "# 上海大学\n\n上海大学位于上海市。",
+        )
+        .unwrap();
+
+        let response =
+            search_vault(dir.path().to_str().unwrap(), "北京", "keyword", 10).unwrap();
+
+        assert_eq!(response.results.len(), 1);
+        assert_eq!(response.results[0].title, "北京大学");
     }
 }

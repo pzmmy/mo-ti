@@ -1,0 +1,322 @@
+use base64::Engine as _;
+use std::path::{Path, PathBuf};
+use std::time::{SystemTime, UNIX_EPOCH};
+
+/// WebDAV sync configuration stored in app settings
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct WebdavConfig {
+    pub url: String,
+    pub username: String,
+    pub password: String,
+    pub remote_path: String,
+    pub enabled: bool,
+    pub last_sync_at: Option<u64>,
+}
+
+impl Default for WebdavConfig {
+    fn default() -> Self {
+        Self {
+            url: String::new(),
+            username: String::new(),
+            password: String::new(),
+            remote_path: "/mo-ti-vault".to_string(),
+            enabled: false,
+            last_sync_at: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct SyncStatus {
+    pub connected: bool,
+    pub last_sync_at: Option<u64>,
+    pub files_uploaded: usize,
+    pub files_downloaded: usize,
+    pub files_conflicted: usize,
+    pub errors: Vec<String>,
+}
+
+pub struct WebdavClient {
+    url: String,
+    username: String,
+    password: String,
+    remote_path: String,
+    client: reqwest::blocking::Client,
+}
+
+impl WebdavClient {
+    pub fn new(config: &WebdavConfig) -> Self {
+        let client = reqwest::blocking::Client::builder()
+            .timeout(std::time::Duration::from_secs(30))
+            .danger_accept_invalid_certs(false)
+            .build()
+            .unwrap_or_default();
+
+        Self {
+            url: config.url.trim_end_matches('/').to_string(),
+            username: config.username.clone(),
+            password: config.password.clone(),
+            remote_path: config.remote_path.trim_matches('/').to_string(),
+            client,
+        }
+    }
+
+    fn auth_header(&self) -> String {
+        let credentials = format!("{}:{}", self.username, self.password);
+        format!("Basic {}", base64::engine::general_purpose::STANDARD.encode(credentials.as_bytes()))
+    }
+
+    fn remote_url(&self, path: &str) -> String {
+        let path = path.trim_start_matches('/');
+        format!("{}/{}/{}", self.url, self.remote_path, path)
+    }
+
+    /// Test connection to WebDAV server
+    pub fn test_connection(&self) -> Result<String, String> {
+        let url = format!("{}/{}", self.url, self.remote_path);
+        let response = self.client
+            .request("PROPFIND", &url)
+            .header("Authorization", self.auth_header())
+            .header("Depth", "0")
+            .send()
+            .map_err(|e| format!("连接失败: {}", e))?;
+
+        if response.status().is_success() || response.status().as_u16() == 207 {
+            Ok("连接成功".to_string())
+        } else if response.status().as_u16() == 401 {
+            Err("认证失败：用户名或密码错误".to_string())
+        } else {
+            Err(format!("服务器返回: {}", response.status()))
+        }
+    }
+
+    /// List files in the remote directory (recursive for .md files)
+    pub fn list_files(&self) -> Result<Vec<String>, String> {
+        let url = self.remote_url("");
+        let response = self.client
+            .request("PROPFIND", &url)
+            .header("Authorization", self.auth_header())
+            .header("Depth", "1")
+            .send()
+            .map_err(|e| format!("列出文件失败: {}", e))?;
+
+        if !response.status().is_success() && response.status().as_u16() != 207 {
+            return Err(format!("列出文件失败: HTTP {}", response.status()));
+        }
+
+        let body = response.text().map_err(|e| format!("读取响应失败: {}", e))?;
+        let paths = parse_propfind_response(&body);
+        Ok(paths)
+    }
+
+    /// Download a file from WebDAV
+    pub fn download_file(&self, remote_rel_path: &str, local_path: &Path) -> Result<(), String> {
+        let url = self.remote_url(remote_rel_path);
+        let response = self.client
+            .get(&url)
+            .header("Authorization", self.auth_header())
+            .send()
+            .map_err(|e| format!("下载失败: {}", e))?;
+
+        if !response.status().is_success() {
+            return Err(format!("下载失败: HTTP {}", response.status()));
+        }
+
+        let bytes = response.bytes().map_err(|e| format!("读取数据失败: {}", e))?;
+
+        // Ensure parent directory exists
+        if let Some(parent) = local_path.parent() {
+            std::fs::create_dir_all(parent)
+                .map_err(|e| format!("创建目录失败: {}", e))?;
+        }
+
+        std::fs::write(local_path, &bytes)
+            .map_err(|e| format!("写入文件失败: {}", e))?;
+
+        Ok(())
+    }
+
+    /// Upload a file to WebDAV
+    pub fn upload_file(&self, local_path: &Path, remote_rel_path: &str) -> Result<(), String> {
+        let content = std::fs::read_to_string(local_path)
+            .map_err(|e| format!("读取文件失败: {}", e))?;
+
+        let url = self.remote_url(remote_rel_path);
+        let response = self.client
+            .put(&url)
+            .header("Authorization", self.auth_header())
+            .body(content)
+            .send()
+            .map_err(|e| format!("上传失败: {}", e))?;
+
+        if !response.status().is_success() {
+            return Err(format!("上传失败: HTTP {}", response.status()));
+        }
+
+        Ok(())
+    }
+
+    /// Create a remote directory (MKCOL)
+    pub fn create_remote_dir(&self, dir_path: &str) -> Result<(), String> {
+        let url = self.remote_url(dir_path);
+        let response = self.client
+            .request("MKCOL", &url)
+            .header("Authorization", self.auth_header())
+            .send()
+            .map_err(|e| format!("创建目录失败: {}", e))?;
+
+        // 405 = already exists, which is fine
+        if response.status().is_success() || response.status().as_u16() == 405 {
+            Ok(())
+        } else {
+            Err(format!("创建目录失败: HTTP {}", response.status()))
+        }
+    }
+}
+
+/// Parse a WebDAV PROPFIND XML response and extract file paths
+fn parse_propfind_response(xml_body: &str) -> Vec<String> {
+    let mut paths = Vec::new();
+    // Simple XML parsing for href elements
+    for line in xml_body.lines() {
+        let trimmed = line.trim();
+        if let Some(href) = trimmed.strip_prefix("<d:href>").or_else(|| trimmed.strip_prefix("<href>")) {
+            if let Some(end) = href.find("</") {
+                let path = &href[..end];
+                // Skip the root directory itself
+                if !path.ends_with('/') {
+                    paths.push(path.to_string());
+                }
+            }
+        }
+    }
+    paths
+}
+
+/// Collect all .md files in a vault directory (recursive)
+fn collect_vault_files(vault_path: &Path) -> Result<Vec<PathBuf>, String> {
+    let mut files = Vec::new();
+    for entry in walkdir::WalkDir::new(vault_path)
+        .into_iter()
+        .filter_map(|e| e.ok())
+    {
+        let path = entry.path();
+        if path.extension().is_some_and(|ext| ext == "md") {
+            files.push(path.to_path_buf());
+        }
+    }
+    Ok(files)
+}
+
+/// Get the relative path of a file within the vault
+fn relative_path(vault_path: &Path, file_path: &Path) -> String {
+    file_path
+        .strip_prefix(vault_path)
+        .unwrap_or(file_path)
+        .to_string_lossy()
+        .to_string()
+}
+
+/// Two-way sync between a local vault and WebDAV remote
+pub fn sync_vault(
+    vault_path: &str,
+    config: &WebdavConfig,
+) -> Result<SyncStatus, String> {
+    let vault_dir = Path::new(vault_path);
+    if !vault_dir.exists() {
+        return Err("知识库路径不存在".to_string());
+    }
+
+    let client = WebdavClient::new(config);
+    let mut status = SyncStatus {
+        connected: false,
+        last_sync_at: Some(
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_secs(),
+        ),
+        files_uploaded: 0,
+        files_downloaded: 0,
+        files_conflicted: 0,
+        errors: Vec::new(),
+    };
+
+    // Test connection
+    match client.test_connection() {
+        Ok(_) => status.connected = true,
+        Err(e) => {
+            status.errors.push(e);
+            return Ok(status);
+        }
+    }
+
+    // Ensure remote directory exists
+    if let Err(e) = client.create_remote_dir("") {
+        status.errors.push(format!("创建远程目录失败: {}", e));
+        return Ok(status);
+    }
+
+    // Collect local files
+    let local_files = match collect_vault_files(vault_dir) {
+        Ok(f) => f,
+        Err(e) => {
+            status.errors.push(e);
+            return Ok(status);
+        }
+    };
+
+    // Collect remote files
+    let remote_files = match client.list_files() {
+        Ok(f) => f,
+        Err(e) => {
+            status.errors.push(e);
+            return Ok(status);
+        }
+    };
+
+    // Create a set of remote file paths for quick lookup
+    let remote_paths: std::collections::HashSet<String> = remote_files.iter().cloned().collect();
+
+    // Upload local files that don't exist remotely
+    for local_path in &local_files {
+        let rel = relative_path(vault_dir, local_path);
+        let remote_path = format!("{}/{}", config.remote_path.trim_matches('/'), rel);
+
+        if !remote_paths.contains(&remote_path) {
+            match client.upload_file(local_path, &rel) {
+                Ok(_) => status.files_uploaded += 1,
+                Err(e) => status.errors.push(format!("上传 {} 失败: {}", rel, e)),
+            }
+        }
+    }
+
+    // Download remote files that don't exist locally
+    for remote_file in &remote_files {
+        // Extract relative path from the full WebDAV URL path
+        let prefix = format!("/{}/", config.remote_path.trim_matches('/'));
+        let rel = remote_file
+            .trim_start_matches('/')
+            .strip_prefix(&prefix.trim_start_matches('/'))
+            .or_else(|| {
+                // Try without leading slash
+                remote_file
+                    .strip_prefix(&prefix)
+            })
+            .unwrap_or(remote_file.trim_start_matches('/'));
+
+        if rel.is_empty() || rel.ends_with('/') {
+            continue; // Skip directory entries
+        }
+
+        let local_path = vault_dir.join(rel);
+        if !local_path.exists() {
+            match client.download_file(rel, &local_path) {
+                Ok(_) => status.files_downloaded += 1,
+                Err(e) => status.errors.push(format!("下载 {} 失败: {}", rel, e)),
+            }
+        }
+    }
+
+    Ok(status)
+}

@@ -1,4 +1,4 @@
-import { Copy, Cube, Monitor, Moon, Sun, X } from '@phosphor-icons/react'
+import { CloudArrowUp, Copy, Cube, Monitor, Moon, Sun, X } from '@phosphor-icons/react'
 import {
   AI_AGENT_DEFINITIONS,
   createMissingAiAgentsStatus,
@@ -60,6 +60,7 @@ import {
 } from './SettingsControls'
 import { SettingsFooter } from './SettingsFooter'
 import { VaultContentSettingsSection } from './VaultContentSettingsSection'
+import { WebdavSyncSettingsSection, type WebdavSyncStatus } from './WebdavSyncSettingsSection'
 import { WorkspaceSettingsSection } from './WorkspaceSettingsSection'
 import {
   resolveAllNotesFileVisibility,
@@ -125,6 +126,12 @@ interface SettingsDraft {
   crashReporting: boolean
   analytics: boolean
   explicitOrganization: boolean
+  webdavEnabled: boolean
+  webdavUrl: string
+  webdavUsername: string
+  webdavPassword: string
+  webdavRemotePath: string
+  webdavSyncStatus: WebdavSyncStatus
 }
 
 interface SettingsBodyProps {
@@ -183,6 +190,19 @@ interface SettingsBodyProps {
   setCrashReporting: (value: boolean) => void
   analytics: boolean
   setAnalytics: (value: boolean) => void
+  webdavEnabled: boolean
+  setWebdavEnabled: (value: boolean) => void
+  webdavUrl: string
+  setWebdavUrl: (value: string) => void
+  webdavUsername: string
+  setWebdavUsername: (value: string) => void
+  webdavPassword: string
+  setWebdavPassword: (value: string) => void
+  webdavRemotePath: string
+  setWebdavRemotePath: (value: string) => void
+  webdavSyncStatus: WebdavSyncStatus
+  onTestWebdavConnection: () => Promise<string | null>
+  onWebdavSyncNow: () => Promise<WebdavSyncStatus | null>
 }
 
 const PULL_INTERVAL_OPTIONS = [1, 2, 5, 10, 15, 30] as const
@@ -228,6 +248,17 @@ function createSettingsDraft(
     crashReporting: settings.crash_reporting_enabled ?? false,
     analytics: settings.analytics_enabled ?? false,
     explicitOrganization: explicitOrganizationEnabled,
+    webdavEnabled: (settings as any).webdav_enabled ?? false,
+    webdavUrl: (settings as any).webdav_url ?? '',
+    webdavUsername: (settings as any).webdav_username ?? '',
+    webdavPassword: (settings as any).webdav_password ?? '',
+    webdavRemotePath: (settings as any).webdav_remote_path ?? '/mo-ti-vault',
+    webdavSyncStatus: {
+      connected: false,
+      lastSyncAt: (settings as any).webdav_last_sync_at ?? null,
+      filesUploaded: 0,
+      filesDownloaded: 0,
+    },
   }
 }
 
@@ -275,6 +306,11 @@ function buildSettingsFromDraft(settings: Settings, draft: SettingsDraft): Setti
     ai_model_providers: draft.aiModelProviders.length > 0 ? draft.aiModelProviders : null,
     hide_gitignored_files: draft.hideGitignoredFiles,
     multi_workspace_enabled: draft.multiWorkspaceEnabled,
+    webdav_enabled: draft.webdavEnabled,
+    webdav_url: draft.webdavUrl || null,
+    webdav_username: draft.webdavUsername || null,
+    webdav_password: draft.webdavPassword || null,
+    webdav_remote_path: draft.webdavRemotePath || null,
   }
   return settingsWithAllNotesFileVisibility(nextSettings, draft.allNotesFileVisibility)
 }
@@ -593,6 +629,19 @@ function SettingsBodyFromDraft({
       setCrashReporting={(value) => updateDraft('crashReporting', value)}
       analytics={draft.analytics}
       setAnalytics={(value) => updateDraft('analytics', value)}
+      webdavEnabled={draft.webdavEnabled}
+      setWebdavEnabled={(value) => updateDraft('webdavEnabled', value)}
+      webdavUrl={draft.webdavUrl}
+      setWebdavUrl={(value) => updateDraft('webdavUrl', value)}
+      webdavUsername={draft.webdavUsername}
+      setWebdavUsername={(value) => updateDraft('webdavUsername', value)}
+      webdavPassword={draft.webdavPassword}
+      setWebdavPassword={(value) => updateDraft('webdavPassword', value)}
+      webdavRemotePath={draft.webdavRemotePath}
+      setWebdavRemotePath={(value) => updateDraft('webdavRemotePath', value)}
+      webdavSyncStatus={draft.webdavSyncStatus}
+      onTestWebdavConnection={() => Promise.resolve(null)}
+      onWebdavSyncNow={() => Promise.resolve(null)}
     />
   )
 }
@@ -636,6 +685,19 @@ function SettingsSyncAndAppearanceSections({
   setThemeMode,
   uiLanguage,
   setUiLanguage,
+  webdavEnabled,
+  setWebdavEnabled,
+  webdavUrl,
+  setWebdavUrl,
+  webdavUsername,
+  setWebdavUsername,
+  webdavPassword,
+  setWebdavPassword,
+  webdavRemotePath,
+  setWebdavRemotePath,
+  webdavSyncStatus,
+  onTestWebdavConnection,
+  onWebdavSyncNow,
 }: SettingsBodyProps) {
   return (
     <>
@@ -674,6 +736,25 @@ function SettingsSyncAndAppearanceSections({
           setAutoGitIdleThresholdSeconds={setAutoGitIdleThresholdSeconds}
           autoGitInactiveThresholdSeconds={autoGitInactiveThresholdSeconds}
           setAutoGitInactiveThresholdSeconds={setAutoGitInactiveThresholdSeconds}
+        />
+      </SettingsSection>
+
+      <SettingsSection id={SETTINGS_SECTION_IDS.webdav}>
+        <WebdavSyncSettingsSection
+          t={t}
+          serverUrl={webdavUrl}
+          username={webdavUsername}
+          password={webdavPassword}
+          remotePath={webdavRemotePath}
+          enabled={webdavEnabled}
+          syncStatus={webdavSyncStatus}
+          setServerUrl={setWebdavUrl}
+          setUsername={setWebdavUsername}
+          setPassword={setWebdavPassword}
+          setRemotePath={setWebdavRemotePath}
+          setEnabled={setWebdavEnabled}
+          onTestConnection={onTestWebdavConnection}
+          onSyncNow={onWebdavSyncNow}
         />
       </SettingsSection>
 
