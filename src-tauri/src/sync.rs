@@ -1,7 +1,8 @@
 use base64::Engine as _;
+use log::{error, info, warn};
 use serde::Serialize;
 use std::path::{Path, PathBuf};
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tauri::State;
 use crate::settings;
 
@@ -47,13 +48,69 @@ pub struct WebdavClient {
     client: reqwest::blocking::Client,
 }
 
+/// Retry a WebDAV HTTP request with exponential backoff.
+///
+/// Retry logic:
+/// - Network errors (connection refused, timeout, DNS failure) → retry up to 3 times
+/// - HTTP 429 (Too Many Requests), 502 (Bad Gateway), 503 (Service Unavailable),
+///   504 (Gateway Timeout) → retry up to 3 times
+/// - HTTP 401/403 (authentication failures) → NOT retried, returned immediately
+/// - All other status codes → returned to the caller as-is
+///
+/// Backoff: 1s after first failure, 2s after second failure.
+fn retry_webdav_request<F>(f: F) -> Result<reqwest::blocking::Response, String>
+where
+    F: Fn() -> Result<reqwest::blocking::Response, reqwest::Error>,
+{
+    let delays = [Duration::from_secs(1), Duration::from_secs(2)];
+    let mut last_network_error: Option<String> = None;
+
+    for attempt in 0..3 {
+        match f() {
+            Ok(resp) => {
+                let status = resp.status().as_u16();
+                if matches!(status, 429 | 502 | 503 | 504) {
+                    if attempt < 2 {
+                        warn!(
+                            "[WebDAV] HTTP {status} (attempt {}/3), retrying in {}s...",
+                            attempt + 1,
+                            delays[attempt].as_secs()
+                        );
+                        std::thread::sleep(delays[attempt]);
+                        continue;
+                    }
+                    return Err(format!("server returned HTTP {status} (retried 3 times)"));
+                }
+                return Ok(resp);
+            }
+            Err(e) => {
+                let msg: String = format!("network error: {e}");
+                last_network_error = Some(msg.clone());
+                if attempt < 2 {
+                    warn!(
+                        "[WebDAV] {msg} (attempt {}/3), retrying in {}s...",
+                        attempt + 1,
+                        delays[attempt].as_secs()
+                    );
+                    std::thread::sleep(delays[attempt]);
+                }
+            }
+        }
+    }
+
+    let msg: String = last_network_error.unwrap_or_else(|| "unknown network error".to_string());
+    error!("[WebDAV] {msg} (retried 3 times)");
+    Err(format!("{msg} (retried 3 times)"))
+}
+
 impl WebdavClient {
     pub fn new(config: &WebdavConfig) -> Result<Self, String> {
         let client = reqwest::blocking::Client::builder()
-            .timeout(std::time::Duration::from_secs(30))
+            .connect_timeout(Duration::from_secs(10))
+            .timeout(Duration::from_secs(30))
             .danger_accept_invalid_certs(false)
             .build()
-            .map_err(|e| format!("初始化 HTTP 客户端失败: {}", e))?;
+            .map_err(|e| format!("初始化 HTTP 客户端失败: {e}"))?;
 
         Self {
             url: config.url.trim_end_matches('/').to_string(),
@@ -77,14 +134,16 @@ impl WebdavClient {
     /// Test connection to WebDAV server
     pub fn test_connection(&self) -> Result<String, String> {
         let url = format!("{}/{}", self.url, self.remote_path);
-        let response = self.client
-            .request("PROPFIND", &url)
-            .header("Authorization", self.auth_header())
-            .header("Depth", "0")
-            .send()
-            .map_err(|e| format!("连接失败: {}", e))?;
+        let response = retry_webdav_request(|| {
+            self.client
+                .request("PROPFIND", &url)
+                .header("Authorization", self.auth_header())
+                .header("Depth", "0")
+                .send()
+        })?;
 
         if response.status().is_success() || response.status().as_u16() == 207 {
+            info!("[WebDAV] 连接测试成功: {url}");
             Ok("连接成功".to_string())
         } else if response.status().as_u16() == 401 {
             Err("认证失败：用户名或密码错误".to_string())
@@ -96,18 +155,19 @@ impl WebdavClient {
     /// List files in the remote directory (recursive for .md files)
     pub fn list_files(&self) -> Result<Vec<String>, String> {
         let url = self.remote_url("");
-        let response = self.client
-            .request("PROPFIND", &url)
-            .header("Authorization", self.auth_header())
-            .header("Depth", "1")
-            .send()
-            .map_err(|e| format!("列出文件失败: {}", e))?;
+        let response = retry_webdav_request(|| {
+            self.client
+                .request("PROPFIND", &url)
+                .header("Authorization", self.auth_header())
+                .header("Depth", "1")
+                .send()
+        })?;
 
         if !response.status().is_success() && response.status().as_u16() != 207 {
             return Err(format!("列出文件失败: HTTP {}", response.status()));
         }
 
-        let body = response.text().map_err(|e| format!("读取响应失败: {}", e))?;
+        let body = response.text().map_err(|e| format!("读取响应失败: {e}"))?;
         let paths = parse_propfind_response(&body);
         Ok(paths)
     }
@@ -115,26 +175,27 @@ impl WebdavClient {
     /// Download a file from WebDAV
     pub fn download_file(&self, remote_rel_path: &str, local_path: &Path) -> Result<(), String> {
         let url = self.remote_url(remote_rel_path);
-        let response = self.client
-            .get(&url)
-            .header("Authorization", self.auth_header())
-            .send()
-            .map_err(|e| format!("下载失败: {}", e))?;
+        let response = retry_webdav_request(|| {
+            self.client
+                .get(&url)
+                .header("Authorization", self.auth_header())
+                .send()
+        })?;
 
         if !response.status().is_success() {
             return Err(format!("下载失败: HTTP {}", response.status()));
         }
 
-        let bytes = response.bytes().map_err(|e| format!("读取数据失败: {}", e))?;
+        let bytes = response.bytes().map_err(|e| format!("读取数据失败: {e}"))?;
 
         // Ensure parent directory exists
         if let Some(parent) = local_path.parent() {
             std::fs::create_dir_all(parent)
-                .map_err(|e| format!("创建目录失败: {}", e))?;
+                .map_err(|e| format!("创建目录失败: {e}"))?;
         }
 
         std::fs::write(local_path, &bytes)
-            .map_err(|e| format!("写入文件失败: {}", e))?;
+            .map_err(|e| format!("写入文件失败: {e}"))?;
 
         Ok(())
     }
@@ -142,15 +203,16 @@ impl WebdavClient {
     /// Upload a file to WebDAV
     pub fn upload_file(&self, local_path: &Path, remote_rel_path: &str) -> Result<(), String> {
         let content = std::fs::read_to_string(local_path)
-            .map_err(|e| format!("读取文件失败: {}", e))?;
+            .map_err(|e| format!("读取文件失败: {e}"))?;
 
         let url = self.remote_url(remote_rel_path);
-        let response = self.client
-            .put(&url)
-            .header("Authorization", self.auth_header())
-            .body(content)
-            .send()
-            .map_err(|e| format!("上传失败: {}", e))?;
+        let response = retry_webdav_request(|| {
+            self.client
+                .put(&url)
+                .header("Authorization", self.auth_header())
+                .body(content.clone())
+                .send()
+        })?;
 
         if !response.status().is_success() {
             return Err(format!("上传失败: HTTP {}", response.status()));
@@ -162,11 +224,12 @@ impl WebdavClient {
     /// Create a remote directory (MKCOL)
     pub fn create_remote_dir(&self, dir_path: &str) -> Result<(), String> {
         let url = self.remote_url(dir_path);
-        let response = self.client
-            .request("MKCOL", &url)
-            .header("Authorization", self.auth_header())
-            .send()
-            .map_err(|e| format!("创建目录失败: {}", e))?;
+        let response = retry_webdav_request(|| {
+            self.client
+                .request("MKCOL", &url)
+                .header("Authorization", self.auth_header())
+                .send()
+        })?;
 
         // 405 = already exists, which is fine
         if response.status().is_success() || response.status().as_u16() == 405 {
@@ -257,7 +320,7 @@ pub fn sync_vault(
 
     // Ensure remote directory exists
     if let Err(e) = client.create_remote_dir("") {
-        status.errors.push(format!("创建远程目录失败: {}", e));
+        status.errors.push(format!("创建远程目录失败: {e}"));
         return Ok(status);
     }
 
@@ -290,7 +353,7 @@ pub fn sync_vault(
         if !remote_paths.contains(&remote_path) {
             match client.upload_file(local_path, &rel) {
                 Ok(_) => status.files_uploaded += 1,
-                Err(e) => status.errors.push(format!("上传 {} 失败: {}", rel, e)),
+                Err(e) => status.errors.push(format!("上传 {} 失败: {e}", rel)),
             }
         }
     }
@@ -317,7 +380,7 @@ pub fn sync_vault(
         if !local_path.exists() {
             match client.download_file(rel, &local_path) {
                 Ok(_) => status.files_downloaded += 1,
-                Err(e) => status.errors.push(format!("下载 {} 失败: {}", rel, e)),
+                Err(e) => status.errors.push(format!("下载 {} 失败: {e}", rel)),
             }
         }
     }

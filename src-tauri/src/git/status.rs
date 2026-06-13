@@ -1,4 +1,4 @@
-use super::git_command;
+use super::{command, git_command};
 use serde::Serialize;
 use std::collections::HashMap;
 use std::path::Path;
@@ -155,10 +155,7 @@ fn parse_numstat_output(output: &[u8]) -> HashMap<String, DiffStats> {
 }
 
 fn repo_has_head(vault: &Path) -> Result<bool, String> {
-    let output = git_command()
-        .args(["rev-parse", "--verify", "HEAD"])
-        .current_dir(vault)
-        .output()
+    let output = command::git_output(vault, &["rev-parse", "--verify", "HEAD"])
         .map_err(|e| format!("Failed to run git rev-parse: {e}"))?;
 
     Ok(output.status.success())
@@ -169,11 +166,11 @@ fn load_diff_stats(vault: &Path) -> Result<HashMap<String, DiffStats>, String> {
         return Ok(HashMap::new());
     }
 
-    let output = git_command()
-        .args(["diff", "--numstat", "-z", "--find-renames", "HEAD", "--"])
-        .current_dir(vault)
-        .output()
-        .map_err(|e| format!("Failed to run git diff --numstat: {e}"))?;
+    let output = command::git_output(
+        vault,
+        &["diff", "--numstat", "-z", "--find-renames", "HEAD", "--"],
+    )
+    .map_err(|e| format!("Failed to run git diff --numstat: {e}"))?;
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
@@ -241,11 +238,7 @@ fn ensure_path_within_vault(vault: &Path, relative_path: &Path, abs: &Path) -> R
 }
 
 fn load_file_status(vault: &Path, relative_path: &Path) -> Result<String, String> {
-    let output = git_command()
-        .args(["status", "--porcelain", "--"])
-        .arg(relative_path)
-        .current_dir(vault)
-        .output()
+    let output = command::git_output(vault, &["status", "--porcelain", "--", relative_path.to_str().unwrap_or("")])
         .map_err(|e| format!("Failed to run git status: {e}"))?;
 
     let stdout = String::from_utf8_lossy(&output.stdout);
@@ -257,17 +250,9 @@ fn load_file_status(vault: &Path, relative_path: &Path) -> Result<String, String
 }
 
 fn restore_tracked_file(vault: &Path, relative_path: &Path) -> Result<(), String> {
-    let _ = git_command()
-        .args(["reset", "HEAD", "--"])
-        .arg(relative_path)
-        .current_dir(vault)
-        .output();
+    let _ = command::git_output(vault, &["reset", "HEAD", "--", relative_path.to_str().unwrap_or("")]);
 
-    let checkout = git_command()
-        .args(["checkout", "--"])
-        .arg(relative_path)
-        .current_dir(vault)
-        .output()
+    let checkout = command::git_output(vault, &["checkout", "--", relative_path.to_str().unwrap_or("")])
         .map_err(|e| format!("Failed to run git checkout: {e}"))?;
 
     if checkout.status.success() {
@@ -291,10 +276,7 @@ pub fn get_modified_files_with_stats(
 }
 
 fn get_modified_files_impl(vault: &Path, include_stats: bool) -> Result<Vec<ModifiedFile>, String> {
-    let output = git_command()
-        .args(["status", "--porcelain=v1", "-z", "--untracked-files=all"])
-        .current_dir(vault)
-        .output()
+    let output = command::git_output(vault, &["status", "--porcelain=v1", "-z", "--untracked-files=all"])
         .map_err(|e| format!("Failed to run git status: {e}"))?;
 
     if !output.status.success() {

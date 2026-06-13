@@ -1,6 +1,7 @@
 use std::path::Path;
 use std::process::{Command, Output, Stdio};
 
+use super::command;
 use super::git_command;
 
 struct CloneRequest<'a> {
@@ -79,8 +80,7 @@ fn run_clone(request: &CloneRequest<'_>) -> Result<(), String> {
             request.dest.display()
         )
     })?;
-    let output = build_clone_command(request, destination)
-        .output()
+    let output = command::spawn_command(build_clone_command(request, destination), &["clone"])
         .map_err(|e| format!("Failed to run git clone: {}", e))?;
 
     if output.status.success() {

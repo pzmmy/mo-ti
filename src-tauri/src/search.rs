@@ -176,6 +176,109 @@ fn text_to_pinyin(text: &str) -> String {
     result
 }
 
+/// Convert text to pinyin and return both the pinyin string and a mapping
+/// from pinyin byte positions to original text byte ranges.
+///
+/// Each mapping entry is (original_byte_start, original_byte_end, pinyin_byte_start, pinyin_byte_end).
+/// Useful for mapping a pinyin match position back to the original Chinese character positions.
+///
+/// Example: text="北京大学" → pinyin="beijingdaxue"
+///   map[0] = (0, 3, 0, 3)    // '北' → "bei" (3 bytes each)
+///   map[1] = (3, 6, 3, 7)    // '京' → "jing" (3 bytes → 4 bytes)
+///   map[2] = (6, 9, 7, 9)    // '大' → "da"  (3 bytes → 2 bytes)
+///   map[3] = (9, 12, 9, 12)  // '学' → "xue" (3 bytes → 3 bytes)
+fn text_to_pinyin_with_map(text: &str) -> (String, Vec<(usize, usize, usize, usize)>) {
+    let mut pinyin = String::with_capacity(text.len());
+    let mut map = Vec::new();
+    let mut pinyin_pos = 0;
+
+    for (byte_start, c) in text.char_indices() {
+        let byte_end = byte_start + c.len_utf8();
+        let seg: String = match c.to_pinyin() {
+            Some(p) => p.plain().to_string(),
+            None => c.to_lowercase().collect(),
+        };
+        let seg_len = seg.len();
+        map.push((byte_start, byte_end, pinyin_pos, pinyin_pos + seg_len));
+        pinyin.push_str(&seg);
+        pinyin_pos += seg_len;
+    }
+
+    (pinyin, map)
+}
+
+/// Apply `[[HIGHLIGHT]]`/`[[END_HIGHLIGHT]]` markers to a `snippet` text for all
+/// positions where `query_lower` matches when both text and query are converted to pinyin.
+///
+/// Uses the pinyin→original mapping to find which character ranges in the original text
+/// correspond to the pinyin match, and wraps those ranges with highlight markers.
+///
+/// Example: snippet="北京大学简介", query_lower="beijing"
+///   → "[[HIGHLIGHT]]北京[[END_HIGHLIGHT]]大学简介"
+fn apply_pinyin_highlight(snippet: &str, query_lower: &str) -> String {
+    if snippet.is_empty() || query_lower.is_empty() {
+        return snippet.to_string();
+    }
+
+    let (snippet_pinyin, map) = text_to_pinyin_with_map(snippet);
+
+    // Find all positions where query_lower is found in the pinyin representation
+    let mut ranges: Vec<(usize, usize)> = Vec::new();
+    let mut search_pos = 0;
+    while let Some(pos) = snippet_pinyin[search_pos..].find(query_lower) {
+        let pinyin_start = search_pos + pos;
+        let pinyin_end = pinyin_start + query_lower.len();
+        // Map pinyin byte range to original snippet byte range
+        let mut orig_start = snippet.len();
+        let mut orig_end = 0;
+        for &(b_start, b_end, p_start, p_end) in &map {
+            if p_start <= pinyin_start && pinyin_start < p_end {
+                orig_start = b_start;
+            }
+            if p_start < pinyin_end && pinyin_end > p_start && b_end > orig_end {
+                orig_end = b_end;
+            }
+        }
+        if orig_start < orig_end {
+            ranges.push((orig_start, orig_end));
+        }
+        search_pos = pinyin_start + 1;
+        if search_pos >= snippet_pinyin.len() {
+            break;
+        }
+    }
+
+    // Sort and merge overlapping ranges
+    ranges.sort();
+    let mut merged: Vec<(usize, usize)> = Vec::new();
+    for (s, e) in ranges {
+        if let Some(last) = merged.last_mut() {
+            if s <= last.1 {
+                last.1 = last.1.max(e);
+                continue;
+            }
+        }
+        merged.push((s, e));
+    }
+
+    if merged.is_empty() {
+        return snippet.to_string();
+    }
+
+    // Build highlighted snippet
+    let mut result = String::with_capacity(snippet.len() + merged.len() * 30);
+    let mut last_end = 0;
+    for (s, e) in &merged {
+        result.push_str(&snippet[last_end..*s]);
+        result.push_str("[[HIGHLIGHT]]");
+        result.push_str(&snippet[*s..*e]);
+        result.push_str("[[END_HIGHLIGHT]]");
+        last_end = *e;
+    }
+    result.push_str(&snippet[last_end..]);
+    result
+}
+
 /// Count how many bigrams from `query_bigrams` appear in `content_bigrams`.
 fn cjk_bigram_overlap(query_bigrams: &[String], content_bigrams: &[String]) -> usize {
     query_bigrams.iter()
@@ -403,6 +506,15 @@ pub fn search_vault_with_options(options: SearchOptions<'_>) -> Result<SearchRes
             let snippet = &searchable_content[..searchable_content.len().min(200)];
             let end = Utf8Boundary { text: snippet }.floor(200.min(snippet.len()));
             format!("{}…", &snippet[..end])
+        };
+
+        // Apply pinyin-based highlighting to the snippet when the match is via pinyin.
+        // Maps pinyin match positions back to original Chinese character positions
+        // and wraps them with [[HIGHLIGHT]]/[[END_HIGHLIGHT]] markers.
+        let snippet = if pinyin_match {
+            apply_pinyin_highlight(&snippet, &query_lower)
+        } else {
+            snippet
         };
 
         let full_path = path.to_string_lossy().to_string();
@@ -843,6 +955,157 @@ mod tests {
         assert!(
             beida.score >= shanghai.score,
             "北大.md should score at least as high as 上海.md"
+        );
+    }
+
+    #[test]
+    fn test_text_to_pinyin_with_map_basic() {
+        let (pinyin, map) = text_to_pinyin_with_map("北京大学");
+        assert_eq!(pinyin, "beijingdaxue");
+        // '北' (3 bytes: 0-3) → "bei" (0-3)
+        assert_eq!(map[0], (0, 3, 0, 3));
+        // '京' (3 bytes: 3-6) → "jing" (3-7)
+        assert_eq!(map[1], (3, 6, 3, 7));
+        // '大' (3 bytes: 6-9) → "da" (7-9)
+        assert_eq!(map[2], (6, 9, 7, 9));
+        // '学' (3 bytes: 9-12) → "xue" (9-12)
+        assert_eq!(map[3], (9, 12, 9, 12));
+    }
+
+    #[test]
+    fn test_text_to_pinyin_with_map_non_cjk() {
+        let (pinyin, map) = text_to_pinyin_with_map("Hello 你好");
+        assert_eq!(pinyin, "hello nihao");
+        // 'H' (1 byte) → "h" (pinyin 0-1)
+        assert_eq!(map[0], (0, 1, 0, 1));
+        // 'e' (1 byte) → "e" (pinyin 1-2)
+        assert_eq!(map[1], (1, 2, 1, 2));
+        // '你' (3 bytes: 6-9) → "ni" (pinyin 6-8)
+        assert_eq!(map[6], (6, 9, 6, 8));
+        // '好' (3 bytes: 9-12) → "hao" (pinyin 8-11)
+        assert_eq!(map[7], (9, 12, 8, 11));
+    }
+
+    #[test]
+    fn test_apply_pinyin_highlight_basic() {
+        let result = apply_pinyin_highlight("北京大学简介", "beijing");
+        assert_eq!(result, "[[HIGHLIGHT]]北京[[END_HIGHLIGHT]]大学简介");
+    }
+
+    #[test]
+    fn test_apply_pinyin_highlight_partial_word() {
+        // Query "jing" should match only the second character "京" in "北京大学"
+        let result = apply_pinyin_highlight("北京大学欢迎你", "jing");
+        assert_eq!(result, "北[[HIGHLIGHT]]京[[END_HIGHLIGHT]]大学欢迎你");
+    }
+
+    #[test]
+    fn test_apply_pinyin_highlight_no_match() {
+        let result = apply_pinyin_highlight("上海大学简介", "beijing");
+        assert_eq!(result, "上海大学简介");
+    }
+
+    #[test]
+    fn test_apply_pinyin_highlight_empty_input() {
+        assert_eq!(apply_pinyin_highlight("", "beijing"), "");
+        assert_eq!(apply_pinyin_highlight("test", ""), "test");
+    }
+
+    #[test]
+    fn test_apply_pinyin_highlight_multiple_matches() {
+        let result = apply_pinyin_highlight("北京和北京", "beijing");
+        assert_eq!(result, "[[HIGHLIGHT]]北京[[END_HIGHLIGHT]]和[[HIGHLIGHT]]北京[[END_HIGHLIGHT]]");
+    }
+
+    #[test]
+    fn test_apply_pinyin_highlight_adjacent_chars() {
+        // "bei" matches first char of "北京大学" → highlights 北
+        let result = apply_pinyin_highlight("北京大学", "bei");
+        assert_eq!(result, "[[HIGHLIGHT]]北[[END_HIGHLIGHT]]京大学");
+    }
+
+    #[test]
+    fn test_apply_pinyin_highlight_mixed_content() {
+        // Query "beijing" matching in mixed Chinese/English text
+        let result = apply_pinyin_highlight("首都Beijing和北京大学", "beijing");
+        // Should highlight both the English "Beijing" and the Chinese "北京"
+        // "Beijing" in English (position 2-9) gets highlighted as is,
+        // "北京大学" → "beijingdaxue" → query "beijing" matches at pinyin 0-6 → chars 0-2
+        assert!(result.contains("[[HIGHLIGHT]]Beijing[[END_HIGHLIGHT]]"));
+        assert!(result.contains("[[HIGHLIGHT]]北京[[END_HIGHLIGHT]]"));
+    }
+
+    #[test]
+    fn test_pinyin_search_snippet_contains_highlight() {
+        let dir = Builder::new()
+            .prefix("pinyin-highlight-snippet-")
+            .tempdir_in(std::env::current_dir().unwrap())
+            .unwrap();
+        fs::write(
+            dir.path().join("beijing.md"),
+            "# 北京大学\n\n北京大学位于北京海淀区。",
+        )
+        .unwrap();
+
+        let response =
+            search_vault(dir.path().to_str().unwrap(), "beijing", "keyword", 10).unwrap();
+
+        assert_eq!(response.results.len(), 1);
+        let snippet = &response.results[0].snippet;
+        assert!(
+            snippet.contains("[[HIGHLIGHT]]"),
+            "Pinyin match snippet should contain highlight markers, got: {snippet}"
+        );
+        assert!(
+            snippet.contains("[[END_HIGHLIGHT]]"),
+            "Pinyin match snippet should contain end highlight markers"
+        );
+        // The highlighted text should be "北京" or "北京大学"
+        assert!(
+            snippet.contains("北京"),
+            "Snippet should contain the matched Chinese text"
+        );
+    }
+
+    #[test]
+    fn test_pinyin_search_non_matching_has_no_highlight() {
+        let dir = Builder::new()
+            .prefix("pinyin-no-highlight-")
+            .tempdir_in(std::env::current_dir().unwrap())
+            .unwrap();
+        fs::write(
+            dir.path().join("shanghai.md"),
+            "# 上海大学\n\n上海大学位于上海市。",
+        )
+        .unwrap();
+
+        let response =
+            search_vault(dir.path().to_str().unwrap(), "beijing", "keyword", 10).unwrap();
+
+        // No results should match
+        assert_eq!(response.results.len(), 0);
+    }
+
+    #[test]
+    fn test_pinyin_search_content_highlight() {
+        let dir = Builder::new()
+            .prefix("pinyin-content-highlight-")
+            .tempdir_in(std::env::current_dir().unwrap())
+            .unwrap();
+        fs::write(
+            dir.path().join("test.md"),
+            "# Test Title\n\nThe capital of China is 北京.",
+        )
+        .unwrap();
+
+        let response =
+            search_vault(dir.path().to_str().unwrap(), "beijing", "keyword", 10).unwrap();
+
+        assert_eq!(response.results.len(), 1);
+        let snippet = &response.results[0].snippet;
+        assert!(
+            snippet.contains("[[HIGHLIGHT]]"),
+            "Pinyin content match snippet should have highlight, got: {snippet}"
         );
     }
 }

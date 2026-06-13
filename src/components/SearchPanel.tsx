@@ -565,8 +565,25 @@ function SearchIdleMessage() {
   )
 }
 
-function SearchLoadingMessage() {
-  return <div className="px-4 py-8 text-center text-[13px] text-muted-foreground">Searching...</div>
+const SEARCH_SKELETON_ROWS = 5
+
+function SearchLoadingSkeleton() {
+  return (
+    <div className="animate-pulse px-4 py-2">
+      {Array.from({ length: SEARCH_SKELETON_ROWS }, (_, i) => (
+        <div key={i} className="py-2.5">
+          <div className="flex items-center gap-2">
+            <div className="h-3.5 w-3.5 shrink-0 rounded bg-muted-foreground/20" />
+            <div className="h-3.5 flex-1 rounded bg-muted-foreground/20" />
+            <div className="h-3 w-12 rounded bg-muted-foreground/20" />
+          </div>
+          <div className="mt-0.5 pl-[22px]">
+            <div className="h-3 w-40 rounded bg-muted-foreground/20" />
+          </div>
+        </div>
+      ))}
+    </div>
+  )
 }
 
 function SearchNoResultsMessage() {
@@ -596,8 +613,8 @@ function SearchContent({
   return (
     <div className="flex-1 overflow-y-auto">
       {!hasQuery && <SearchIdleMessage />}
-      {hasQuery && !hasResults && loading && <SearchLoadingMessage />}
-      {hasQuery && !hasResults && !loading && <SearchNoResultsMessage />}
+      {hasQuery && !hasResults && (loading || isStale) && <SearchLoadingSkeleton />}
+      {hasQuery && !hasResults && !loading && !isStale && <SearchNoResultsMessage />}
       {hasResults && (
         <>
           <SearchResultsHeader count={results.length} elapsedMs={elapsedMs} isStale={isStale} />

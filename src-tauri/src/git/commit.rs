@@ -1,4 +1,5 @@
 use super::{ensure_author_config, git_command};
+use super::command;
 use std::path::Path;
 
 struct CommitFailure {
@@ -11,10 +12,7 @@ pub fn git_commit(vault_path: &str, message: &str) -> Result<String, String> {
     let vault = Path::new(vault_path);
 
     // Stage all changes
-    let add = git_command()
-        .args(["add", "-A"])
-        .current_dir(vault)
-        .output()
+    let add = command::git_output(vault, &["add", "-A"])
         .map_err(|e| format!("Failed to run git add: {}", e))?;
 
     if !add.status.success() {
@@ -44,10 +42,7 @@ fn run_commit(vault: &Path, message: &str, disable_signing: bool) -> Result<Stri
         command.args(["-c", "commit.gpgsign=false"]);
     }
 
-    let commit = command
-        .args(["commit", "-m", message])
-        .current_dir(vault)
-        .output()
+    let commit = command::git_output_with_args(command, vault, &["commit", "-m", message])
         .map_err(|e| CommitFailure {
             stdout: String::new(),
             stderr: format!("Failed to run git commit: {}", e),
