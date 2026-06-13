@@ -118,7 +118,7 @@ export function SidebarViewItem({
     startRename,
   } = interactions
 
-  const rowClassName = `flex cursor-pointer select-none items-center gap-2 rounded transition-colors ${isActive ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-accent'}`
+  const rowClassName = `flex cursor-pointer select-none items-center gap-2 rounded transition-colors duration-150 ${isActive ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-accent'}`
   const rowStyle = getViewRowStyle(showCount, isActive, accent)
 
   return (

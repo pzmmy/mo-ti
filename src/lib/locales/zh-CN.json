@@ -848,5 +848,11 @@
   "settings.webdav.uploadedCount": "上传：{count} 个文件",
   "settings.webdav.downloadedCount": "下载：{count} 个文件",
   "settings.webdav.statusEnabled": "已启用",
-  "settings.webdav.statusDisabled": "已停用"
+  "settings.webdav.statusDisabled": "已停用",
+  "settings.webdav.progress.connecting": "正在连接…",
+  "settings.webdav.progress.ensuringDir": "准备远程目录…",
+  "settings.webdav.progress.collecting": "收集文件…",
+  "settings.webdav.progress.uploading": "上传中…",
+  "settings.webdav.progress.downloading": "下载中…",
+  "settings.webdav.progress.done": "同步完成"
 }

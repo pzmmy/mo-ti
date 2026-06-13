@@ -1,4 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Skeleton, SkeletonLine, SkeletonCircle, SkeletonCard } from '@/components/ui/Skeleton'
 import { Sidebar } from './components/Sidebar'
 import { NoteList } from './components/NoteList'
 import { Editor } from './components/Editor'
@@ -154,13 +155,104 @@ declare global {
 const DEFAULT_SELECTION: SidebarSelection = INBOX_SELECTION
 
 /** Wraps useEditorSave to also keep outgoingLinks in sync on save and on content change. */
+
+/** Skeleton shown while AiWorkspaceWindowApp (dedicated window) loads. */
+function AiWorkspaceWindowSkeleton(): JSX.Element {
+  return (
+    <div className="flex h-full w-full items-center justify-center p-8">
+      <div className="flex w-full max-w-lg flex-col gap-6">
+        <div className="flex items-center gap-3">
+          <SkeletonCircle width={48} height={48} />
+          <div className="flex flex-1 flex-col gap-2">
+            <SkeletonLine className="h-5 w-48" />
+            <SkeletonLine className="h-3 w-32" />
+          </div>
+        </div>
+        <SkeletonCard height={200} />
+        <div className="flex flex-col gap-3">
+          {Array.from({ length: 4 }, (_, i) => (
+            <div key={i} className="flex items-start gap-3">
+              <SkeletonCircle width={32} height={32} />
+              <SkeletonLine className="h-10 flex-1" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/** Skeleton shown while the full MainApp layout (sidebar + note list + editor) loads. */
+function MainAppLayoutSkeleton(): JSX.Element {
+  return (
+    <div className="flex h-full w-full overflow-hidden">
+      {/* Sidebar skeleton */}
+      <div className="flex w-60 shrink-0 flex-col gap-4 border-r border-border/50 p-4">
+        <div className="flex items-center gap-2">
+          <SkeletonCircle width={20} height={20} />
+          <SkeletonLine className="h-4 w-28" />
+        </div>
+        {Array.from({ length: 5 }, (_, i) => (
+          <div key={i} className="flex items-center gap-2 pl-2">
+            <Skeleton className="h-3 w-3 rounded-sm" />
+            <SkeletonLine className="h-3.5 w-32" />
+          </div>
+        ))}
+        <div className="mt-auto border-t border-border/50 pt-4">
+          <SkeletonLine className="h-3.5 w-24" />
+        </div>
+      </div>
+      {/* Note list skeleton */}
+      <div className="flex w-64 shrink-0 flex-col gap-3 border-r border-border/50 p-4">
+        <SkeletonLine className="h-4 w-20" />
+        {Array.from({ length: 6 }, (_, i) => (
+          <div key={i} className="flex items-center gap-2">
+            <Skeleton className="h-3 w-3 rounded-sm" />
+            <div className="flex flex-1 flex-col gap-1">
+              <SkeletonLine className="h-3.5 w-full" />
+              <SkeletonLine className="h-3 w-24" />
+            </div>
+          </div>
+        ))}
+      </div>
+      {/* Editor skeleton */}
+      <div className="flex flex-1 flex-col gap-6 p-6">
+        <SkeletonLine className="h-6 w-72" />
+        <div className="flex flex-col gap-3">
+          {Array.from({ length: 8 }, (_, i) => (
+            <SkeletonLine key={i} className={`h-4 ${i % 3 === 0 ? 'w-3/4' : i % 3 === 1 ? 'w-full' : 'w-5/6'}`} />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/** Minimal skeleton shown while StartupScreen loads (first-launch experience). */
+function StartupScreenSkeleton(): JSX.Element {
+  return (
+    <div className="flex h-full w-full items-center justify-center p-8">
+      <div className="flex w-full max-w-md flex-col items-center gap-6 text-center">
+        <SkeletonCircle width={64} height={64} />
+        <SkeletonLine className="h-6 w-40" />
+        <SkeletonLine className="h-4 w-64" />
+        <SkeletonCard height={200} className="w-full" />
+        <div className="flex gap-3">
+          <Skeleton className="h-10 w-32 rounded-lg" />
+          <Skeleton className="h-10 w-32 rounded-lg" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function App() {
   const noteWindowParams = useMemo(() => isNoteWindow() ? getNoteWindowParams() : null, [])
   const aiWorkspaceWindow = useMemo(() => isAiWorkspaceWindow(), [])
 
-  if (aiWorkspaceWindow) return <Suspense fallback={null}><AiWorkspaceWindowApp /></Suspense>
+  if (aiWorkspaceWindow) return <Suspense fallback={<AiWorkspaceWindowSkeleton />}><AiWorkspaceWindowApp /></Suspense>
 
-  return <Suspense fallback={null}><MainApp noteWindowParams={noteWindowParams} /></Suspense>
+  return <Suspense fallback={<MainAppLayoutSkeleton />}><MainApp noteWindowParams={noteWindowParams} /></Suspense>
 }
 
 function MainApp({ noteWindowParams }: { noteWindowParams: NoteWindowParams | null }) {
@@ -1567,7 +1659,7 @@ function MainApp({ noteWindowParams }: { noteWindowParams: NoteWindowParams | nu
   )
   if (shouldShowStartupScreen) {
     return (
-      <Suspense fallback={null}>
+      <Suspense fallback={<StartupScreenSkeleton />}>
         <StartupScreen
           aiAgentsOnboarding={aiAgentsOnboarding}
           aiAgentsStatus={aiAgentsStatus}
@@ -1591,7 +1683,7 @@ function MainApp({ noteWindowParams }: { noteWindowParams: NoteWindowParams | nu
 
   if (aiWorkspaceWindow) {
     return (
-      <Suspense fallback={null}>
+      <Suspense fallback={<AiWorkspaceWindowSkeleton />}>
         <AppPreferencesProvider dateDisplayFormat={dateDisplayFormat}>
           {aiWorkspaceSurface}
         </AppPreferencesProvider>
@@ -1603,7 +1695,7 @@ function MainApp({ noteWindowParams }: { noteWindowParams: NoteWindowParams | nu
   const noteListModifiedFilesError = isChangesSelection ? gitSurfaces.changesModifiedFilesError : null
 
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<MainAppLayoutSkeleton />}>
       <AppPreferencesProvider dateDisplayFormat={dateDisplayFormat}>
       <div className="app-shell">
         <div className="app">

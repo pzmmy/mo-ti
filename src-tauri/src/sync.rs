@@ -3,7 +3,7 @@ use log::{error, info, warn};
 use serde::Serialize;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
-use tauri::State;
+use tauri::{Emitter, State};
 use crate::settings;
 
 /// WebDAV sync configuration stored in app settings
@@ -38,6 +38,180 @@ pub struct SyncStatus {
     pub files_downloaded: usize,
     pub files_conflicted: usize,
     pub errors: Vec<String>,
+}
+
+/// Progress payload emitted during sync operations
+#[derive(Debug, Clone, Serialize)]
+pub struct ProgressPayload {
+    pub current: usize,
+    pub total: usize,
+    pub phase: String,
+}
+
+/// Emit a progress event via Tauri's event channel
+fn emit_progress(app_handle: &tauri::AppHandle, current: usize, total: usize, phase: &str) {
+    let payload = ProgressPayload {
+        current,
+        total,
+        phase: phase.to_string(),
+    };
+    if let Err(e) = app_handle.emit("webdav-sync-progress", payload) {
+        warn!("[WebDAV] Failed to emit progress event: {e}");
+    }
+}
+
+/// Sync vault with progress events emitted via Tauri AppHandle
+pub fn sync_vault_with_progress(
+    vault_path: &str,
+    config: &WebdavConfig,
+    app_handle: &tauri::AppHandle,
+) -> Result<SyncStatus, String> {
+    let vault_dir = Path::new(vault_path);
+    if !vault_dir.exists() {
+        return Err("知识库路径不存在".to_string());
+    }
+
+    let client = WebdavClient::new(config)?;
+    let mut status = SyncStatus {
+        connected: false,
+        last_sync_at: Some(
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_secs(),
+        ),
+        files_uploaded: 0,
+        files_downloaded: 0,
+        files_conflicted: 0,
+        errors: Vec::new(),
+    };
+
+    // Test connection
+    emit_progress(app_handle, 0, 0, "connecting");
+    match client.test_connection() {
+        Ok(_) => status.connected = true,
+        Err(e) => {
+            status.errors.push(e);
+            return Ok(status);
+        }
+    }
+
+    // Ensure remote directory exists
+    emit_progress(app_handle, 0, 0, "ensuring-remote-dir");
+    if let Err(e) = client.create_remote_dir("") {
+        status.errors.push(format!("创建远程目录失败: {e}"));
+        return Ok(status);
+    }
+
+    // Collect local files
+    emit_progress(app_handle, 0, 0, "collecting");
+    let local_files = match collect_vault_files(vault_dir) {
+        Ok(f) => f,
+        Err(e) => {
+            status.errors.push(e);
+            return Ok(status);
+        }
+    };
+
+    // Collect remote files
+    let remote_files = match client.list_files() {
+        Ok(f) => f,
+        Err(e) => {
+            status.errors.push(e);
+            return Ok(status);
+        }
+    };
+
+    // Create a set of remote file paths for quick lookup
+    let remote_paths: std::collections::HashSet<String> = remote_files.iter().cloned().collect();
+
+    // Upload local files that don't exist remotely
+    let total_uploads = local_files
+        .iter()
+        .filter(|local_path| {
+            let rel = relative_path(vault_dir, local_path);
+            let remote_path = format!("{}/{}", config.remote_path.trim_matches('/'), rel);
+            !remote_paths.contains(&remote_path)
+        })
+        .count();
+    let mut upload_current = 0usize;
+
+    for local_path in &local_files {
+        let rel = relative_path(vault_dir, local_path);
+        let remote_path = format!("{}/{}", config.remote_path.trim_matches('/'), rel);
+
+        if !remote_paths.contains(&remote_path) {
+            upload_current += 1;
+            emit_progress(
+                app_handle,
+                upload_current,
+                total_uploads.max(1),
+                "uploading",
+            );
+            match client.upload_file(local_path, &rel) {
+                Ok(_) => status.files_uploaded += 1,
+                Err(e) => status.errors.push(format!("上传 {} 失败: {e}", rel)),
+            }
+        }
+    }
+
+    // Download remote files that don't exist locally
+    let remote_files_to_download: Vec<&String> = remote_files
+        .iter()
+        .filter(|remote_file| {
+            let prefix = format!("/{}/", config.remote_path.trim_matches('/'));
+            let rel = remote_file
+                .trim_start_matches('/')
+                .strip_prefix(&prefix.trim_start_matches('/'))
+                .or_else(|| remote_file.strip_prefix(&prefix))
+                .unwrap_or(remote_file.trim_start_matches('/'));
+            if rel.is_empty() || rel.ends_with('/') {
+                return false;
+            }
+            let local_path = vault_dir.join(rel);
+            !local_path.exists()
+        })
+        .collect();
+    let total_downloads = remote_files_to_download.len();
+    let mut download_current = 0usize;
+
+    for remote_file in &remote_files_to_download {
+        // Extract relative path from the full WebDAV URL path
+        let prefix = format!("/{}/", config.remote_path.trim_matches('/'));
+        let rel = remote_file
+            .trim_start_matches('/')
+            .strip_prefix(&prefix.trim_start_matches('/'))
+            .or_else(|| {
+                // Try without leading slash
+                remote_file.strip_prefix(&prefix)
+            })
+            .unwrap_or(remote_file.trim_start_matches('/'));
+
+        if rel.is_empty() || rel.ends_with('/') {
+            continue; // Skip directory entries
+        }
+
+        download_current += 1;
+        emit_progress(
+            app_handle,
+            download_current,
+            total_downloads.max(1),
+            "downloading",
+        );
+
+        let local_path = vault_dir.join(rel);
+        if !local_path.exists() {
+            match client.download_file(rel, &local_path) {
+                Ok(_) => status.files_downloaded += 1,
+                Err(e) => status.errors.push(format!("下载 {} 失败: {e}", rel)),
+            }
+        }
+    }
+
+    // Done
+    emit_progress(app_handle, 1, 1, "done");
+
+    Ok(status)
 }
 
 pub struct WebdavClient {
@@ -426,4 +600,25 @@ pub fn sync_webdav(
         last_sync_at: None,
     };
     sync_vault(&vault_path, &config)
+}
+
+/// Same as sync_webdav but emits progress events via Tauri event channel
+#[tauri::command]
+pub fn sync_webdav_with_progress(
+    app_handle: tauri::AppHandle,
+    vault_path: String,
+    url: String,
+    username: String,
+    password: String,
+    remote_path: String,
+) -> Result<SyncStatus, String> {
+    let config = WebdavConfig {
+        url,
+        username,
+        password,
+        remote_path,
+        enabled: true,
+        last_sync_at: None,
+    };
+    sync_vault_with_progress(&vault_path, &config, &app_handle)
 }

@@ -28,7 +28,7 @@ export function SidebarGroupHeader({
         className="flex min-w-0 flex-1 cursor-pointer select-none items-center gap-1 border-none bg-transparent p-0 text-muted-foreground"
         onClick={onToggle}
       >
-        {collapsed ? <CaretRight size={12} /> : <CaretDown size={12} />}
+        {collapsed ? <CaretRight size={12} className="transition-transform duration-200" /> : <CaretDown size={12} className="transition-transform duration-200" />}
         <span className="text-[10px] font-semibold" style={{ letterSpacing: 0.5 }}>{label}</span>
       </button>
       {children ?? (count != null && (

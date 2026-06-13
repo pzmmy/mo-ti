@@ -228,7 +228,7 @@ function ClickableNavItem({
       type="button"
       variant="ghost"
       size="sm"
-      className={cn("h-auto w-full cursor-pointer select-none justify-start rounded text-left transition-colors", isActive ? activeClassName : "text-foreground hover:bg-accent")}
+      className={cn("h-auto w-full cursor-pointer select-none justify-start rounded text-left transition-colors duration-150", isActive ? activeClassName : "text-foreground hover:bg-accent")}
       style={{ padding, borderRadius: 4 }}
       onClick={onClick}
     >
@@ -527,7 +527,7 @@ function SectionHeader({ label, type, Icon, sectionColor, sectionLightColor, ite
   return (
     <div
       ref={headerRef}
-      className={cn("group/section flex cursor-pointer select-none items-center justify-between rounded transition-colors", !isActive && "hover:bg-accent")}
+      className={cn("group/section flex cursor-pointer select-none items-center justify-between rounded transition-colors duration-150", !isActive && "hover:bg-accent")}
       style={{ padding: SIDEBAR_ITEM_PADDING.withCount, borderRadius: 4, gap: 4, ...getSectionHeaderBackground(isActive, sectionLightColor) }}
       {...dragHandleProps}
     >

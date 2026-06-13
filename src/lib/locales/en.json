@@ -848,5 +848,11 @@
   "settings.webdav.uploadedCount": "Uploaded: {count} files",
   "settings.webdav.downloadedCount": "Downloaded: {count} files",
   "settings.webdav.statusEnabled": "Enabled",
-  "settings.webdav.statusDisabled": "Disabled"
+  "settings.webdav.statusDisabled": "Disabled",
+  "settings.webdav.progress.connecting": "Connecting…",
+  "settings.webdav.progress.ensuringDir": "Preparing remote directory…",
+  "settings.webdav.progress.collecting": "Collecting files…",
+  "settings.webdav.progress.uploading": "Uploading…",
+  "settings.webdav.progress.downloading": "Downloading…",
+  "settings.webdav.progress.done": "Sync complete"
 }

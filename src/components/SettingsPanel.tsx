@@ -649,7 +649,7 @@ function SettingsBodyFromDraft({
       })}
       onWebdavSyncNow={() => {
         const activeVault = vaults?.find(v => v.mounted !== false) || vaults?.[0]
-        return invoke('sync_webdav', {
+        return invoke('sync_webdav_with_progress', {
           vaultPath: activeVault?.path || '',
           url: draft.webdavUrl,
           username: draft.webdavUsername,

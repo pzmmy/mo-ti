@@ -302,6 +302,12 @@ body.mac-chrome .app:not(:has(.app__sidebar)):not(:has(.app__note-list)) .breadc
   padding-right: clamp(24px, 4vw, 72px);
 }
 
+/* Smooth transition when toggling between wide and normal editor widths */
+.editor-content-width--normal .editor-content-wrapper,
+.editor-content-width--wide .editor-content-wrapper {
+  transition: max-width 200ms ease, padding 200ms ease;
+}
+
 @page {
   margin: 18mm;
 }

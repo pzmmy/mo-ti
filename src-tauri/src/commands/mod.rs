@@ -28,7 +28,7 @@ pub use runtime::*;
 pub use system::*;
 pub use vault::*;
 pub use version::*;
-pub use crate::sync::{test_webdav_connection, sync_webdav};
+pub use crate::sync::{test_webdav_connection, sync_webdav, sync_webdav_with_progress};
 
 /// Expand a leading `~` or `~/` in a path string to the user's home directory.
 /// Returns the original string unchanged if it doesn't start with `~` or if the

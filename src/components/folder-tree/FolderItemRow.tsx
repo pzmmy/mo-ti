@@ -44,7 +44,7 @@ export function FolderItemRow({
   return (
     <div
       className={cn(
-        'group relative flex items-center gap-1 rounded transition-colors',
+        'group relative flex items-center gap-1 rounded transition-colors duration-150 active:scale-[0.98] transition-transform duration-150 ease-in-out origin-left',
         isSelected
           ? 'bg-[var(--accent-blue-light)] text-primary'
           : 'text-foreground hover:bg-accent',

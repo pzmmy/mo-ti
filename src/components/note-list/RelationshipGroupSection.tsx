@@ -35,7 +35,7 @@ export function RelationshipGroupSection({ group, isCollapsed, sortPrefs, locale
           aria-controls={contentId}
           aria-expanded={!isCollapsed}
         >
-          {isCollapsed ? <CaretRight size={12} /> : <CaretDown size={12} />}
+          {isCollapsed ? <CaretRight size={12} className="transition-transform duration-200" /> : <CaretDown size={12} className="transition-transform duration-200" />}
           <span className="font-mono-label text-muted-foreground">{humanizePropertyKey(group.label)}</span>
           <span className="font-mono-label text-muted-foreground" style={{ fontWeight: 400 }}>{group.entries.length}</span>
         </Button>

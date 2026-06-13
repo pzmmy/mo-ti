@@ -1,6 +1,8 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { CloudArrowUp, LinkBreak, PlugsConnected } from '@phosphor-icons/react'
+import { listen, type UnlistenFn } from '@tauri-apps/api/event'
 import type { createTranslator } from '../lib/i18n'
+import { isTauri } from '../mock-tauri'
 import { Button } from './ui/button'
 import {
   SectionHeading,
@@ -35,6 +37,12 @@ export interface WebdavSyncSettingsSectionProps {
   t: Translate
 }
 
+interface SyncProgress {
+  current: number
+  total: number
+  phase: string
+}
+
 function formatLastSyncTime(unixSeconds: number | null, t: Translate): string {
   if (unixSeconds === null) return t('settings.webdav.neverSynced')
   const date = new Date(unixSeconds * 1000)
@@ -45,6 +53,25 @@ function formatLastSyncTime(unixSeconds: number | null, t: Translate): string {
   if (diffMinutes < 1) return t('status.sync.justNow')
   if (diffMinutes < 60) return t('status.sync.minutesAgo', { minutes: diffMinutes })
   return date.toLocaleString()
+}
+
+function phaseLabel(phase: string, t: Translate): string {
+  switch (phase) {
+    case 'connecting':
+      return t('settings.webdav.progress.connecting')
+    case 'ensuring-remote-dir':
+      return t('settings.webdav.progress.ensuringDir')
+    case 'collecting':
+      return t('settings.webdav.progress.collecting')
+    case 'uploading':
+      return t('settings.webdav.progress.uploading')
+    case 'downloading':
+      return t('settings.webdav.progress.downloading')
+    case 'done':
+      return t('settings.webdav.progress.done')
+    default:
+      return phase
+  }
 }
 
 export function WebdavSyncSettingsSection(props: WebdavSyncSettingsSectionProps) {
@@ -70,6 +97,16 @@ export function WebdavSyncSettingsSection(props: WebdavSyncSettingsSectionProps)
   const [syncing, setSyncing] = useState(false)
   const [syncResult, setSyncResult] = useState<WebdavSyncStatus | null>(null)
   const [testError, setTestError] = useState<string | null>(null)
+  const [syncProgress, setSyncProgress] = useState<SyncProgress | null>(null)
+  const unlistenRef = useRef<UnlistenFn | null>(null)
+
+  // Cleanup listener on unmount
+  useEffect(() => {
+    return () => {
+      unlistenRef.current?.()
+      unlistenRef.current = null
+    }
+  }, [])
 
   const handleTestConnection = useCallback(async () => {
     setTestingConnection(true)
@@ -93,20 +130,42 @@ export function WebdavSyncSettingsSection(props: WebdavSyncSettingsSectionProps)
 
   const handleSyncNow = useCallback(async () => {
     setSyncing(true)
+    setSyncProgress({ current: 0, total: 0, phase: 'connecting' })
+
+    // Set up progress listener
+    if (isTauri()) {
+      try {
+        const unlisten = await listen<SyncProgress>('webdav-sync-progress', (event) => {
+          setSyncProgress(event.payload)
+        })
+        unlistenRef.current = unlisten
+      } catch {
+        // Swallow — progress display degrades gracefully
+      }
+    }
+
     try {
       const result = await onSyncNow()
       if (result) {
         setSyncResult(result)
+        setSyncProgress({ current: 1, total: 1, phase: 'done' })
       }
     } catch {
       // Sync error is handled by the parent
     } finally {
+      // Clean up listener
+      unlistenRef.current?.()
+      unlistenRef.current = null
       setSyncing(false)
     }
   }, [onSyncNow])
 
   const displayStatus = syncResult ?? syncStatus
   const lastSyncLabel = formatLastSyncTime(displayStatus.lastSyncAt, t)
+
+  const progressPercent = syncProgress && syncProgress.total > 0
+    ? Math.round((syncProgress.current / syncProgress.total) * 100)
+    : null
 
   return (
     <>
@@ -219,6 +278,43 @@ export function WebdavSyncSettingsSection(props: WebdavSyncSettingsSectionProps)
           {syncing ? t('settings.webdav.syncing') : t('settings.webdav.syncNow')}
         </Button>
       </div>
+
+      {/* Progress bar (shown during sync) */}
+      {syncing && syncProgress && syncProgress.total > 0 && (
+        <div
+          className="mt-3 px-1"
+          data-testid="settings-webdav-sync-progress"
+        >
+          <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
+            <span>{phaseLabel(syncProgress.phase, t)}</span>
+            <span>
+              {syncProgress.current}/{syncProgress.total}
+              {progressPercent !== null ? ` (${progressPercent}%)` : ''}
+            </span>
+          </div>
+          <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-full rounded-full bg-primary transition-all duration-300 ease-out"
+              style={{ width: `${Math.min(progressPercent ?? 0, 100)}%` }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Indeterminate progress (connecting/collecting phases) */}
+      {syncing && syncProgress && syncProgress.total === 0 && (
+        <div
+          className="mt-3 px-1"
+          data-testid="settings-webdav-sync-progress-indeterminate"
+        >
+          <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
+            <span>{phaseLabel(syncProgress.phase, t)}</span>
+          </div>
+          <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+            <div className="h-full w-1/3 animate-pulse rounded-full bg-primary" />
+          </div>
+        </div>
+      )}
 
       {/* Test connection result */}
       {testResult === 'success' && (

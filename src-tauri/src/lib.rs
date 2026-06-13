@@ -576,6 +576,7 @@ macro_rules! app_invoke_handler {
             commands::delete_view_cmd,
             commands::test_webdav_connection,
             commands::sync_webdav,
+            commands::sync_webdav_with_progress,
             vault_watcher::start_vault_watcher,
             vault_watcher::stop_vault_watcher
         ]
