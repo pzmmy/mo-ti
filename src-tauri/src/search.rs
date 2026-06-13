@@ -1,4 +1,5 @@
 use serde::Serialize;
+use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 use std::time::Instant;
 use walkdir::WalkDir;
@@ -261,6 +262,8 @@ pub fn search_vault_with_options(options: SearchOptions<'_>) -> Result<SearchRes
     } else {
         Vec::new()
     };
+    // Single-character CJK fallback: when query has CJK but bigrams are empty (e.g. "京")
+    let query_has_single_cjk = has_cjk(&query_lower) && query_lower.chars().filter(|&c| is_cjk(c)).count() == 1;
 
     let mut results: Vec<SearchResult> = Vec::new();
 
@@ -292,7 +295,15 @@ pub fn search_vault_with_options(options: SearchOptions<'_>) -> Result<SearchRes
             false
         };
 
-        if !standard_match && !bigram_match {
+        // Single CJK character fallback: match any note containing that character
+        let single_cjk_match = if query_has_single_cjk {
+            let c = query_lower.chars().find(|&c| is_cjk(c)).unwrap();
+            title_lower.contains(c) || content_lower.contains(c)
+        } else {
+            false
+        };
+
+        if !standard_match && !bigram_match && !single_cjk_match {
             continue;
         }
 

@@ -1,6 +1,9 @@
 use base64::Engine as _;
+use serde::Serialize;
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
+use tauri::State;
+use crate::settings;
 
 /// WebDAV sync configuration stored in app settings
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -45,12 +48,12 @@ pub struct WebdavClient {
 }
 
 impl WebdavClient {
-    pub fn new(config: &WebdavConfig) -> Self {
+    pub fn new(config: &WebdavConfig) -> Result<Self, String> {
         let client = reqwest::blocking::Client::builder()
             .timeout(std::time::Duration::from_secs(30))
             .danger_accept_invalid_certs(false)
             .build()
-            .unwrap_or_default();
+            .map_err(|e| format!("初始化 HTTP 客户端失败: {}", e))?;
 
         Self {
             url: config.url.trim_end_matches('/').to_string(),
@@ -197,6 +200,7 @@ fn parse_propfind_response(xml_body: &str) -> Vec<String> {
 fn collect_vault_files(vault_path: &Path) -> Result<Vec<PathBuf>, String> {
     let mut files = Vec::new();
     for entry in walkdir::WalkDir::new(vault_path)
+        .follow_links(false)
         .into_iter()
         .filter_map(|e| e.ok())
     {
@@ -227,7 +231,7 @@ pub fn sync_vault(
         return Err("知识库路径不存在".to_string());
     }
 
-    let client = WebdavClient::new(config);
+    let client = WebdavClient::new(config)?;
     let mut status = SyncStatus {
         connected: false,
         last_sync_at: Some(
@@ -319,4 +323,44 @@ pub fn sync_vault(
     }
 
     Ok(status)
+}
+
+// ===== Tauri Commands =====
+
+#[tauri::command]
+pub fn test_webdav_connection(
+    url: String,
+    username: String,
+    password: String,
+    remote_path: String,
+) -> Result<String, String> {
+    let config = WebdavConfig {
+        url,
+        username,
+        password,
+        remote_path,
+        enabled: true,
+        last_sync_at: None,
+    };
+    let client = WebdavClient::new(&config)?;
+    client.test_connection()
+}
+
+#[tauri::command]
+pub fn sync_webdav(
+    vault_path: String,
+    url: String,
+    username: String,
+    password: String,
+    remote_path: String,
+) -> Result<SyncStatus, String> {
+    let config = WebdavConfig {
+        url,
+        username,
+        password,
+        remote_path,
+        enabled: true,
+        last_sync_at: None,
+    };
+    sync_vault(&vault_path, &config)
 }

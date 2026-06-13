@@ -172,7 +172,7 @@ const STATE = {
 
 // ===== Init =====
 document.addEventListener('DOMContentLoaded', () => {
-  const saved = localStorage.getItem('mo_ti_webdav')
+  const saved = sessionStorage.getItem('mo_ti_webdav') || localStorage.getItem('mo_ti_webdav')
   if (saved) {
     try {
       STATE.config = JSON.parse(saved)
@@ -236,8 +236,8 @@ async function connect() {
     if (res.status === 401) throw new Error('认证失败，请检查用户名和密码')
     if (!res.ok && res.status !== 207) throw new Error(`服务器返回 ${res.status}`)
     
-    // Save config
-    localStorage.setItem('mo_ti_webdav', JSON.stringify(STATE.config))
+    // Save config to sessionStorage (not localStorage — password not persisted)
+    sessionStorage.setItem('mo_ti_webdav', JSON.stringify(STATE.config))
     
     status.className = 'connection-status success'
     status.textContent = '✅ 连接成功！正在加载笔记列表...'
