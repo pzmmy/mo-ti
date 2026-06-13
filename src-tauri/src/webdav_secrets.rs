@@ -3,8 +3,10 @@ use aes_gcm::{
     Aes256Gcm, Nonce,
 };
 use base64::Engine as _;
+use hmac::Hmac;
+use pbkdf2::pbkdf2_hmac;
 use rand::RngCore;
-use sha2::{Digest, Sha256};
+use sha2::Sha256;
 use std::fs;
 use std::path::PathBuf;
 
@@ -12,7 +14,7 @@ const SECRETS_DIR: &str = "com.tolaria.app";
 const SECRETS_FILE: &str = "webdav-passwords.enc";
 const SALT: &[u8] = b"tolaria-webdav-v1-salt-2024";
 
-/// Derive a 256-bit AES key from a machine identifier + fixed salt.
+/// Derive a 256-bit AES key from a machine identifier + fixed salt using PBKDF2-HMAC-SHA256.
 fn derive_encryption_key() -> Result<[u8; 32], String> {
     // Use hostname as machine identifier (available on all platforms)
     let hostname = hostname::get()
@@ -27,13 +29,16 @@ fn derive_encryption_key() -> Result<[u8; 32], String> {
 
     let machine_id = format!("{}::{}", hostname, config_dir.display());
 
-    let mut hasher = Sha256::new();
-    hasher.update(SALT);
-    hasher.update(machine_id.as_bytes());
-    let result = hasher.finalize();
+    // Combine salt + machine_id as the PBKDF2 password input
+    let password = format!(
+        "{}{}",
+        std::str::from_utf8(SALT).unwrap_or(""),
+        machine_id
+    );
 
     let mut key = [0u8; 32];
-    key.copy_from_slice(&result);
+    pbkdf2_hmac::<Hmac<Sha256>>(password.as_bytes(), SALT, 100_000, &mut key)
+        .map_err(|e| format!("PBKDF2 key derivation failed: {e}"))?;
     Ok(key)
 }
 
