@@ -13,7 +13,7 @@ import { mockInvoke } from '../mock-tauri'
 const mockInvokeFn = vi.mocked(mockInvoke)
 
 const NOW = Math.floor(Date.now() / 1000)
-const SEARCH_INPUT_PLACEHOLDER = 'Search in all notes...'
+const SEARCH_INPUT_PLACEHOLDER = 'Search notes... (pinyin: beijing→北京)'
 
 type MockSearchResult = {
   title: string
@@ -110,7 +110,7 @@ function renderSearchPanel({
   onSelectNote?: (entry: VaultEntry) => void
 } = {}) {
   render(
-    <SearchPanel open={true} vaultPath="/vault" entries={entries} onSelectNote={onSelectNote} onClose={onClose} />,
+    <SearchPanel open={true} vaultPath="/vault" entries={entries} onSelectNote={onSelectNote} onClose={onClose} locale="en" />,
   )
 }
 

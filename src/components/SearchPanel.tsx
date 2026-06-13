@@ -10,6 +10,7 @@ import { getTypeIcon } from './NoteItem'
 import { NoteTitleIcon } from './NoteTitleIcon'
 import { WorkspaceInitialsBadge } from './WorkspaceInitialsBadge'
 import { useDateDisplayFormat } from '../hooks/useAppPreferences'
+import { createTranslator, type AppLocale } from '../lib/i18n'
 
 interface SearchPanelProps {
   open: boolean
@@ -17,6 +18,7 @@ interface SearchPanelProps {
   entries: VaultEntry[]
   onSelectNote: (entry: VaultEntry) => void
   onClose: () => void
+  locale?: AppLocale
 }
 
 type SearchKeyboardAction = 'close' | 'next' | 'previous' | 'select'
@@ -310,6 +312,7 @@ export function SearchPanel({
   entries,
   onSelectNote,
   onClose,
+  locale,
 }: SearchPanelProps) {
   const dateDisplayFormat = useDateDisplayFormat()
   const rootRef = useRef<HTMLDivElement>(null)
@@ -369,6 +372,7 @@ export function SearchPanel({
           query={query}
           loading={loading}
           onChange={setQuery}
+          locale={locale}
         />
         <SearchContent
           query={query}
@@ -395,10 +399,12 @@ interface SearchInputProps {
   query: string
   loading: boolean
   onChange: (value: string) => void
+  locale?: AppLocale
 }
 
 const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
-  function SearchInput({ query, loading, onChange }, ref) {
+  function SearchInput({ query, loading, onChange, locale }, ref) {
+    const t = createTranslator(locale)
     return (
       <div className="flex items-center gap-3 border-b border-border px-4 py-3">
         <svg aria-hidden="true" className="h-4 w-4 shrink-0 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -409,7 +415,7 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
           ref={ref}
           className="flex-1 bg-transparent text-[15px] text-foreground outline-none placeholder:text-muted-foreground"
           type="text"
-          placeholder="Search in all notes..."
+          placeholder={t('search.placeholder')}
           value={query}
           onChange={e => onChange(e.target.value)}
         />

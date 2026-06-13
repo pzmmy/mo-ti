@@ -1,4 +1,4 @@
-export type AiAgentId = 'claude_code' | 'codex' | 'opencode' | 'pi' | 'gemini' | 'kiro'
+export type AiAgentId = 'claude_code' | 'codex' | 'opencode' | 'pi' | 'gemini' | 'kiro' | 'deepseek'
 
 export type AiAgentStatus = 'checking' | 'installed' | 'missing'
 export type AiAgentReadiness = 'checking' | 'ready' | 'missing'
@@ -18,6 +18,11 @@ export interface AiAgentDefinition {
 }
 
 export const DEFAULT_AI_AGENT: AiAgentId = 'claude_code'
+
+export function getDefaultAiAgent(locale: string): AiAgentId {
+  if (locale.startsWith('zh')) return 'deepseek'
+  return DEFAULT_AI_AGENT
+}
 
 export const AI_AGENT_DEFINITIONS: readonly AiAgentDefinition[] = [
   {
@@ -55,6 +60,12 @@ export const AI_AGENT_DEFINITIONS: readonly AiAgentDefinition[] = [
     label: 'Kiro',
     shortLabel: 'Kiro',
     installUrl: 'https://kiro.dev/docs/cli',
+  },
+  {
+    id: 'deepseek',
+    label: 'DeepSeek',
+    shortLabel: 'DeepSeek',
+    installUrl: 'https://api-docs.deepseek.com/',
   },
 ] as const
 
@@ -108,6 +119,7 @@ export function normalizeAiAgentsStatus(payload: Partial<Record<AiAgentId, { ins
     pi: normalizeAvailability(payload?.pi),
     gemini: normalizeAvailability(payload?.gemini),
     kiro: normalizeAvailability(payload?.kiro),
+    deepseek: normalizeAvailability(payload?.deepseek),
   }
 }
 

@@ -92,6 +92,7 @@ export function useAppPreferences({
     void saveSettings({ ...settings, ui_language: serializeUiLanguagePreference(uiLanguage) })
   }, [saveSettings, settings])
   const aiAgentPreferences = useAiAgentPreferences({
+    locale: appLocale,
     settings,
     settingsLoaded,
     saveSettings,

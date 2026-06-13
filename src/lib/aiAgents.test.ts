@@ -14,6 +14,7 @@ describe('aiAgents helpers', () => {
     expect(normalizeStoredAiAgent('pi')).toBe('pi')
     expect(normalizeStoredAiAgent('gemini')).toBe('gemini')
     expect(normalizeStoredAiAgent('kiro')).toBe('kiro')
+    expect(normalizeStoredAiAgent('deepseek')).toBe('deepseek')
     expect(normalizeStoredAiAgent('cursor')).toBeNull()
   })
 
@@ -38,6 +39,7 @@ describe('aiAgents helpers', () => {
     expect(statuses.pi).toEqual({ status: 'installed', version: '0.70.2' })
     expect(statuses.gemini).toEqual({ status: 'installed', version: '0.5.1' })
     expect(statuses.kiro).toEqual({ status: 'installed', version: '0.12.0' })
+    expect(statuses.deepseek).toEqual({ status: 'missing', version: null })
   })
 
   it('cycles through the supported agents', () => {
@@ -46,6 +48,7 @@ describe('aiAgents helpers', () => {
     expect(getNextAiAgentId('opencode')).toBe('pi')
     expect(getNextAiAgentId('pi')).toBe('gemini')
     expect(getNextAiAgentId('gemini')).toBe('kiro')
-    expect(getNextAiAgentId('kiro')).toBe('claude_code')
+    expect(getNextAiAgentId('kiro')).toBe('deepseek')
+    expect(getNextAiAgentId('deepseek')).toBe('claude_code')
   })
 })

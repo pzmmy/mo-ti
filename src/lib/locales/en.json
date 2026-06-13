@@ -1,4 +1,5 @@
 {
+  "search.placeholder": "Search notes... (pinyin: beijing→北京)",
   "command.noMatches": "No matching commands",
   "command.palettePlaceholder": "Type a command...",
   "command.footerNavigate": "↑↓ navigate",

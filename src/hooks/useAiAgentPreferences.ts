@@ -3,6 +3,7 @@ import { isTauri } from '../mock-tauri'
 import {
   getAiAgentDefinition,
   getAiAgentAvailability,
+  getDefaultAiAgent,
   getNextAiAgentId,
   type AiAgentReadiness,
   type AiAgentId,
@@ -18,6 +19,7 @@ import {
 import type { Settings } from '../types'
 
 interface UseAiAgentPreferencesArgs {
+  locale: string
   settings: Settings
   settingsLoaded: boolean
   saveSettings: (settings: Settings) => void
@@ -40,14 +42,22 @@ function getDefaultAiTargetReadiness(
 }
 
 export function useAiAgentPreferences({
+  locale,
   settings,
   settingsLoaded,
   saveSettings,
   aiAgentsStatus,
   onToast,
 }: UseAiAgentPreferencesArgs) {
+  const effectiveLocale = locale ?? 'en'
   const defaultAiTarget = useMemo(() => resolveAiTarget(settings), [settings])
-  const targetAgentId = targetAgent(defaultAiTarget)
+
+  // When no explicit user preference is stored, use locale-based default
+  const targetAgentId = useMemo(() => {
+    const resolved = targetAgent(defaultAiTarget)
+    if (settings.default_ai_agent) return resolved
+    return getDefaultAiAgent(effectiveLocale)
+  }, [defaultAiTarget, settings.default_ai_agent, effectiveLocale])
 
   const defaultAiAgentLabel = defaultAiTarget.label
   const defaultAiAgentReadiness = getDefaultAiTargetReadiness(

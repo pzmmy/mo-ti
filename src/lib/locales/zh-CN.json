@@ -1,4 +1,5 @@
 {
+  "search.placeholder": "搜索笔记… 支持拼音搜索",
   "command.noMatches": "没有匹配的命令",
   "command.palettePlaceholder": "输入命令...",
   "command.footerNavigate": "↑↓ 导航",
