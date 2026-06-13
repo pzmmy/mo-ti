@@ -318,6 +318,89 @@
     .footer-link:hover {
       color: #3c3c8c;
     }
+
+    /* Toggle Switch */
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: #fff;
+      border: 1px solid #e8e8e8;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+
+    .toggle-label:hover {
+      border-color: #d0d0e0;
+    }
+
+    .toggle-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .toggle-hint {
+      font-size: 11px;
+      font-weight: 400;
+      color: #999;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 36px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.3s;
+      border-radius: 20px;
+    }
+
+    .slider::before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      transition: 0.3s;
+      border-radius: 50%;
+    }
+
+    .switch input:checked + .slider {
+      background-color: #3c3c8c;
+    }
+
+    .switch input:checked + .slider::before {
+      transform: translateX(16px);
+    }
+
+    .switch input:disabled + .slider {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
@@ -357,6 +440,20 @@
       <div class="tags-input-wrapper" id="tagsWrapper">
         <input type="text" class="tags-input" id="tagsInput" placeholder="输入标签后按回车/逗号" />
       </div>
+    </div>
+
+    <!-- AI Summary Toggle -->
+    <div class="form-group">
+      <label class="toggle-label">
+        <span class="toggle-text">
+          <span>智能脱水</span>
+          <span class="toggle-hint">AI 提取核心观点</span>
+        </span>
+        <label class="switch">
+          <input type="checkbox" id="aiToggle" />
+          <span class="slider"></span>
+        </label>
+      </label>
     </div>
 
     <!-- Save Button -->

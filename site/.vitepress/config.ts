@@ -27,6 +27,7 @@ export default defineConfig({
       { text: "开始使用", link: "/start/install" },
       { text: "概念", link: "/concepts/vaults" },
       { text: "指南", link: "/guides/capture-a-note" },
+      { text: "场景", link: "/scenarios/" },
       { text: "模板", link: "/templates/portent" },
       { text: "下载", link: "https://mo-ti.io/download/", target: "_self", noIcon: true },
     ],
@@ -81,6 +82,16 @@ export default defineConfig({
         items: [
           { text: "拼音搜索", link: "/features/pinyin-search" },
           { text: "WebDAV 同步", link: "/features/webdav-sync" },
+        ],
+      },
+      {
+        text: "场景",
+        items: [
+          { text: "场景概览", link: "/scenarios/" },
+          { text: "考研/考公备考", link: "/scenarios/exam-prep" },
+          { text: "职场知识库", link: "/scenarios/daily-work" },
+          { text: "知识付费课程", link: "/scenarios/knowledge-pay" },
+          { text: "家庭/小团队共享", link: "/scenarios/team-knowledge" },
         ],
       },
       {

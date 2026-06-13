@@ -19,14 +19,27 @@
   const tagsInput = document.getElementById('tagsInput');
   const tagsWrapper = document.getElementById('tagsWrapper');
   const modeBtns = document.querySelectorAll('.mode-btn');
+  const aiToggle = document.getElementById('aiToggle');
 
   // ===== 初始化 =====
   document.addEventListener('DOMContentLoaded', async () => {
     // 加载配置
     const config = await chrome.storage.sync.get({
-      defaultPath: '/clippings/'
+      defaultPath: '/clippings/',
+      aiApiKey: ''
     });
     savePath.value = config.defaultPath;
+
+    // 检查 AI API Key 是否已配置
+    if (config.aiApiKey) {
+      aiToggle.disabled = false;
+      aiToggle.checked = true;
+      aiToggle.title = '';
+    } else {
+      aiToggle.disabled = true;
+      aiToggle.checked = false;
+      aiToggle.title = '请在设置中配置 DeepSeek API Key 以使用此功能';
+    }
 
     // 提取页面内容
     await extractPageContent();
@@ -163,7 +176,8 @@
         pageData: pageData,
         options: {
           path: savePath.value.trim() || '/clippings/',
-          tags: tags
+          tags: tags,
+          enableAI: aiToggle.checked
         }
       });
 

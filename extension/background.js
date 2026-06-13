@@ -51,9 +51,58 @@ async function getConfig() {
     serverUrl: '',
     username: '',
     password: '',
-    defaultPath: '/clippings/'
+    defaultPath: '/clippings/',
+    aiApiKey: ''
   });
   return result;
+}
+
+// ===== DeepSeek AI 摘要 =====
+async function callDeepSeekAPI(apiKey, text) {
+  // 如果文本太长，截取前 15000 字符（DeepSeek 上下文足够但为了节省 token）
+  const truncatedText = text.substring(0, 15000);
+
+  const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: 'deepseek-chat',
+      messages: [
+        {
+          role: 'system',
+          content: '你是一位专业的信息摘要助手。请对以下网页剪藏内容进行「智能脱水」，提取核心信息。\n\n请按以下格式输出（使用中文）：\n\n## 📌 核心观点\n- 观点1\n- 观点2\n- 观点3\n（3-5条，每条一句话）\n\n## 📊 关键数据\n- 如果原文有数据、统计、数字信息，列出关键数据点\n- 没有则写「无明显关键数据」\n\n## 💡 个人思考建议\n从学习、研究、实践角度给出 1-2 条思考或建议'
+        },
+        {
+          role: 'user',
+          content: `请对以下网页内容进行智能脱水摘要：\n\n${truncatedText}`
+        }
+      ],
+      max_tokens: 1000,
+      temperature: 0.3,
+      stream: false
+    })
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    let errorMsg = `DeepSeek API 请求失败 (HTTP ${response.status})`;
+    try {
+      const errorJson = JSON.parse(errorText);
+      if (errorJson.error?.message) {
+        errorMsg += `: ${errorJson.error.message}`;
+      }
+    } catch (e) {
+      // ignore parse error
+    }
+    throw new Error(errorMsg);
+  }
+
+  const data = await response.json();
+  const summary = data.choices?.[0]?.message?.content || '';
+  return summary;
 }
 
 // ===== 生成文件名 =====
@@ -77,7 +126,7 @@ function generateFilename(title) {
 }
 
 // ===== 构建 Markdown 内容 =====
-function buildMarkdownContent(pageData) {
+function buildMarkdownContent(pageData, aiSummary) {
   const turndown = createTurndownService();
 
   // HTML → Markdown
@@ -101,6 +150,16 @@ function buildMarkdownContent(pageData) {
     lines.push('---');
     lines.push('');
     lines.push(pageData.excerpt);
+    lines.push('');
+  }
+
+  // 插入 AI 摘要（在 frontmatter 之后、正文之前）
+  if (aiSummary) {
+    lines.push('---');
+    lines.push('');
+    lines.push('## 🤖 智能脱水摘要');
+    lines.push('');
+    lines.push(aiSummary);
     lines.push('');
   }
 
@@ -286,8 +345,33 @@ async function performSave(pageData, extraOptions) {
   const filename = extraOptions?.filename || generateFilename(pageData.title);
   const filePath = basePath + filename;
 
+  // 如果有 AI 摘要需求
+  let aiSummary = '';
+  if (extraOptions?.enableAI && config.aiApiKey) {
+    try {
+      // 准备用于摘要的内容（优先使用纯文本）
+      let textForSummary = '';
+      if (pageData.selection) {
+        textForSummary = pageData.selection;
+      } else if (pageData.content) {
+        // HTML 转纯文本
+        const tmp = document.createElement('div');
+        tmp.innerHTML = pageData.content;
+        textForSummary = tmp.textContent || tmp.innerText || '';
+      }
+
+      if (textForSummary.trim()) {
+        aiSummary = await callDeepSeekAPI(config.aiApiKey, textForSummary);
+      }
+    } catch (err) {
+      console.error('AI 摘要生成失败:', err);
+      // 继续执行，不阻塞保存
+      aiSummary = `> ⚠️ AI 摘要生成失败: ${err.message}`;
+    }
+  }
+
   // 构建 Markdown
-  const markdown = buildMarkdownContent(pageData);
+  const markdown = buildMarkdownContent(pageData, aiSummary);
 
   // 上传
   return await webdavSave(config, filePath, markdown);

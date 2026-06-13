@@ -10,6 +10,7 @@
   const username = document.getElementById('username');
   const password = document.getElementById('password');
   const defaultPath = document.getElementById('defaultPath');
+  const aiApiKey = document.getElementById('aiApiKey');
   const saveBtn = document.getElementById('saveBtn');
   const testBtn = document.getElementById('testBtn');
   const status = document.getElementById('status');
@@ -20,13 +21,15 @@
       serverUrl: '',
       username: '',
       password: '',
-      defaultPath: '/clippings/'
+      defaultPath: '/clippings/',
+      aiApiKey: ''
     });
 
     serverUrl.value = config.serverUrl || '';
     username.value = config.username || '';
     password.value = config.password || '';
     defaultPath.value = config.defaultPath || '/clippings/';
+    aiApiKey.value = config.aiApiKey || '';
   }
 
   // ===== 保存配置 =====
@@ -35,7 +38,8 @@
       serverUrl: serverUrl.value.trim(),
       username: username.value.trim(),
       password: password.value,
-      defaultPath: defaultPath.value.trim() || '/clippings/'
+      defaultPath: defaultPath.value.trim() || '/clippings/',
+      aiApiKey: aiApiKey.value.trim()
     };
 
     if (!config.serverUrl) {
