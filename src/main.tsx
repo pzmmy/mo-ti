@@ -25,6 +25,41 @@ const TLDRAW_CONTEXT_MENU_SELECTOR = '.tldraw-whiteboard'
 
 const RootApp = lazy(() => import('./App.tsx'))
 
+/** Minimal skeleton shown while React.lazy loads the full App chunk. */
+function AppSkeleton(): JSX.Element {
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'var(--bg-secondary, #f5f5f5)',
+        color: 'var(--text-secondary, #888)',
+        fontFamily: 'ui-sans-serif, system-ui, sans-serif',
+        fontSize: 14,
+      }}
+    >
+      <div style={{ textAlign: 'center' }}>
+        <div
+          style={{
+            width: 32,
+            height: 32,
+            margin: '0 auto 12px',
+            borderRadius: '50%',
+            border: '3px solid var(--border-primary, #ddd)',
+            borderTopColor: 'var(--accent, #4f8ef7)',
+            animation: 'app-skeleton-spin 0.8s linear infinite',
+          }}
+        />
+        <div>Loading…</div>
+        <style>{`@keyframes app-skeleton-spin{to{transform:rotate(360deg)}}`}</style>
+      </div>
+    </div>
+  )
+}
+
 function dataTransferHasFiles(dataTransfer: DataTransfer | null): boolean {
   if (!dataTransfer) return false
   if (dataTransfer.files.length > 0) return true
@@ -192,7 +227,7 @@ createRoot(document.getElementById('root')!, {
   <StrictMode>
     <TooltipProvider>
       <LinuxTitlebar />
-      <Suspense fallback={null}>
+      <Suspense fallback={<AppSkeleton />}>
         <RootApp />
         <FrontendReadyMarker />
       </Suspense>

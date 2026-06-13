@@ -23,7 +23,7 @@ interface FolderTreeRowProps {
   selection: SidebarSelection
 }
 
-function FolderRenameRow({
+const FolderRenameRow = memo(function FolderRenameRow({
   contentInset,
   depthIndent,
   node,
@@ -53,9 +53,9 @@ function FolderRenameRow({
       />
     </div>
   )
-}
+})
 
-function FolderChildren({
+const FolderChildren = memo(function FolderChildren({
   depth,
   expanded,
   node,
@@ -103,7 +103,7 @@ function FolderChildren({
       ))}
     </div>
   )
-}
+})
 
 function folderSelectionMatches(
   selection: SidebarSelection,

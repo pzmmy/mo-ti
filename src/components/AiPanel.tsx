@@ -1,4 +1,4 @@
-import { useCallback, useRef, type CSSProperties, type ReactNode, type RefObject } from 'react'
+import { memo, useCallback, useRef, type CSSProperties, type ReactNode, type RefObject } from 'react'
 import {
   AiPanelComposer,
   AiPanelHeader,
@@ -111,7 +111,7 @@ function aiPanelFrameStyle(isActive: boolean, showLeftBorder: boolean): CSSPrope
   }
 }
 
-function AiPanelFrame({
+const AiPanelFrame = memo(function AiPanelFrame({
   children,
   isActive,
   panelRef,
@@ -136,7 +136,7 @@ function AiPanelFrame({
       {children}
     </aside>
   )
-}
+})
 
 export function AiPanelView({
   controller,

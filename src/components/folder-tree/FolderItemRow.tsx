@@ -1,4 +1,4 @@
-import type { MouseEvent as ReactMouseEvent, MouseEventHandler } from 'react'
+import { memo, type MouseEvent as ReactMouseEvent, type MouseEventHandler } from 'react'
 import {
   Folder,
   FolderOpen,
@@ -72,7 +72,7 @@ export function FolderItemRow({
   )
 }
 
-function FolderSelectButton({
+const FolderSelectButton = memo(function FolderSelectButton({
   contentInset,
   hasChildren,
   isExpanded,
@@ -120,4 +120,4 @@ function FolderSelectButton({
       <span className="truncate">{node.name}</span>
     </Button>
   )
-}
+})

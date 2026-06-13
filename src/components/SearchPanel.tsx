@@ -1,4 +1,4 @@
-import { createElement, forwardRef, useRef, useEffect, useCallback, useLayoutEffect, useMemo } from 'react'
+import { createElement, forwardRef, useRef, useEffect, useCallback, useLayoutEffect, useMemo, useDeferredValue } from 'react'
 import { cn } from '@/lib/utils'
 import type { SearchResult, VaultEntry } from '../types'
 import { useUnifiedSearch } from '../hooks/useUnifiedSearch'
@@ -328,6 +328,8 @@ export function SearchPanel({
     showWorkspace,
     typeEntryMap,
   } = useSearchPanelController({ open, vaultPath, entries, onSelectNote, onClose })
+  const deferredQuery = useDeferredValue(query)
+  const isStale = query !== deferredQuery
   const handleResultHover = useCallback((index: number, event: React.MouseEvent<HTMLDivElement>) => {
     if (shouldApplySearchResultHover(event)) setSelectedIndex(index)
   }, [setSelectedIndex])
@@ -372,6 +374,7 @@ export function SearchPanel({
           results={results}
           selectedIndex={selectedIndex}
           loading={loading}
+          isStale={isStale}
           elapsedMs={elapsedMs}
           entryLookup={entryLookup}
           typeEntryMap={typeEntryMap}
@@ -430,6 +433,7 @@ interface SearchContentProps {
   results: SearchResult[]
   selectedIndex: number
   loading: boolean
+  isStale: boolean
   elapsedMs: number | null
   entryLookup: Map<string, VaultEntry>
   typeEntryMap: Record<string, VaultEntry>
@@ -573,18 +577,19 @@ function SearchNoResultsMessage() {
   )
 }
 
-function SearchResultsHeader({ count, elapsedMs }: { count: number; elapsedMs: number | null }) {
+function SearchResultsHeader({ count, elapsedMs, isStale }: { count: number; elapsedMs: number | null; isStale: boolean }) {
   return (
     <div className="border-b border-border/50 px-4 py-1.5">
       <span className="text-[11px] text-muted-foreground">
         {count} result{count !== 1 ? 's' : ''}{elapsedMs !== null ? ` · ${elapsedMs}ms` : ''}
+        {isStale ? ' · updating…' : ''}
       </span>
     </div>
   )
 }
 
 function SearchContent({
-  query, results, selectedIndex, loading, elapsedMs, entryLookup, typeEntryMap, showWorkspace, dateDisplayFormat, listRef, onSelect, onHover,
+  query, results, selectedIndex, loading, isStale, elapsedMs, entryLookup, typeEntryMap, showWorkspace, dateDisplayFormat, listRef, onSelect, onHover,
 }: SearchContentProps) {
   const hasQuery = query.trim().length > 0
   const hasResults = results.length > 0
@@ -595,7 +600,7 @@ function SearchContent({
       {hasQuery && !hasResults && !loading && <SearchNoResultsMessage />}
       {hasResults && (
         <>
-          <SearchResultsHeader count={results.length} elapsedMs={elapsedMs} />
+          <SearchResultsHeader count={results.length} elapsedMs={elapsedMs} isStale={isStale} />
           <div ref={listRef} role="listbox" aria-label="Search results">
             {results.map((result, i) => (
               <SearchResultRow

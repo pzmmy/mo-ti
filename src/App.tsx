@@ -1,26 +1,28 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Sidebar } from './components/Sidebar'
 import { NoteList } from './components/NoteList'
 import { Editor } from './components/Editor'
 import { ResizeHandle } from './components/ResizeHandle'
-import { CreateTypeDialog } from './components/CreateTypeDialog'
-import { CreateViewDialog } from './components/CreateViewDialog'
-import { QuickOpenPalette } from './components/QuickOpenPalette'
-import { CommandPalette } from './components/CommandPalette'
-import { SearchPanel } from './components/SearchPanel'
 import { Toast } from './components/Toast'
-import { CommitDialog } from './components/CommitDialog'
-import { PulseView } from './components/PulseView'
 import { StatusBar } from './components/StatusBar'
-import { AppAiWorkspaceSurface } from './components/AppAiWorkspaceSurface'
-import { AiWorkspaceFloatingButton } from './components/AiWorkspaceFloatingButton'
-import { AiWorkspaceWindowApp } from './components/AiWorkspaceWindowApp'
-import { SettingsPanel } from './components/SettingsPanel'
-import { CloneVaultModal } from './components/CloneVaultModal'
-import { FeedbackDialog } from './components/FeedbackDialog'
-import { McpSetupDialog } from './components/McpSetupDialog'
-import { NoteRetargetingDialogs } from './components/note-retargeting/NoteRetargetingDialogs'
-import { StartupScreen } from './components/StartupScreen'
+
+// Lazy-loaded dialogs, panels, and non-first-screen components
+const CreateTypeDialog = lazy(() => import('./components/CreateTypeDialog'))
+const CreateViewDialog = lazy(() => import('./components/CreateViewDialog'))
+const QuickOpenPalette = lazy(() => import('./components/QuickOpenPalette'))
+const CommandPalette = lazy(() => import('./components/CommandPalette'))
+const SearchPanel = lazy(() => import('./components/SearchPanel'))
+const CommitDialog = lazy(() => import('./components/CommitDialog'))
+const PulseView = lazy(() => import('./components/PulseView'))
+const AppAiWorkspaceSurface = lazy(() => import('./components/AppAiWorkspaceSurface'))
+const AiWorkspaceFloatingButton = lazy(() => import('./components/AiWorkspaceFloatingButton'))
+const AiWorkspaceWindowApp = lazy(() => import('./components/AiWorkspaceWindowApp'))
+const SettingsPanel = lazy(() => import('./components/SettingsPanel'))
+const CloneVaultModal = lazy(() => import('./components/CloneVaultModal'))
+const FeedbackDialog = lazy(() => import('./components/FeedbackDialog'))
+const McpSetupDialog = lazy(() => import('./components/McpSetupDialog'))
+const NoteRetargetingDialogs = lazy(() => import('./components/note-retargeting/NoteRetargetingDialogs'))
+const StartupScreen = lazy(() => import('./components/StartupScreen'))
 import { useAiAgentsOnboarding } from './hooks/useAiAgentsOnboarding'
 import { useAiAgentsStatus } from './hooks/useAiAgentsStatus'
 import { useVaultAiGuidanceStatus } from './hooks/useVaultAiGuidanceStatus'
@@ -69,10 +71,14 @@ import {
   useNeighborhoodHistoryBack,
   useSelectionSanitizer,
 } from './hooks/useNeighborhoodSelection'
-import { ConflictResolverModal } from './components/ConflictResolverModal'
-import { ConfirmDeleteDialog } from './components/ConfirmDeleteDialog'
-import { DeleteProgressNotice } from './components/DeleteProgressNotice'
-import { UpdateBanner } from './components/UpdateBanner'
+
+// Lazy-loaded dialogs/banners (non-first-screen)
+const ConflictResolverModal = lazy(() => import('./components/ConflictResolverModal'))
+const ConfirmDeleteDialog = lazy(() => import('./components/ConfirmDeleteDialog'))
+const DeleteProgressNotice = lazy(() => import('./components/DeleteProgressNotice'))
+const UpdateBanner = lazy(() => import('./components/UpdateBanner'))
+const GitSetupDialog = lazy(() => import('./components/GitRequiredModal'))
+const RenameDetectedBanner = lazy(() => import('./components/RenameDetectedBanner'))
 import { invoke } from '@tauri-apps/api/core'
 import { isTauri, mockInvoke } from './mock-tauri'
 import type { AiWorkspaceConversationSetting, GitSetupPreference, SidebarSelection, InboxPeriod, VaultEntry, WorkspaceIdentity } from './types'
@@ -82,8 +88,6 @@ import { openNoteInNewWindow } from './utils/openNoteWindow'
 import { refreshPulledVaultState } from './utils/pulledVaultRefresh'
 import { viewMatchesSelection } from './utils/viewIdentity'
 import { isAiWorkspaceWindow, isNoteWindow, getNoteWindowParams, type NoteWindowParams } from './utils/windowMode'
-import { GitSetupDialog } from './components/GitRequiredModal'
-import { RenameDetectedBanner } from './components/RenameDetectedBanner'
 import { openNoteListPropertiesPicker } from './components/note-list/noteListPropertiesEvents'
 import type { NoteListMultiSelectionCommands } from './components/note-list/multiSelectionCommands'
 import { focusNoteIconPropertyEditor } from './components/noteIconPropertyEvents'
@@ -154,9 +158,9 @@ function App() {
   const noteWindowParams = useMemo(() => isNoteWindow() ? getNoteWindowParams() : null, [])
   const aiWorkspaceWindow = useMemo(() => isAiWorkspaceWindow(), [])
 
-  if (aiWorkspaceWindow) return <AiWorkspaceWindowApp />
+  if (aiWorkspaceWindow) return <Suspense fallback={null}><AiWorkspaceWindowApp /></Suspense>
 
-  return <MainApp noteWindowParams={noteWindowParams} />
+  return <Suspense fallback={null}><MainApp noteWindowParams={noteWindowParams} /></Suspense>
 }
 
 function MainApp({ noteWindowParams }: { noteWindowParams: NoteWindowParams | null }) {
@@ -1563,31 +1567,35 @@ function MainApp({ noteWindowParams }: { noteWindowParams: NoteWindowParams | nu
   )
   if (shouldShowStartupScreen) {
     return (
-      <StartupScreen
-        aiAgentsOnboarding={aiAgentsOnboarding}
-        aiAgentsStatus={aiAgentsStatus}
-        isOffline={networkStatus.isOffline}
-        isStartupLoading={isStartupLoading}
-        noteWindowParams={noteWindowParams}
-        onboarding={onboarding}
-        runtimeMissingVaultPath={runtimeMissingVaultPath}
-        saveSettings={saveSettings}
-        settings={settings}
-        settingsLoaded={settingsLoaded}
-        shouldResumeFreshStartOnboarding={shouldResumeFreshStartOnboarding}
-        showMcpSetupDialog={mcpSetupDialog.open}
-        setToastMessage={setToastMessage}
-        toastMessage={toastMessage}
-        vaultSwitcher={vaultSwitcher}
-      />
+      <Suspense fallback={null}>
+        <StartupScreen
+          aiAgentsOnboarding={aiAgentsOnboarding}
+          aiAgentsStatus={aiAgentsStatus}
+          isOffline={networkStatus.isOffline}
+          isStartupLoading={isStartupLoading}
+          noteWindowParams={noteWindowParams}
+          onboarding={onboarding}
+          runtimeMissingVaultPath={runtimeMissingVaultPath}
+          saveSettings={saveSettings}
+          settings={settings}
+          settingsLoaded={settingsLoaded}
+          shouldResumeFreshStartOnboarding={shouldResumeFreshStartOnboarding}
+          showMcpSetupDialog={mcpSetupDialog.open}
+          setToastMessage={setToastMessage}
+          toastMessage={toastMessage}
+          vaultSwitcher={vaultSwitcher}
+        />
+      </Suspense>
     )
   }
 
   if (aiWorkspaceWindow) {
     return (
-      <AppPreferencesProvider dateDisplayFormat={dateDisplayFormat}>
-        {aiWorkspaceSurface}
-      </AppPreferencesProvider>
+      <Suspense fallback={null}>
+        <AppPreferencesProvider dateDisplayFormat={dateDisplayFormat}>
+          {aiWorkspaceSurface}
+        </AppPreferencesProvider>
+      </Suspense>
     )
   }
 
@@ -1595,7 +1603,8 @@ function MainApp({ noteWindowParams }: { noteWindowParams: NoteWindowParams | nu
   const noteListModifiedFilesError = isChangesSelection ? gitSurfaces.changesModifiedFilesError : null
 
   return (
-    <AppPreferencesProvider dateDisplayFormat={dateDisplayFormat}>
+    <Suspense fallback={null}>
+      <AppPreferencesProvider dateDisplayFormat={dateDisplayFormat}>
       <div className="app-shell">
         <div className="app">
           {sidebarVisible && (
@@ -1787,6 +1796,7 @@ function MainApp({ noteWindowParams }: { noteWindowParams: NoteWindowParams | nu
         )}
       </div>
     </AppPreferencesProvider>
+    </Suspense>
   )
 }
 

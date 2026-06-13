@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { Virtuoso, type VirtuosoHandle } from 'react-virtuoso'
 import type { VaultEntry } from '../../types'
 import type { SortOption, SortDirection, SortConfig, RelationshipGroup } from '../../utils/noteListHelpers'
@@ -28,7 +29,7 @@ function resolveEmptyText({
   return query ? translate(locale, 'noteList.empty.noMatching') : translate(locale, 'noteList.empty.noNotes')
 }
 
-export function EntityView({ entity, groups, query, collapsedGroups, sortPrefs, onToggleGroup, onSortChange, renderItem, locale = 'en' }: {
+export const EntityView = memo(function EntityView({ entity, groups, query, collapsedGroups, sortPrefs, onToggleGroup, onSortChange, renderItem, locale = 'en' }: {
   entity: VaultEntry; groups: RelationshipGroup[]; query: string
   collapsedGroups: Set<string>; sortPrefs: Record<string, SortConfig>
   onToggleGroup: (label: string) => void; onSortChange: (label: string, opt: SortOption, dir: SortDirection) => void
@@ -48,7 +49,7 @@ export function EntityView({ entity, groups, query, collapsedGroups, sortPrefs, 
   )
 }
 
-export function ListView({ isArchivedView, isChangesView, isInboxView, changesError, searched, query, renderItem, virtuosoRef, locale = 'en' }: {
+export const ListView = memo(function ListView({ isArchivedView, isChangesView, isInboxView, changesError, searched, query, renderItem, virtuosoRef, locale = 'en' }: {
   isArchivedView?: boolean; isChangesView?: boolean; isInboxView?: boolean; changesError?: string | null
   searched: VaultEntry[]; query: string
   renderItem: (entry: VaultEntry) => React.ReactNode

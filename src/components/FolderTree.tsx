@@ -230,7 +230,7 @@ export const FolderTree = memo(function FolderTree({
   )
 })
 
-function FolderTreeBody({
+const FolderTreeBody = memo(function FolderTreeBody({
   displayedExpanded,
   displayedFolders,
   isCreating,
@@ -287,9 +287,9 @@ function FolderTreeBody({
       )}
     </div>
   )
-}
+})
 
-function CreateFolderButton({
+const CreateFolderButton = memo(function CreateFolderButton({
   locale,
   onCreate,
 }: {
@@ -313,4 +313,4 @@ function CreateFolderButton({
       <Plus size={12} className="text-muted-foreground hover:text-foreground" />
     </Button>
   )
-}
+})
