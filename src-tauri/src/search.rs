@@ -150,7 +150,18 @@ fn has_latin(s: &str) -> bool {
 /// Convert Chinese characters in text to their pinyin representation (without tones).
 /// Non-Chinese characters are preserved (lowercased).
 /// Example: "北京大学" → "beijingdaxue"
+///
+/// # Known limitations
+/// - **Polyphone characters** (多音字): The `pinyin` crate always returns the most common
+///   reading without context. E.g. 银行(yínháng)→"yinxing", 行路(xínglù)→"xinglu".
+///   Searching for "hang" will NOT match "银行". This is a known crate limitation.
+/// - **Non-CJK bypass**: Files without CJK characters skip pinyin conversion entirely
+///   (returns lowercased original text) to avoid unnecessary overhead.
 fn text_to_pinyin(text: &str) -> String {
+    // Early exit: no CJK → just lowercase (avoids allocation overhead for English-only files)
+    if !has_cjk(text) {
+        return text.to_lowercase();
+    }
     let mut result = String::with_capacity(text.len());
     for c in text.chars() {
         match c.to_pinyin() {

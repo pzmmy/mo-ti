@@ -113,22 +113,8 @@ if [ -z "${OSS_ACCESS_KEY_SECRET:-}" ]; then
   exit 1
 fi
 
-# --------------- 配置 ---------------
-OSS_CONFIG_FILE="/tmp/ossutil_config_$$"
-cat > "$OSS_CONFIG_FILE" <<EOF
-[Credentials]
-language=CH
-endpoint=$OSS_ENDPOINT
-accessKeyID=$OSS_ACCESS_KEY_ID
-accessKeySecret=$OSS_ACCESS_KEY_SECRET
-EOF
-
-cleanup() {
-  rm -f "$OSS_CONFIG_FILE"
-}
-trap cleanup EXIT
-
-OSS_OPTS=(-c "$OSS_CONFIG_FILE" -f)
+# 用命令行参数代替配置文件，避免 AK/SK 写入磁盘（多租户安全）
+OSS_OPTS=(-i "$OSS_ACCESS_KEY_ID" -k "$OSS_ACCESS_KEY_SECRET" -e "$OSS_ENDPOINT" -f)
 
 # --------------- 上传文件 ---------------
 TARGET_PATH="oss://${OSS_BUCKET}/${OSS_PREFIX}/${VERSION}"

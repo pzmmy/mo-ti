@@ -119,19 +119,12 @@ jobs:
           OSS_ENDPOINT: ${{ secrets.OSS_ENDPOINT || 'oss-cn-hangzhou.aliyuncs.com' }}
           OSS_BUCKET: ${{ secrets.OSS_BUCKET || 'mo-ti' }}
         run: |
-          # Install ossutil
+          # Install ossutil (memory-only, no AK/SK written to disk)
           curl -sL "https://gosspublic.alicdn.com/ossutil/1.7.19/ossutil64" -o /tmp/ossutil64
           chmod +x /tmp/ossutil64
 
-          # Write config
-          cat > /tmp/ossutil_config <<EOF
-          [Credentials]
-          language=CH
-          endpoint=$OSS_ENDPOINT
-          accessKeyID=$OSS_ACCESS_KEY_ID
-          accessKeySecret=$OSS_ACCESS_KEY_SECRET
-          EOF
-
+          # Use CLI args instead of config file to avoid AK/SK in /tmp on multi-tenant runner
+          OSSUTIL="/tmp/ossutil64 -i ${{ secrets.OSS_ACCESS_KEY_ID }} -k ${{ secrets.OSS_ACCESS_KEY_SECRET }} -e $OSS_ENDPOINT"
           VERSION="${{ github.ref_name }}"
 
           # Upload all artifacts to versioned path
@@ -139,7 +132,7 @@ jobs:
           for f in *.AppImage *.deb *.msi *.exe; do
             if [ -f "$f" ]; then
               echo "Uploading $f..."
-              /tmp/ossutil64 cp -c /tmp/ossutil_config -f "$f" "oss://${OSS_BUCKET}/releases/${VERSION}/$f" --acl public-read
+              $OSSUTIL cp -f "$f" "oss://${OSS_BUCKET}/releases/${VERSION}/$f" --acl public-read
             fi
           done
           echo "::endgroup::"
@@ -149,10 +142,7 @@ jobs:
           for f in *.AppImage *.deb *.msi *.exe; do
             if [ -f "$f" ]; then
               echo "Uploading $f..."
-              /tmp/ossutil64 cp -c /tmp/ossutil_config -f "$f" "oss://${OSS_BUCKET}/releases/latest/$f" --acl public-read
+              $OSSUTIL cp -f "$f" "oss://${OSS_BUCKET}/releases/latest/$f" --acl public-read
             fi
           done
           echo "::endgroup::"
-
-          # Cleanup
-          rm -f /tmp/ossutil_config
