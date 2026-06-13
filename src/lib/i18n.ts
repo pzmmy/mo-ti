@@ -1,6 +1,6 @@
 import EN_TRANSLATIONS from './locales/en.json'
 
-export const DEFAULT_APP_LOCALE = 'en'
+export const DEFAULT_APP_LOCALE = 'zh-CN'
 export const SYSTEM_UI_LANGUAGE = 'system'
 
 export const APP_LOCALES = [
@@ -102,27 +102,9 @@ const LOCALE_DEFINITIONS: Record<AppLocale, LocaleDefinition> = {
     dateLocale: 'es-419',
     labelKey: 'locale.es419',
     aliases: [
-      'es-419',
-      'es-ar',
-      'es-bo',
-      'es-cl',
-      'es-co',
-      'es-cr',
-      'es-cu',
-      'es-do',
-      'es-ec',
-      'es-gt',
-      'es-hn',
-      'es-mx',
-      'es-ni',
-      'es-pa',
-      'es-pe',
-      'es-pr',
-      'es-py',
-      'es-sv',
-      'es-us',
-      'es-uy',
-      'es-ve',
+      'es-419', 'es-ar', 'es-bo', 'es-cl', 'es-co', 'es-cr', 'es-cu',
+      'es-do', 'es-ec', 'es-gt', 'es-hn', 'es-mx', 'es-ni', 'es-pa',
+      'es-pe', 'es-pr', 'es-py', 'es-sv', 'es-us', 'es-uy', 'es-ve',
     ],
     searchKeywords: ['spanish', 'latin', 'latam', 'latin america', 'es-419'],
   },
@@ -315,18 +297,22 @@ export function getBrowserLanguagePreferences(): string[] {
 
 export function resolveEffectiveLocale(
   preference: unknown,
-  languagePreferences: readonly string[] = getBrowserLanguagePreferences(),
+  _languagePreferences: readonly string[] = getBrowserLanguagePreferences(),
 ): AppLocale {
-  const normalizedPreference = normalizeUiLanguagePreference(preference)
-  if (normalizedPreference && normalizedPreference !== SYSTEM_UI_LANGUAGE) {
-    return normalizedPreference
+  // 墨屉默认中文 — 系统语言优先，否则默认中文
+  const normalized = normalizeUiLanguagePreference(preference)
+
+  if (normalized && normalized !== SYSTEM_UI_LANGUAGE) {
+    return normalized
   }
 
-  for (const language of languagePreferences) {
+  // 检查浏览器/系统语言偏好
+  for (const language of _languagePreferences) {
     const locale = normalizeLocaleCode(language)
     if (locale) return locale
   }
 
+  // 默认中文
   return DEFAULT_APP_LOCALE
 }
 

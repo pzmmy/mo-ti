@@ -16,7 +16,7 @@ describe('i18n', () => {
     expect(resolveEffectiveLocale(null, ['zh-TW'])).toBe('zh-TW')
     expect(resolveEffectiveLocale(null, ['es-MX'])).toBe('es-419')
     expect(resolveEffectiveLocale('system', ['fr-FR'])).toBe('fr-FR')
-    expect(resolveEffectiveLocale('system', ['xx-ZZ'])).toBe('en')
+    expect(resolveEffectiveLocale('system', ['xx-ZZ'])).toBe('zh-CN')
   })
 
   it('normalizes current and legacy language preferences', () => {
