@@ -85,6 +85,9 @@ jobs:
           cp "$DIST/alpha/latest.json" "$DIST/latest.json"
           cp "$DIST/alpha/latest.json" "$DIST/latest-canary.json"
 
+      - name: Copy mobile web companion
+        run: cp -r site/mobile site/.vitepress/dist/mobile
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:

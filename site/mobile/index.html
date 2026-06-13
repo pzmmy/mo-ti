@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="theme-color" content="#1a1a2e">
+<title>墨屉 · 移动版</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
+<style>
+:root{--bg:#f8f7f4;--surface:#fff;--text:#1a1a1a;--text2:#666;--border:#e0ddd8;--accent:#4f46e5;--accent2:#6366f1;--danger:#dc2626;--success:#16a34a;--radius:12px}
+@media(prefers-color-scheme:dark){
+:root{--bg:#0f0f12;--surface:#1c1c24;--text:#e8e6e3;--text2:#888;--border:#2a2a35;--accent:#6366f1;--accent2:#818cf8}
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.6;min-height:100dvh}
+.header{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:12px;backdrop-filter:blur(8px)}
+.header h1{font-size:18px;font-weight:600;flex:1}
+.header .sub{font-size:12px;color:var(--text2)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 20px;border:none;border-radius:var(--radius);font-size:15px;font-weight:500;cursor:pointer;transition:all .15s;touch-action:manipulation}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:active{background:var(--accent2)}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-sm{padding:6px 14px;font-size:13px}
+.btn-icon{padding:8px;border-radius:50%;background:transparent;border:none;color:var(--text2);cursor:pointer;font-size:20px}
+.screen{display:none;padding:16px;max-width:640px;margin:0 auto}
+.screen.active{display:block}
+/* Connection form */
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:13px;font-weight:500;color:var(--text2);margin-bottom:6px}
+.form-group input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text);font-size:16px;outline:none;transition:border-color .15s}
+.form-group input:focus{border-color:var(--accent)}
+.form-group input::placeholder{color:var(--text2);opacity:.5}
+.form-hint{font-size:12px;color:var(--text2);margin-top:4px}
+.connection-status{padding:10px 14px;border-radius:var(--radius);margin-bottom:12px;font-size:14px;display:none}
+.connection-status.success{display:block;background:#dcfce7;color:#166534}
+.connection-status.error{display:block;background:#fef2f2;color:#991b1b}
+/* File list */
+.file-list{list-style:none}
+.file-item{display:flex;align-items:center;padding:14px 16px;background:var(--surface);border-radius:var(--radius);margin-bottom:8px;cursor:pointer;transition:background .1s;border:1px solid var(--border);gap:12px}
+.file-item:active{background:var(--border)}
+.file-icon{font-size:22px;flex-shrink:0}
+.file-info{flex:1;min-width:0}
+.file-name{font-size:15px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-path{font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-time{font-size:11px;color:var(--text2);flex-shrink:0}
+.empty-state{text-align:center;padding:60px 20px;color:var(--text2)}
+.empty-state .icon{font-size:48px;margin-bottom:16px}
+.empty-state p{font-size:15px}
+/* Search bar */
+.search-bar{position:relative;margin-bottom:16px}
+.search-bar input{width:100%;padding:12px 14px 12px 40px;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text);font-size:15px;outline:none}
+.search-bar input:focus{border-color:var(--accent)}
+.search-bar .icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:18px}
+/* Reader */
+.reader{padding-bottom:80px}
+.reader h1{font-size:24px;margin-bottom:8px;line-height:1.3}
+.reader .meta{font-size:13px;color:var(--text2);margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.reader-content{line-height:1.8}
+.reader-content h2{font-size:20px;margin:24px 0 12px}
+.reader-content h3{font-size:17px;margin:20px 0 8px}
+.reader-content p{margin:12px 0}
+.reader-content ul,.reader-content ol{padding-left:24px;margin:12px 0}
+.reader-content li{margin:4px 0}
+.reader-content code{background:var(--border);padding:2px 6px;border-radius:4px;font-size:14px}
+.reader-content pre{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;overflow-x:auto;margin:16px 0}
+.reader-content pre code{background:none;padding:0;font-size:14px}
+.reader-content blockquote{border-left:3px solid var(--accent);padding-left:16px;margin:16px 0;color:var(--text2)}
+.reader-content a{color:var(--accent)}
+.reader-content img{max-width:100%;border-radius:var(--radius);margin:12px 0}
+.reader-content table{width:100%;border-collapse:collapse;margin:16px 0}
+.reader-content td,.reader-content th{border:1px solid var(--border);padding:8px 12px;text-align:left}
+.reader-content th{background:var(--border);font-weight:600}
+/* Bottom action bar */
+.action-bar{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:12px 16px;display:flex;gap:10px;backdrop-filter:blur(8px);max-width:640px;margin:0 auto}
+.action-bar .btn{flex:1}
+/* Editor */
+.editor textarea{width:100%;min-height:60dvh;padding:16px;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text);font-size:15px;line-height:1.7;font-family:'Cascadia Code','JetBrains Mono','Fira Code',monospace;resize:none;outline:none}
+.editor textarea:focus{border-color:var(--accent)}
+/* Toast */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:8px;font-size:14px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+/* Loading */
+.loading{text-align:center;padding:40px;color:var(--text2)}
+.spinner{display:inline-block;width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;margin-bottom:12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* Settings link in file list */
+.settings-link{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;color:var(--text2);font-size:13px;cursor:pointer;border-radius:var(--radius)}
+.settings-link:active{background:var(--border)}
+/* Back button */
+.back-btn{font-size:22px;padding:4px 8px;cursor:pointer;background:none;border:none;color:var(--text);display:flex;align-items:center;gap:4px}
+</style>
+</head>
+<body>
+
+<div class="header" id="appHeader">
+  <button class="back-btn" id="backBtn" style="display:none" onclick="goBack()">‹</button>
+  <h1 id="headerTitle">墨屉</h1>
+  <span class="sub" id="headerSub"></span>
+</div>
+
+<!-- Screen: Connection -->
+<div class="screen active" id="screenConnect">
+  <div style="text-align:center;padding:20px 0 32px">
+    <div style="font-size:48px;margin-bottom:8px">📖</div>
+    <h2 style="font-size:20px;font-weight:600">连接知识库</h2>
+    <p style="color:var(--text2);font-size:14px;margin-top:4px">通过 WebDAV 访问你的墨屉笔记</p>
+  </div>
+  <div class="connection-status" id="connStatus"></div>
+  <div class="form-group">
+    <label>服务器地址</label>
+    <input type="url" id="webdavUrl" placeholder="https://example.com/dav/" autocomplete="url">
+  </div>
+  <div class="form-group">
+    <label>用户名</label>
+    <input type="text" id="webdavUser" placeholder="username" autocomplete="username">
+  </div>
+  <div class="form-group">
+    <label>密码</label>
+    <input type="password" id="webdavPass" placeholder="••••••••" autocomplete="current-password">
+  </div>
+  <div class="form-group">
+    <label>远程路径</label>
+    <input type="text" id="webdavPath" placeholder="/mo-ti-vault" value="/mo-ti-vault" autocomplete="off">
+    <div class="form-hint">WebDAV 上存放笔记的目录路径</div>
+  </div>
+  <button class="btn btn-primary" style="width:100%;margin-top:8px" id="connectBtn" onclick="connect()">🔗 连接</button>
+  <p style="text-align:center;margin-top:24px;font-size:12px;color:var(--text2)">凭据仅保存在本地浏览器中</p>
+</div>
+
+<!-- Screen: File List -->
+<div class="screen" id="screenFiles">
+  <div class="search-bar">
+    <span class="icon">🔍</span>
+    <input type="search" id="searchInput" placeholder="搜索笔记..." oninput="filterFiles()">
+  </div>
+  <div id="fileListContainer"></div>
+  <div class="settings-link" onclick="showScreen('screenConnect')">⚙️ 更换 WebDAV 连接</div>
+</div>
+
+<!-- Screen: Reader -->
+<div class="screen" id="screenReader">
+  <div class="reader" id="readerContent"></div>
+  <div class="action-bar">
+    <button class="btn btn-outline" onclick="goBack()">← 返回</button>
+    <button class="btn btn-primary" id="editBtn" onclick="enterEditMode()">✏️ 编辑</button>
+  </div>
+</div>
+
+<!-- Screen: Editor -->
+<div class="screen" id="screenEditor">
+  <div class="editor">
+    <textarea id="editorTextarea"></textarea>
+  </div>
+  <div class="action-bar">
+    <button class="btn btn-outline" onclick="exitEditMode()">取消</button>
+    <button class="btn btn-primary" onclick="saveNote()">💾 保存</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== State =====
+const STATE = {
+  config: { url: '', user: '', pass: '', path: '' },
+  files: [],
+  currentFile: null,
+  history: [],
+}
+
+// ===== Init =====
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('mo_ti_webdav')
+  if (saved) {
+    try {
+      STATE.config = JSON.parse(saved)
+      document.getElementById('webdavUrl').value = STATE.config.url
+      document.getElementById('webdavUser').value = STATE.config.user
+      document.getElementById('webdavPass').value = STATE.config.pass
+      document.getElementById('webdavPath').value = STATE.config.path
+      connect()
+    } catch(e) {}
+  }
+})
+
+// ===== Navigation =====
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'))
+  document.getElementById(id).classList.add('active')
+  document.getElementById('backBtn').style.display = id === 'screenFiles' ? 'none' : 'inline'
+  
+  const titles = { screenConnect: '墨屉', screenFiles: '笔记列表', screenReader: '预览', screenEditor: '编辑' }
+  document.getElementById('headerTitle').textContent = titles[id] || '墨屉'
+}
+
+function goBack() {
+  if (STATE.history.length > 0) {
+    const prev = STATE.history.pop()
+    showScreen(prev)
+  } else {
+    showScreen('screenFiles')
+  }
+}
+
+function pushScreen(id) {
+  STATE.history.push(document.querySelector('.screen.active')?.id || 'screenFiles')
+  showScreen(id)
+}
+
+// ===== WebDAV =====
+function webdavHeaders() {
+  const auth = btoa(`${STATE.config.user}:${STATE.config.pass}`)
+  return { 'Authorization': `Basic ${auth}` }
+}
+
+function webdavUrl(path) {
+  const base = STATE.config.url.replace(/\/+$/, '')
+  const root = STATE.config.path.replace(/^\/+|\/+$/g, '')
+  return `${base}/${root}${path.startsWith('/') ? '' : '/'}${path}`
+}
+
+async function connect() {
+  STATE.config.url = document.getElementById('webdavUrl').value.trim()
+  STATE.config.user = document.getElementById('webdavUser').value.trim()
+  STATE.config.pass = document.getElementById('webdavPass').value
+  STATE.config.path = document.getElementById('webdavPath').value.trim() || '/mo-ti-vault'
+
+  const status = document.getElementById('connStatus')
+  const btn = document.getElementById('connectBtn')
+  btn.disabled = true; btn.textContent = '⏳ 连接中...'
+
+  try {
+    const res = await fetch(webdavUrl(''), { method: 'PROPFIND', headers: { ...webdavHeaders(), Depth: '0' } })
+    if (res.status === 401) throw new Error('认证失败，请检查用户名和密码')
+    if (!res.ok && res.status !== 207) throw new Error(`服务器返回 ${res.status}`)
+    
+    // Save config
+    localStorage.setItem('mo_ti_webdav', JSON.stringify(STATE.config))
+    
+    status.className = 'connection-status success'
+    status.textContent = '✅ 连接成功！正在加载笔记列表...'
+    
+    await loadFileList()
+    showScreen('screenFiles')
+  } catch(e) {
+    status.className = 'connection-status error'
+    status.textContent = `❌ ${e.message}`
+  } finally {
+    btn.disabled = false; btn.textContent = '🔗 连接'
+  }
+}
+
+async function loadFileList() {
+  const container = document.getElementById('fileListContainer')
+  container.innerHTML = '<div class="loading"><div class="spinner"></div><p>加载笔记列表...</p></div>'
+  
+  try {
+    const paths = await webdavList('')
+    const mdFiles = paths.filter(p => p.endsWith('.md'))
+    
+    // Fetch titles and metadata for each file
+    const files = []
+    for (const relPath of mdFiles) {
+      try {
+        const content = await webdavGet(relPath)
+        const title = extractTitle(content, relPath)
+        files.push({ path: relPath, title, content })
+      } catch(e) {
+        files.push({ path: relPath, title: relPath.split('/').pop(), content: '' })
+      }
+    }
+    
+    STATE.files = files
+    renderFileList(files)
+    document.getElementById('headerSub').textContent = `${files.length} 篇笔记`
+  } catch(e) {
+    container.innerHTML = `<div class="empty-state"><div class="icon">😅</div><p>加载失败: ${e.message}</p></div>`
+  }
+}
+
+async function webdavList(dirPath) {
+  const url = webdavUrl(dirPath)
+  const res = await fetch(url, { method: 'PROPFIND', headers: { ...webdavHeaders(), Depth: '1' } })
+  if (!res.ok && res.status !== 207) throw new Error(`列出目录失败: ${res.status}`)
+  const xml = await res.text()
+  return parsePropfindXml(xml)
+}
+
+async function webdavGet(relPath) {
+  const res = await fetch(webdavUrl(relPath), { headers: webdavHeaders() })
+  if (!res.ok) throw new Error(`下载失败: ${res.status}`)
+  return await res.text()
+}
+
+async function webdavPut(relPath, content) {
+  const res = await fetch(webdavUrl(relPath), { method: 'PUT', headers: { ...webdavHeaders(), 'Content-Type': 'text/markdown' }, body: content })
+  if (!res.ok) throw new Error(`保存失败: ${res.status}`)
+}
+
+function parsePropfindXml(xml) {
+  const paths = []
+  const hrefRegex = /<[^:]*:href[^>]*>([^<]+)<\/[^:]*:href>/g
+  let match
+  while ((match = hrefRegex.exec(xml)) !== null) {
+    let p = match[1]
+    if (p.endsWith('/')) continue
+    // Decode URL-encoded paths
+    try { p = decodeURIComponent(p) } catch(e) {}
+    // Strip base path
+    const root = STATE.config.path.replace(/^\/+|\/+$/g, '')
+    const idx = p.indexOf(root)
+    if (idx >= 0) {
+      p = p.substring(idx + root.length).replace(/^\/+/, '')
+    }
+    if (p) paths.push(p)
+  }
+  return [...new Set(paths)]
+}
+
+function extractTitle(content, fallbackPath) {
+  const match = content.match(/^#\s+(.+)/m)
+  if (match) return match[1].trim()
+  return fallbackPath.split('/').pop().replace(/\.md$/i, '')
+}
+
+// ===== File List =====
+function renderFileList(files) {
+  const container = document.getElementById('fileListContainer')
+  if (files.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">📝</div><p>没有找到 .md 笔记文件</p><p style="font-size:13px;margin-top:8px">检查 WebDAV 路径是否正确</p></div>'
+    return
+  }
+  
+  container.innerHTML = '<ul class="file-list">' + files.map(f => `
+    <li class="file-item" onclick="openFile('${escapeHtml(f.path)}')">
+      <span class="file-icon">📄</span>
+      <div class="file-info">
+        <div class="file-name">${escapeHtml(f.title)}</div>
+        <div class="file-path">${escapeHtml(f.path)}</div>
+      </div>
+      <span class="file-time">›</span>
+    </li>
+  `).join('') + '</ul>'
+}
+
+function filterFiles() {
+  const q = document.getElementById('searchInput').value.toLowerCase()
+  const filtered = q ? STATE.files.filter(f => f.title.toLowerCase().includes(q) || f.path.toLowerCase().includes(q)) : STATE.files
+  renderFileList(filtered)
+}
+
+// ===== Reader =====
+async function openFile(path) {
+  const file = STATE.files.find(f => f.path === path)
+  if (!file) return showToast('文件未找到')
+  
+  STATE.currentFile = file
+  pushScreen('screenReader')
+  
+  // Re-fetch to get latest content
+  try {
+    const content = await webdavGet(path)
+    file.content = content
+  } catch(e) {}
+  
+  renderReader(file)
+}
+
+function renderReader(file) {
+  const container = document.getElementById('readerContent')
+  const title = extractTitle(file.content, file.path)
+  const body = file.content.replace(/^---[\s\S]*?---\n?/, '').replace(/^#\s+.*\n?/, '')
+  
+  let html = file.content
+  // Strip frontmatter for rendering
+  html = html.replace(/^---[\s\S]*?---\n?/, '')
+  
+  // Render markdown
+  if (typeof marked !== 'undefined') {
+    html = marked.parse(html)
+  } else {
+    html = '<pre style="white-space:pre-wrap">' + escapeHtml(html) + '</pre>'
+  }
+  
+  container.innerHTML = `
+    <h1>${escapeHtml(title)}</h1>
+    <div class="meta">${escapeHtml(file.path)}</div>
+    <div class="reader-content">${html}</div>
+  `
+  
+  document.getElementById('editBtn').textContent = '✏️ 编辑'
+}
+
+// ===== Editor =====
+function enterEditMode() {
+  if (!STATE.currentFile) return
+  pushScreen('screenEditor')
+  document.getElementById('editorTextarea').value = STATE.currentFile.content
+}
+
+function exitEditMode() {
+  goBack()
+  if (STATE.currentFile) renderReader(STATE.currentFile)
+}
+
+async function saveNote() {
+  if (!STATE.currentFile) return
+  const content = document.getElementById('editorTextarea').value
+  
+  try {
+    await webdavPut(STATE.currentFile.path, content)
+    STATE.currentFile.content = content
+    showToast('✅ 保存成功')
+    goBack()
+    renderReader(STATE.currentFile)
+  } catch(e) {
+    showToast('❌ 保存失败: ' + e.message)
+  }
+}
+
+// ===== Toast =====
+let toastTimer
+
+function showToast(msg) {
+  const el = document.getElementById('toast')
+  el.textContent = msg
+  el.classList.add('show')
+  clearTimeout(toastTimer)
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500)
+}
+
+// ===== Utils =====
+function escapeHtml(s) {
+  const div = document.createElement('div')
+  div.textContent = s
+  return div.innerHTML
+}
+</script>
+</body>
+</html>
