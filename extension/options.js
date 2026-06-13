@@ -43,7 +43,10 @@
       return;
     }
 
-    if (!config.serverUrl.startsWith('http://') && !config.serverUrl.startsWith('https://')) {
+    // HTTPS 强制检查
+    if (url.startsWith('http://')) {
+      showStatus('⚠️ WebDAV 建议使用 HTTPS 连接，密码将通过明文传输', 'warn');
+    } else if (!url.startsWith('https://')) {
       showStatus('error', '服务器地址必须以 http:// 或 https:// 开头');
       return;
     }

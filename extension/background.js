@@ -4,7 +4,7 @@
  */
 
 // 加载内联库
-importScripts('lib/turndown.js', 'lib/readability.js');
+importScripts('lib/turndown.js');
 
 // ===== Turndown 初始化 =====
 function createTurndownService() {
