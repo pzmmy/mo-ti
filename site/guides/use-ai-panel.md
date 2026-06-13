@@ -1,38 +1,38 @@
-# Use The AI
+# 使用 AI
 
-Tolaria gives you two ways to ask for AI help: open the AI panel for an ongoing conversation, or prompt directly from the editor with `Cmd+K` followed by a space.
+Tolaria 提供两种方式请求 AI 帮助：打开 AI 面板进行持续对话，或者在编辑器中通过 `Cmd+K` 后跟空格直接输入提示词。
 
-## Choose How To Prompt
+## 选择提示方式
 
-- **AI panel** is best for longer conversations, agent work, and requests that need visible back-and-forth.
-- **Inline prompt** is best when you are already writing. Press `Cmd+K`, type a space, then write the prompt you want the AI to handle from the current note context.
+- **AI 面板**最适合较长的对话、代理任务以及需要可见来回交互的请求。
+- **行内提示**最适合你已经在写作时使用。按下 `Cmd+K`，输入空格，然后写出你希望 AI 基于当前笔记上下文处理的提示词。
 
-## Choose A Target
+## 选择目标
 
-Open Settings and choose the default AI target:
+打开设置并选择默认 AI 目标：
 
-- **Coding agent** for tool-backed vault editing through Claude Code, Codex, OpenCode, Pi, or Gemini CLI.
-- **Local model** for Ollama or LM Studio chat over note context.
-- **API model** for OpenAI, Anthropic, Gemini, OpenRouter, or an OpenAI-compatible endpoint.
+- **编码代理**通过 Claude Code、Codex、OpenCode、Pi 或 Gemini CLI 进行支持工具的仓库编辑。
+- **本地模型**用于基于笔记上下文与 Ollama 或 LM Studio 进行对话。
+- **API 模型**用于 OpenAI、Anthropic、Gemini、OpenRouter 或兼容 OpenAI 接口的端点。
 
-If a coding agent is missing, install it and reopen Tolaria or switch to another target.
+如果编码代理缺失，请安装它并重新打开 Tolaria，或切换到其他目标。
 
-## Permission Mode
+## 权限模式
 
-Coding agents support per-vault permission modes:
+编码代理支持按仓库设置的权限模式：
 
-- **Vault Safe** keeps agents limited to file, search, and edit tools.
-- **Power User** can allow shell commands for agents that support them.
+- **仓库安全**将代理限制为文件、搜索和编辑工具。
+- **高级用户**可以为支持 shell 命令的代理允许 shell 命令。
 
-Direct model targets always stay in chat mode. They can use note context, but they cannot edit vault files through tools.
+直接模型目标始终保持在对话模式。它们可以使用笔记上下文，但不能通过工具编辑仓库文件。
 
-## Good Requests
+## 好的请求示例
 
-- "Find notes related to this project."
-- "Summarize what changed in this note."
-- "Draft a weekly review from these linked notes."
-- "Update this checklist based on the current project status."
+- "查找与此项目相关的笔记。"
+- "总结此笔记中的变更内容。"
+- "根据这些关联笔记起草一份每周回顾。"
+- "根据当前项目状态更新此检查清单。"
 
-## Review Changes
+## 审阅变更
 
-AI edits are file edits. Review them with Tolaria's diff and Git history before committing.
+AI 编辑就是文件编辑。在提交之前，使用 Tolaria 的差异对比功能和 Git 历史记录来审阅它们。

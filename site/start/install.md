@@ -1,40 +1,40 @@
-# Install Tolaria
+# 安装 Tolaria
 
-Tolaria publishes desktop builds for macOS, Windows, and Linux. macOS is the primary day-to-day development target, with Windows and Linux builds supported through the release pipeline and fixed as platform issues are found.
+Tolaria 发布适用于 macOS、Windows 和 Linux 的桌面版本。macOS 是日常开发的主要目标平台，Windows 和 Linux 版本通过发布流程提供支持，并随着平台问题的发现进行修复。
 
-## Download
+## 下载
 
-Use the latest stable release unless you are intentionally testing pre-release builds:
+使用最新的稳定版本，除非你特意测试预发布版本：
 
-- <a href="https://tolaria.md/download/" target="_self">Download the latest stable build</a>
-- [Browse all GitHub releases](https://github.com/refactoringhq/tolaria/releases)
-- <a href="https://tolaria.md/releases/" target="_self">Read the release notes</a>
+- <a href="https://tolaria.md/download/" target="_self">下载最新稳定版</a>
+- [浏览所有 GitHub 发布版本](https://github.com/refactoringhq/tolaria/releases)
+- <a href="https://tolaria.md/releases/" target="_self">阅读发布说明</a>
 
 ## Homebrew
 
-On macOS you can install the cask:
+在 macOS 上，你可以通过 Homebrew 安装：
 
 ```bash
 brew install --cask tolaria
 ```
 
-## Platform Status
+## 平台状态
 
-| Platform | Status | Notes |
+| 平台 | 状态 | 说明 |
 | --- | --- | --- |
-| macOS | Primary | Apple Silicon and Intel builds are published. Homebrew is available. |
-| Windows | Supported, early | NSIS installers and updater bundles are Tauri-signed. Authenticode publisher signing will be added after Windows certificate provisioning; company-managed SmartScreen, Defender, or WDAC policies can still require IT approval before install. |
-| Linux | Supported, early | AppImage, deb, and RPM artifacts are published. Desktop behavior depends on distribution WebKitGTK and input-method integration. |
+| macOS | 主要 | 发布 Apple Silicon 和 Intel 版本。支持 Homebrew 安装。 |
+| Windows | 已支持，早期阶段 | NSIS 安装程序和更新包已通过 Tauri 签名。Authenticode 发布者签名将在 Windows 证书配置完成后添加；公司管理的 SmartScreen、Defender 或 WDAC 策略仍可能需要在安装前获得 IT 批准。 |
+| Linux | 已支持，早期阶段 | 发布 AppImage、deb 和 RPM 包。桌面行为取决于发行版的 WebKitGTK 和输入法集成。 |
 
-See [Supported Platforms](/reference/supported-platforms) for the current support policy.
+参见[支持平台](/reference/supported-platforms)了解当前支持策略。
 
-## Managed Windows Devices
+## 托管 Windows 设备
 
-Do not disable SmartScreen or Windows Security to install Tolaria. On a managed Windows device, install Tolaria through your normal software approval path if policy blocks unsigned or unknown-publisher installers. After Authenticode provisioning is complete, validate that the downloaded installer has a valid Tolaria publisher signature before installing.
+不要为了安装 Tolaria 而禁用 SmartScreen 或 Windows 安全中心。在托管 Windows 设备上，如果策略阻止未签名或未知发布者的安装程序，请通过正常的软件审批流程安装 Tolaria。在 Authenticode 配置完成后，请在安装前验证下载的安装程序具有有效的 Tolaria 发布者签名。
 
-## After Installing
+## 安装后
 
-1. Open Tolaria.
-2. Choose the Getting Started vault if you want a guided sample.
-3. Or open an existing folder of Markdown files as a vault.
-4. Use the command palette with `Cmd+K` on macOS or `Ctrl+K` on Linux and Windows.
+1. 打开 Tolaria。
+2. 如果你想体验引导示例，选择"入门知识库"。
+3. 或者打开一个已有的 Markdown 文件文件夹作为知识库。
+4. 使用 `Cmd+K`（macOS）或 `Ctrl+K`（Linux 和 Windows）打开命令面板。

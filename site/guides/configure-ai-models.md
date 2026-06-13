@@ -1,25 +1,25 @@
-# Configure AI Models
+# 配置 AI 模型
 
-Use model providers when you want chat over note context without giving an agent vault-write tools.
+当你希望基于笔记上下文进行对话，但又不想给 AI 代理仓库写入工具权限时，请使用模型提供商。
 
-## Local Models
+## 本地模型
 
-Local model targets are for tools such as Ollama and LM Studio. They usually need a base URL and model ID, and they usually do not need an API key.
+本地模型目标适用于 Ollama 和 LM Studio 等工具。通常需要提供基础 URL 和模型 ID，且通常不需要 API 密钥。
 
-## API Models
+## API 模型
 
-API model targets are for hosted providers such as OpenAI, Anthropic, Gemini, OpenRouter, or another OpenAI-compatible endpoint.
+API 模型目标适用于 OpenAI、Anthropic、Gemini、OpenRouter 或其他兼容 OpenAI 接口的托管提供商。
 
-Tolaria does not store provider API keys in vault settings. Choose one of the supported key paths:
+Tolaria 不会在仓库设置中存储提供商 API 密钥。请从以下支持的密钥存储方式中选择：
 
-- Save the key locally on this device.
-- Read the key from an environment variable.
-- Use no key for local providers that do not require one.
+- 在本地设备上保存密钥。
+- 从环境变量中读取密钥。
+- 对于不需要密钥的本地提供商，不使用密钥。
 
-## Test The Connection
+## 测试连接
 
-After adding a provider, use the test action in Settings. A successful test means Tolaria reached the endpoint and the model replied.
+添加提供商后，使用设置中的测试操作。测试成功表示 Tolaria 已连接到端点并且模型已回复。
 
-## Select The Target
+## 选择目标
 
-Once configured, choose the model from the AI target selector or set it as the default AI target in Settings.
+配置完成后，从 AI 目标选择器中选择模型，或在设置中将其设置为默认 AI 目标。

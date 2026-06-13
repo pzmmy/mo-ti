@@ -1,14 +1,14 @@
-# Create Types
+# 创建类型
 
-Create a type when several notes share the same role in your system.
+当多个笔记在你的系统中扮演相同角色时，请创建一个类型。
 
-## Steps
+## 步骤
 
-1. Run `New Type` from the command palette, or click `+` in the Types header in the sidebar.
-2. Give the type a clear name.
-3. Add optional icon, color, sidebar order, sidebar label, pinned properties, suggested fields, default values, or a new-note template.
+1. 从命令面板运行 `New Type`，或点击侧边栏类型标题中的 `+`。
+2. 为类型取一个清晰的名字。
+3. 可选地添加图标、颜色、侧边栏顺序、侧边栏标签、固定属性、建议字段、默认值或新笔记模板。
 
-You can also right-click a type in the sidebar to change its icon and color.
+你也可以右键点击侧边栏中的类型来更改其图标和颜色。
 
 ```yaml
 ---
@@ -22,12 +22,12 @@ _order: 10
 # Project
 ```
 
-## Use Types Sparingly
+## 谨慎使用类型
 
-A type should represent a recurring category, not a one-off label. If you only need a temporary grouping, use a saved view or property instead.
+一个类型应该代表一个经常出现的类别，而不是一次性的标签。如果你只需要临时分组，请使用保存的视图或属性。
 
-## Templates
+## 模板
 
-Type documents can include a Markdown template for new notes of that type. Keep templates small and useful: a heading, a few expected fields, and the first checklist are usually enough.
+类型文档可以为该类型的新笔记包含一个 Markdown 模板。保持模板小巧实用：一个标题、几个预期字段和第一个检查清单通常就足够了。
 
-Type documents can also define fields for new notes. Empty properties and relationships become placeholders in new notes of that type. Properties with values become defaults for new notes of that type.
+类型文档也可以为新笔记定义字段。空的属性和关系会成为该类型新笔记中的占位符。带有值的属性会变成该类型新笔记的默认值。

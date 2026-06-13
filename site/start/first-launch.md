@@ -1,35 +1,35 @@
-# First Launch
+# 首次启动
 
-The first launch flow is designed to get you into a real vault quickly without hiding the local-first model.
+首次启动流程旨在让你快速进入一个真实的知识库，同时不隐藏本地优先的工作模式。
 
-## What You Choose
+## 你的选择
 
-Tolaria asks whether you want to:
+Tolaria 会询问你是否要：
 
-- Create or clone the Getting Started vault.
-- Open an existing local vault.
-- Create a new empty vault.
+- 创建或克隆入门知识库。
+- 打开一个已有的本地知识库。
+- 创建一个新的空知识库。
 
-The Getting Started vault is cloned locally and then disconnected from its remote. That keeps the sample safe to edit without accidentally pushing tutorial changes.
+入门知识库会被克隆到本地，然后断开与远程仓库的连接。这样你可以安全地编辑示例内容，而不会意外推送教程更改。
 
-## What Tolaria Creates
+## Tolaria 创建的内容
 
-Tolaria stores app-level settings on the local machine. Your notes stay in the vault folder you choose.
+Tolaria 将应用级别的设置存储在本机。你的笔记保存在你选择的知识库文件夹中。
 
-| Data | Stored in |
+| 数据 | 存储位置 |
 | --- | --- |
-| Notes and attachments | Your vault folder |
-| Type definitions and saved views | Your vault folder |
-| Window size, zoom, recent vaults | Local app settings |
-| Cache data | Rebuildable local cache |
+| 笔记和附件 | 你的知识库文件夹 |
+| 类型定义和保存的视图 | 你的知识库文件夹 |
+| 窗口大小、缩放、最近使用的知识库 | 本地应用设置 |
+| 缓存数据 | 可重建的本地缓存 |
 
-## First Commands To Try
+## 值得尝试的首批命令
 
-- `Cmd+K` / `Ctrl+K`: open the command palette.
-- `New Note`: create a note in the current vault.
-- `Open Getting Started Vault`: clone the public sample vault.
-- `Reload Vault`: rescan files after external edits.
+- `Cmd+K` / `Ctrl+K`：打开命令面板。
+- `新建笔记`：在当前知识库中创建笔记。
+- `打开入门知识库`：克隆公开的示例知识库。
+- `重新加载知识库`：在外部编辑后重新扫描文件。
 
-## AI Setup Prompt
+## AI 设置提示
 
-Tolaria can show an optional AI agents prompt after a vault is open. It checks common local install locations for supported coding agents and gives you setup paths, but you can dismiss it and use Tolaria without AI.
+Tolaria 可以在打开知识库后显示可选的 AI 代理提示。它会检查常见本地安装位置中支持的编码代理，并为你提供设置路径，但你可以忽略它，在不使用 AI 的情况下使用 Tolaria。

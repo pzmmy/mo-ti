@@ -1,23 +1,23 @@
-# Contribute
+# 贡献
 
-Tolaria is free and open source, and any kind of help is useful. Pick the path that matches what you want to do.
+Tolaria 是免费开源项目，任何形式的帮助都很有用。根据你想做的事情选择适合的路径。
 
-## Sponsor Or Support
+## 赞助或支持
 
-The best way to support Tolaria is to subscribe to [Refactoring](https://refactoring.fm/), Luca's newsletter and community about running good teams and shipping software with AI.
+支持 Tolaria 的最佳方式是订阅 [Refactoring](https://refactoring.fm/)，这是 Luca 关于优秀团队运作和 AI 软件交付的新闻通讯及社区。
 
-## Feature Requests
+## 功能请求
 
-Use the [product board](https://tolaria.canny.io/) for feature ideas. Search first, upvote existing ideas, and create a new post when the request is genuinely new.
+使用 [产品看板](https://tolaria.canny.io/) 提交功能想法。先搜索，对已有想法点赞，如果请求确实是新的则创建新帖子。
 
-## Discussions
+## 讨论
 
-Use [GitHub Discussions](https://github.com/refactoringhq/tolaria/discussions) for questions, conversations, show and tell, and broader community context.
+使用 [GitHub Discussions](https://github.com/refactoringhq/tolaria/discussions) 进行提问、交流、展示分享以及更广泛的社区互动。
 
-## Contribute Code
+## 贡献代码
 
-Small, focused pull requests are welcome. Check the product board first so you build the right thing, then open a PR on [GitHub](https://github.com/refactoringhq/tolaria/pulls). The [contributing guide](https://github.com/refactoringhq/tolaria/blob/main/CONTRIBUTING.md) explains the local workflow.
+欢迎小而精的拉取请求。先查看产品看板以确保你构建的是正确的内容，然后在 [GitHub](https://github.com/refactoringhq/tolaria/pulls) 上打开 PR。[贡献指南](https://github.com/refactoringhq/tolaria/blob/main/CONTRIBUTING.md) 解释了本地工作流程。
 
-## Report A Bug
+## 报告 Bug
 
-Use [GitHub Issues](https://github.com/refactoringhq/tolaria/issues) for bugs. Include what happened, what you expected, and clear reproduction steps. If you are reporting from inside Tolaria, use the Contribute panel to copy sanitized diagnostics and attach them to the issue.
+使用 [GitHub Issues](https://github.com/refactoringhq/tolaria/issues) 报告 Bug。请说明发生了什么、你的预期以及清晰的复现步骤。如果在 Tolaria 内部报告，请使用贡献面板复制清理后的诊断信息并附加到问题中。

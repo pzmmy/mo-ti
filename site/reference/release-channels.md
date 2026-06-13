@@ -1,36 +1,36 @@
-# Release Channels
+# 发布通道
 
-Tolaria publishes Stable and Alpha release metadata to GitHub Pages.
+Tolaria 将稳定版和 Alpha 版的发布元数据发布到 GitHub Pages。
 
-## Stable
+## 稳定版
 
-Stable follows manually promoted releases. This is the right channel for normal use.
+稳定版跟随手动推送的发布版本。这是正常使用的正确通道。
 
-The stable updater metadata lives at:
+稳定版更新器元数据位于：
 
 ```txt
 /stable/latest.json
 ```
 
-The public download page points at the latest stable release.
+公共下载页面指向最新的稳定版。
 
-## Alpha
+## Alpha 版
 
-Alpha follows pushes to `main`. It receives fixes and features earlier, but it can be rougher than Stable.
+Alpha 版跟随 `main` 分支的推送。它会更早地接收修复和功能，但可能比稳定版粗糙。
 
-The alpha updater metadata lives at:
+Alpha 版更新器元数据位于：
 
 ```txt
 /alpha/latest.json
 ```
 
-Compatibility endpoints also point to the alpha metadata:
+兼容性端点也指向 Alpha 版元数据：
 
 ```txt
 /latest.json
 /latest-canary.json
 ```
 
-## Before Switching
+## 切换前
 
-Commit or push important vault changes before changing release channel or installing an update. Your notes are local files, but a clean Git state makes recovery simpler.
+在更改发布通道或安装更新之前，请提交或推送重要的库变更。你的笔记是本地文件，但干净的 Git 状态使恢复更加简单。

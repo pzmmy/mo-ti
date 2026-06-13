@@ -3,8 +3,8 @@ layout: page
 sidebar: false
 aside: false
 landing: true
-title: Tolaria
-description: A second brain for the AI era. Free forever.
+title: 墨屉
+description: AI 时代的第二大脑。免费开源。
 ---
 
 <LandingHome />

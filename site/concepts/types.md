@@ -1,26 +1,26 @@
-# Types
+# 类型
 
-Types describe what kind of thing a note represents: Project, Person, Topic, Procedure, Event, or any category you create.
+类型描述一条笔记代表什么：项目、人物、主题、流程、事件或你创建的任何类别。
 
-## Type Field
+## 类型字段
 
-The `type:` field assigns a note to a type.
+`type:` 字段将一条笔记分配给一个类型。
 
 ```yaml
 type: Project
 ```
 
-Tolaria does not infer type from folder location. Moving a file into another folder does not change its type.
+Tolaria 不会从文件夹位置推断类型。将文件移动到另一个文件夹不会改变其类型。
 
-## Prefer Types Over Folders
+## 优先使用类型而非文件夹
 
-Types are the preferred way to group notes in Tolaria. Folders are supported for existing vaults and fallback organization, but Tolaria is built around types and relationships because they carry stronger meaning than file paths.
+类型是 Tolaria 中分组笔记的首选方式。文件夹受支持用于现有 vault 和后备组织，但 Tolaria 围绕类型和关系构建，因为它们比文件路径承载更强的语义。
 
-Use types for semantic groups such as Projects, People, Topics, Procedures, Events, and Essays. Use relationships to connect notes across those groups. This gives Tolaria better structure for navigation, filtering, properties, templates, and future automation than folder location alone.
+使用类型来表示语义组，例如项目、人物、主题、流程、事件和文章。使用关系来跨这些组连接笔记。这为 Tolaria 提供了比仅靠文件夹位置更好的导航、筛选、属性、模板和未来自动化的结构。
 
-## Type Documents
+## 类型文档
 
-Type documents are Markdown notes with `type: Type` in frontmatter. They describe how a type should appear and what new notes of that type should start with.
+类型文档是带有 `type: Type` frontmatter 的 Markdown 笔记。它们描述一个类型应该如何显示，以及该类型的新笔记应以什么内容开始。
 
 ```yaml
 ---
@@ -34,16 +34,16 @@ _order: 10
 # Project
 ```
 
-## What Types Control
+## 类型控制的内容
 
-- Sidebar grouping.
-- Type icon and color.
-- Sidebar order and label.
-- Pinned properties.
-- New-note templates.
+- 侧边栏分组。
+- 类型图标和颜色。
+- 侧边栏顺序和标签。
+- 固定属性。
+- 新建笔记模板。
 
-## New Note Defaults
+## 新建笔记默认值
 
-Type documents can define empty properties and relationships. When you create a new note of that type, Tolaria shows placeholders for those fields so you can fill them in from the Properties panel.
+类型文档可以定义空的属性和关系。当你创建该类型的新笔记时，Tolaria 会显示这些字段的占位符，供你在属性面板中填写。
 
-If a type document gives a property a value, that value becomes the default for new notes of that type. For example, a Project type can define `status: Active` so every new project starts active until you change it.
+如果类型文档为某个属性提供了值，该值将成为该类型新笔记的默认值。例如，项目类型可以定义 `status: Active`，这样每个新项目都会从活跃状态开始，直到你修改它。

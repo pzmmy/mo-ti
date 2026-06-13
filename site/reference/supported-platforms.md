@@ -1,23 +1,23 @@
-# Supported Platforms
+# 支持平台
 
-Tolaria is a desktop app built with Tauri. Releases currently target macOS, Windows, and Linux.
+Tolaria 是一款基于 Tauri 构建的桌面应用。当前版本支持 macOS、Windows 和 Linux。
 
-| Platform | Current support | Notes |
+| 平台 | 当前支持 | 说明 |
 | --- | --- | --- |
-| macOS | Primary | Main development and QA target. Apple Silicon and Intel artifacts are published. |
-| Windows | Supported, early | NSIS installers and signed updater bundles are published. Menu, shell-path, and credential-helper behavior receive platform-specific fixes as they appear. |
-| Linux | Supported, early | AppImage, deb, and RPM artifacts are published. Behavior can depend on distro WebKitGTK packages, Wayland/X11 details, and input-method setup. |
+| macOS | 主要平台 | 主要开发和 QA 目标。发布 Apple Silicon 和 Intel 构件。 |
+| Windows | 支持，早期阶段 | 发布 NSIS 安装程序和签名更新程序包。菜单、Shell 路径和凭据助手行为会在出现时接收平台特定的修复。 |
+| Linux | 支持，早期阶段 | 发布 AppImage、deb 和 RPM 构件。行为可能依赖于发行版的 WebKitGTK 包、Wayland/X11 细节以及输入法设置。 |
 
-## Support Policy
+## 支持政策
 
-Primary support means the platform is part of normal development and release validation. Supported, early means release artifacts exist and the app is expected to work, but platform-specific bugs can take longer to diagnose than macOS issues.
+主要支持意味着该平台是正常开发和发布验证的一部分。支持（早期阶段）意味着存在发布构件且应用预期能正常工作，但平台特定的 Bug 可能比 macOS 问题需要更长时间来诊断。
 
-## Reporting Platform Bugs
+## 报告平台 Bug
 
-Include:
+请包含：
 
-- Tolaria version.
-- Operating system and version.
-- CPU architecture.
-- Whether the vault is local-only or connected to a remote.
-- Steps to reproduce.
+- Tolaria 版本。
+- 操作系统及版本。
+- CPU 架构。
+- 库是仅本地还是连接到远程。
+- 复现步骤。

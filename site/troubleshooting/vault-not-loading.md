@@ -1,25 +1,24 @@
-# Vault Not Loading
+# 保险库无法加载
 
-Use this checklist when Tolaria cannot open or refresh a vault.
+当 Tolaria 无法打开或刷新保险库时，请使用此检查清单。
 
-## Check The Folder
+## 检查文件夹
 
-- Confirm the folder exists.
-- Confirm the folder contains readable files.
-- Confirm Tolaria has permission to access the folder.
-- Try opening a smaller test vault to isolate the issue.
+- 确认文件夹存在。
+- 确认文件夹包含可读文件。
+- 确认 Tolaria 有权访问该文件夹。
+- 尝试打开一个较小的测试保险库以隔离问题。
 
-## Check Git
+## 检查 Git
 
-If the vault is a Git repository, verify it is not in a broken state:
+如果保险库是一个 Git 仓库，请验证它没有处于损坏状态：
 
 ```bash
 git status
 ```
 
-Resolve interrupted merges or corrupted repository state before retrying.
+解决中断的合并或仓库损坏问题后重试。
 
-## Reload
+## 重新加载
 
-Run `Reload Vault` from the command palette. This clears derived cache and rescans the filesystem.
-
+从命令面板中运行 `Reload Vault`。这将清除派生缓存并重新扫描文件系统。

@@ -1,25 +1,25 @@
-# Use Media Previews
+# 使用媒体预览
 
-Media previews let you inspect vault files without leaving Tolaria.
+媒体预览让你无需离开 Tolaria 即可查看仓库文件。
 
-## Open A File
+## 打开文件
 
-Select an image, PDF, media file, or unsupported file from a folder or file list. Tolaria opens supported files in the app and offers an external-open action for files that should use the system default app.
+从文件夹或文件列表中选择图片、PDF、媒体文件或不受支持的文件。Tolaria 在应用内打开支持的文件，并为应使用系统默认应用打开的文件提供外部打开操作。
 
-## All Notes Visibility
+## 所有笔记可见性
 
-Open Settings to choose whether non-Markdown files appear in All Notes:
+打开设置，选择非 Markdown 文件是否显示在所有笔记中：
 
-- PDFs.
-- Images.
-- Unsupported files.
+- PDF。
+- 图片。
+- 不受支持的文件。
 
-Folder browsing still shows files in their folders even when a category is hidden from All Notes.
+即使某个类别从所有笔记中隐藏，文件夹浏览仍然会显示其文件夹中的文件。
 
-## Attachments
+## 附件
 
-When you paste or drop an image into a note, Tolaria copies it into the vault and references the copied file from Markdown.
+当你将图片粘贴或拖放到笔记中时，Tolaria 会将其复制到仓库中，并在 Markdown 中引用复制的文件。
 
-## Troubleshooting
+## 故障排除
 
-If a preview does not render, open the file in the default app to confirm the file is valid, then check whether the file is inside the active vault and not blocked by operating-system permissions.
+如果预览无法渲染，请在默认应用中打开该文件以确认文件有效，然后检查文件是否在活动仓库内且未被操作系统权限阻止。

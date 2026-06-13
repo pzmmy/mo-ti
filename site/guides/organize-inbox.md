@@ -1,31 +1,31 @@
-# Organize The Inbox
+# 整理收件箱
 
-Inbox review turns quick captures into usable knowledge.
+收件箱审阅将快速捕获的内容转化为可用的知识。
 
-## Remove A Note From Inbox
+## 将笔记移出收件箱
 
-When a note is organized enough, mark it as organized. Use `Cmd+E` on macOS or `Ctrl+E` on Windows and Linux, or click the organize action in the breadcrumb bar.
+当笔记整理得足够好时，将其标记为已整理。在 macOS 上使用 `Cmd+E`，在 Windows 和 Linux 上使用 `Ctrl+E`，或点击面包屑导航栏中的整理操作。
 
-That action is what removes the note from Inbox. If auto-advance is enabled in Settings > Workflow, Tolaria opens the next Inbox item immediately after you mark the current note organized.
+该操作会将笔记从收件箱中移除。如果在设置 > 工作流中启用了自动前进，Tolaria 会在你将当前笔记标记为已整理后立即打开下一项收件箱内容。
 
-## Review Checklist
+## 审阅检查清单
 
-- Rename unclear notes.
-- Add or correct the first H1.
-- Set `type`.
-- Add `status` for actionable notes.
-- Add `belongs_to`, `related_to`, or other relationship fields when useful.
-- Archive or delete notes that no longer matter.
+- 重命名不清晰的笔记。
+- 添加或更正第一个 H1 标题。
+- 设置 `type`。
+- 为可操作的笔记添加 `status`。
+- 在有用时添加 `belongs_to`、`related_to` 或其他关系字段。
+- 归档或删除不再重要的笔记。
 
-## Make Notes Navigable
+## 让笔记易于导航
 
-A note is organized when you can answer:
+当你可以回答以下问题时，笔记就算是整理好了：
 
-- What kind of thing is this?
-- What is it connected to?
-- What is this useful for?
-- What will I do with it?
+- 这是什么类型的内容？
+- 它连接到了什么？
+- 它有什么用途？
+- 我会用它做什么？
 
-## Avoid Over-Structuring
+## 避免过度结构化
 
-Do not add fields just because they exist. Add the structure that will help future navigation, review, or automation.
+不要仅仅因为字段存在就添加它们。只添加那些有助于未来导航、审阅或自动化的结构。

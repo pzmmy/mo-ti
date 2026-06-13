@@ -1,23 +1,23 @@
-# Use The Table Of Contents
+# 使用目录
 
-The table of contents panel helps you navigate long notes by heading.
+目录面板帮助你通过标题来导航长笔记。
 
-## Open It
+## 打开方式
 
-Use the editor toolbar, the command palette, or the shortcut:
+使用编辑器工具栏、命令面板或快捷键：
 
-- `Cmd+Shift+T` on macOS.
-- `Ctrl+Shift+T` on Windows and Linux.
+- macOS 上按下 `Cmd+Shift+T`。
+- Windows 和 Linux 上按下 `Ctrl+Shift+T`。
 
-## How It Works
+## 工作原理
 
-Tolaria builds the outline from the current note's headings. The panel updates as the note changes and can jump to sections in the editor.
+Tolaria 根据当前笔记的标题生成大纲。面板会随着笔记的变化而更新，并且可以跳转到编辑器中的各个章节。
 
-## Good Uses
+## 适用场景
 
-- Long procedures.
-- Meeting notes with many sections.
-- Research notes.
-- Generated documents that need review.
+- 长流程操作指南。
+- 包含多个章节的会议笔记。
+- 研究笔记。
+- 需要审阅的生成文档。
 
-If a note has no useful headings, add clear H2 and H3 sections rather than relying on a long uninterrupted document.
+如果笔记没有有用的标题，请添加清晰的 H2 和 H3 章节，而不是依赖一长段没有间断的文档。

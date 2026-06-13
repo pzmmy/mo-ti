@@ -1,29 +1,29 @@
 # Git
 
-Git is Tolaria's recommended history and sync layer. Tolaria can work with plain Markdown folders, and Git unlocks local history, recovery, remote backup, and multi-device workflows when you want them.
+Git 是 Tolaria 推荐的历史记录和同步层。Tolaria 可以处理纯 Markdown 文件夹，而 Git 在你需要时解锁本地历史记录、恢复、远程备份和多设备工作流。
 
-Tolaria acts as a lightweight Git client for your vault. You can review changes, commit, pull, push, and inspect history without leaving the app.
+Tolaria 作为你 vault 的轻量级 Git 客户端。你无需离开应用即可查看变更、提交、拉取、推送和检查历史记录。
 
-## What Tolaria Uses Git For
+## Tolaria 使用 Git 做什么
 
-- Whole-vault commit history.
-- Current diff for the vault.
-- Per-note history.
-- Current diff for an individual note.
-- Pull and push.
-- Conflict detection and resolution.
-- Remote connection for local-only vaults.
+- 整个 vault 的提交历史。
+- vault 的当前差异对比。
+- 单个笔记的历史记录。
+- 单个笔记的当前差异对比。
+- 拉取和推送。
+- 冲突检测与解决。
+- 仅本地 vault 的远程连接。
 
-## History And Diffs
+## 历史记录与差异对比
 
-Each note can show its own history and current diff, so you can understand how that file changed over time or what is unsaved relative to Git.
+每个笔记都可以显示自己的历史记录和当前差异对比，这样你可以了解该文件随时间的变化情况，或者与 Git 相比有哪些未保存的内容。
 
-Tolaria also shows a history of the whole vault. Use it when you want to review broader changes across multiple notes before committing or syncing.
+Tolaria 还会显示整个 vault 的历史记录。当你想在提交或同步前审查跨多个笔记的更广泛变更时，可以使用此功能。
 
-## Local Commits
+## 本地提交
 
-You can commit changes inside Tolaria without leaving the app. This gives you useful restore points even before a remote is configured.
+你可以在 Tolaria 内部提交变更，无需离开应用。即使在配置远程仓库之前，这也为你提供了有用的恢复点。
 
-## Remotes
+## 远程仓库
 
-Connect a compatible Git remote when you want sync or backup. Tolaria relies on your system Git authentication, so GitHub CLI, SSH keys, credential helpers, and existing Git configuration can continue to work.
+当你需要同步或备份时，连接兼容的 Git 远程仓库。Tolaria 依赖你系统的 Git 身份验证，因此 GitHub CLI、SSH 密钥、凭据助手和现有的 Git 配置可以继续正常工作。

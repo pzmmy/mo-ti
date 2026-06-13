@@ -1,32 +1,32 @@
-# Getting Started Vault
+# 入门知识库
 
-The Getting Started vault is a small public sample vault hosted at [refactoringhq/tolaria-getting-started](https://github.com/refactoringhq/tolaria-getting-started).
+入门知识库是一个小型公开示例知识库，托管在 [refactoringhq/tolaria-getting-started](https://github.com/refactoringhq/tolaria-getting-started)。
 
-It exists to show Tolaria's conventions without requiring you to restructure your own notes first.
+它的存在是为了展示 Tolaria 的约定，而不要求你首先重新组织自己的笔记。
 
-## What It Demonstrates
+## 它展示了什么
 
-- Markdown notes with YAML frontmatter.
-- Types such as Project, Person, Topic, and Procedure.
-- Wikilinks in note bodies.
-- Relationship fields in frontmatter.
-- A local Git repository that can be connected to a remote later.
-- Vault guidance files for AI agents.
+- 带有 YAML frontmatter 的 Markdown 笔记。
+- 类型，如项目、人物、主题和流程。
+- 笔记正文中的 Wiki 链接。
+- frontmatter 中的关系字段。
+- 一个以后可以连接到远程仓库的本地 Git 仓库。
+- 用于 AI 代理的知识库指导文件。
 
-## Local-Only By Default
+## 默认仅本地使用
 
-When Tolaria clones the sample, it removes the remote from the local copy. This makes the sample vault disposable. You can edit it freely, commit locally, and delete it later.
+当 Tolaria 克隆示例知识库时，它会移除本地副本的远程仓库连接。这使得示例知识库可以随时丢弃。你可以自由编辑、在本地提交，之后删除它。
 
-To connect a vault to your own remote, use the bottom status bar remote chip or run `Add Remote` from the command palette.
+要将知识库连接到自己的远程仓库，请使用底部状态栏的远程仓库芯片，或从命令面板运行"添加远程仓库"。
 
-Tolaria also repairs starter-vault guidance files when needed. `AGENTS.md` is the canonical guidance file, `CLAUDE.md` is kept as a compatibility shim, and `GEMINI.md` is only created when you explicitly restore Gemini guidance.
+Tolaria 还会在需要时修复入门知识库的指导文件。`AGENTS.md` 是规范的指导文件，`CLAUDE.md` 作为兼容性垫片保留，而 `GEMINI.md` 仅在你明确恢复 Gemini 指导时才会创建。
 
-## Use It Alongside Your Own Vaults
+## 与你自己的知识库一起使用
 
-You can keep the Getting Started vault open while working in your own notes. Enable `Settings` -> `Vaults` -> `Use multiple vaults at the same time`, then use the bottom-left vault menu to include both the sample vault and your real vault in the unified graph.
+你可以在处理自己的笔记时同时保持入门知识库打开。启用"设置" -> "知识库" -> "同时使用多个知识库"，然后使用左下角的知识库菜单，将示例知识库和你真实的知识库都包含在统一图谱中。
 
-This lets search, quick open, note lists, backlinks, and wikilink navigation span both vaults. Git actions still stay scoped to each vault's own repository, and new notes go to the default vault you choose in `Manage vaults`.
+这样，搜索、快速打开、笔记列表、反向链接和 Wiki 链接导航都可以跨两个知识库生效。Git 操作仍然限定在每个知识库自己的仓库范围内，新建的笔记会进入你在"管理知识库"中选择的默认知识库。
 
-## When To Move On
+## 何时继续前进
 
-After you understand the sample, open your own vault. Tolaria does not require a special folder structure: a folder of Markdown files is enough to start. You can remove the sample from Tolaria's vault list later without deleting its files from disk.
+在理解示例之后，打开你自己的知识库。Tolaria 不需要特殊的文件夹结构：一个包含 Markdown 文件的文件夹就足以开始。之后你可以从 Tolaria 的知识库列表中移除示例，而不会从磁盘删除其文件。

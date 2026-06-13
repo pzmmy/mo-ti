@@ -1,33 +1,33 @@
-# View Filters
+# 视图过滤器
 
-View filters define saved lists of notes.
+视图过滤器定义了已保存的笔记列表。
 
-## Common Filter Ideas
+## 常见过滤思路
 
-| Goal | Filter direction |
+| 目标 | 过滤方向 |
 | --- | --- |
-| Active projects | `type` is Project and `status` is Active |
-| Drafts | `type` is Article and `status` is Draft |
-| People follow-up | `type` is Person and date is before today |
-| Recent work | modified date is within a recent range |
+| 活跃项目 | `type` 为 Project 且 `status` 为 Active |
+| 草稿 | `type` 为 Article 且 `status` 为 Draft |
+| 待跟进联系人 | `type` 为 Person 且日期在今日之前 |
+| 近期工作 | 修改日期在近期的范围内 |
 
-## Sorting
+## 排序
 
-Useful sorts include:
+有用的排序方式包括：
 
-- Recently modified first.
-- Title ascending.
-- Status ascending.
-- A custom property ascending or descending.
+- 最近修改优先。
+- 标题升序。
+- 状态升序。
+- 自定义属性升序或降序。
 
-## Operators
+## 运算符
 
-Saved views can combine filters for text, dates, relationship fields, and frontmatter values. Relative date expressions are useful for views such as notes changed this week or people that need follow-up.
+已保存的视图可以组合文本、日期、关系字段和 frontmatter 值的过滤器。相对日期表达式对于诸如"本周更改的笔记"或"需要跟进的联系人"等视图非常有用。
 
-Regex filters are available for power-user cases. Keep them narrow and test them on a small view first.
+高级用户可以使用正则表达式过滤器。请保持其范围狭窄，并在小视图上先行测试。
 
-## Keep Views Focused
+## 保持视图聚焦
 
-A view should answer one recurring question. If it becomes too broad, split it into two views.
+一个视图应回答一个重复出现的问题。如果它变得过于宽泛，请将其拆分为两个视图。
 
-You can also customize view appearance with the same kind of icon and color controls used by types.
+你还可以使用与类型相同的图标和颜色控制来自定义视图外观。

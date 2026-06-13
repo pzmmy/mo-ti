@@ -1,18 +1,18 @@
-# Capture A Note
+# 捕获笔记
 
-Use capture when you need to get an idea into the vault before you know where it belongs.
+当你需要把想法记入仓库但还不知道它属于哪里时，请使用捕获功能。
 
-## Steps
+## 步骤
 
-1. Press `Cmd+N` on macOS or `Ctrl+N` on Windows and Linux.
-2. Write a clear H1.
-3. Add the rough content.
-4. Leave structure for later if you are still thinking.
+1. 在 macOS 上按下 `Cmd+N`，在 Windows 和 Linux 上按下 `Ctrl+N`。
+2. 写一个清晰的 H1 标题。
+3. 添加粗略内容。
+4. 如果你还在思考，结构留待以后处理。
 
-## Capture Well
+## 有效捕获
 
-Prefer a useful title over a perfect taxonomy. You can add type, status, and relationships during inbox review.
+宁愿使用有用的标题，也不要追求完美的分类。你可以在收件箱审阅期间添加类型、状态和关联关系。
 
-## When To Add Structure Immediately
+## 何时立即添加结构
 
-Add structure while capturing when the note's type or relationships are already obvious. Otherwise, capture the idea first and organize it later.
+当笔记的类型或关联关系已经明确时，可以在捕获的同时添加结构。否则，先捕获想法，之后再整理。

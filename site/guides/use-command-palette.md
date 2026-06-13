@@ -1,26 +1,26 @@
-# Use The Command Palette
+# 使用命令面板
 
-The command palette is the fastest way to move around Tolaria.
+命令面板是在 Tolaria 中导航的最快方式。
 
-Open it with:
+打开方式：
 
-- `Cmd+K` on macOS.
-- `Ctrl+K` on Linux and Windows.
+- macOS 上按下 `Cmd+K`。
+- Linux 和 Windows 上按下 `Ctrl+K`。
 
-## Common Commands
+## 常用命令
 
-- New Note.
-- Search.
-- Open Settings.
-- Reload Vault.
-- Add Remote.
-- Open Getting Started Vault.
-- Toggle Raw Mode.
-- Toggle Table of Contents.
-- Toggle AI Panel.
-- Use Light, Dark, or System theme.
-- Open in New Window.
+- 新建笔记。
+- 搜索。
+- 打开设置。
+- 重新加载仓库。
+- 添加远程仓库。
+- 打开入门仓库。
+- 切换原始模式。
+- 切换目录。
+- 切换 AI 面板。
+- 使用浅色、深色或跟随系统主题。
+- 在新窗口中打开。
 
-## Keyboard-First Workflow
+## 键盘优先工作流
 
-Use the palette when you know what you want to do but do not want to hunt through panels. It is also the best place to discover commands as the app grows.
+当你知道自己想做什么但不想在面板中四处寻找时，请使用命令面板。它也是随着应用功能增加而发现新命令的最佳途径。

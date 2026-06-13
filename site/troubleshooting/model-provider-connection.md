@@ -1,25 +1,25 @@
-# Model Provider Connection
+# 模型提供商连接
 
-Use this checklist when a local or API model provider does not connect.
+当本地或 API 模型提供商无法连接时，请使用此检查清单。
 
-## Local Providers
+## 本地提供商
 
-For Ollama or LM Studio:
+对于 Ollama 或 LM Studio：
 
-1. Start the local model server.
-2. Confirm the base URL in Tolaria matches the server.
-3. Confirm the model ID is installed and loaded by the provider.
-4. Use the Settings test action again.
+1. 启动本地模型服务器。
+2. 确认 Tolaria 中的基础 URL 与服务器地址一致。
+3. 确认模型 ID 已安装并被提供商加载。
+4. 再次使用设置中的测试操作。
 
-## API Providers
+## API 提供商
 
-For hosted providers:
+对于托管提供商：
 
-1. Confirm the provider kind and endpoint.
-2. Confirm the model ID exists for your account.
-3. Confirm the API key is saved locally or available in the configured environment variable.
-4. Avoid storing secrets in the vault.
+1. 确认提供商类型和端点地址。
+2. 确认模型 ID 在您的账户下存在。
+3. 确认 API 密钥已保存在本地，或可在配置的环境变量中获取。
+4. 避免将密钥存储在保险库中。
 
-## Chat Mode Boundary
+## 聊天模式边界
 
-Direct model targets run in chat mode. If you need file-editing tools, use a coding agent target such as Claude Code, Codex, OpenCode, Pi, or Gemini CLI.
+直接模型目标以聊天模式运行。如果您需要文件编辑工具，请使用编码代理目标，例如 Claude Code、Codex、OpenCode、Pi 或 Gemini CLI。

@@ -1,25 +1,25 @@
-# Build Custom Views
+# 构建自定义视图
 
-Custom views are saved filters for recurring questions.
+自定义视图是为常用问题保存的筛选器。
 
-## Good View Candidates
+## 适合创建视图的场景
 
-- Active projects.
-- People without a recent follow-up.
-- Drafts ready for review.
-- Notes changed this week.
-- Events in a date range.
+- 进行中的项目。
+- 近期未跟进的人员。
+- 待审阅的草稿。
+- 本周变更的笔记。
+- 日期范围内的事件。
 
-## View Definition
+## 视图定义
 
-Saved views live as files in the vault. They describe filters, sorting, and visible columns using structured data.
+保存的视图以文件形式存在于仓库中。它们使用结构化数据描述筛选条件、排序方式和可见列。
 
-## Filters
+## 筛选器
 
-Custom views can use nested conditions, similar to Notion or Airtable filter groups. Combine `all` and `any` logic when a view needs to answer a more precise question than a single field filter can express.
+自定义视图可以使用嵌套条件，类似于 Notion 或 Airtable 的筛选组。当视图需要回答比单个字段筛选更精确的问题时，可以组合使用 `all` 和 `any` 逻辑。
 
-Date filters support dynamic natural-language values such as `today`, `yesterday`, or `one week ago`. Use these for views that should keep moving over time, such as recent work, stale follow-ups, or upcoming events.
+日期筛选器支持动态自然语言值，例如 `today`、`yesterday` 或 `one week ago`。在需要随时间推移自动更新的视图中使用这些值，例如近期工作、过期跟进或即将发生的事件。
 
-## Design The Question First
+## 先设计问题
 
-Before creating a view, write the question it answers. A good view is not "all fields with all filters"; it is a focused lens.
+在创建视图之前，先写下它要回答的问题。一个好的视图不是"所有字段加上所有筛选器"，而是一个聚焦的镜头。

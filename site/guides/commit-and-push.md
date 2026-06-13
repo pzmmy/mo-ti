@@ -1,23 +1,23 @@
-# Manage Git Manually Or With AutoGit
+# 手动管理 Git 或使用 AutoGit
 
-Tolaria can act as a lightweight Git client for a Git-enabled vault. You can manage commits and pushes yourself, or enable AutoGit to create conservative checkpoints after editing pauses or when the app is no longer active.
+Tolaria 可以为支持 Git 的仓库充当轻量级 Git 客户端。您可以自己管理提交和推送，也可以启用 AutoGit 在编辑暂停或应用变为非活跃状态后自动创建保守的检查点。
 
-## Manual Git
+## 手动 Git
 
-1. Open the Git or changes surface.
-2. Review changed files.
-3. Write a short commit message.
-4. Commit locally.
-5. Push when a remote is configured.
+1. 打开 Git 或变更面板。
+2. 查看已更改的文件。
+3. 写一条简短的提交信息。
+4. 在本地提交。
+5. 配置远程仓库后进行推送。
 
-If the remote has changed, pull first and resolve any conflicts. If the vault has no remote, manual commits still give you local history, diffs, and rollback.
+如果远程仓库发生变更，请先拉取并解决任何冲突。如果仓库没有远程配置，手动提交仍然提供本地历史记录、差异对比和回滚功能。
 
 ## AutoGit
 
-AutoGit is available in Settings for Git-enabled vaults. When enabled, Tolaria automatically commits and pushes saved local changes after an idle pause or after the app becomes inactive.
+AutoGit 在设置中可用于支持 Git 的仓库。启用后，Tolaria 会在空闲暂停后或应用进入非活跃状态时自动提交并推送已保存的本地更改。
 
-Use AutoGit when you want the safety of regular checkpoints without interrupting capture or editing. You can still inspect each note's current diff, review note history, and browse the whole-vault history before making larger manual commits.
+当你希望获得定期检查点的安全性但又不想中断捕获或编辑时，请使用 AutoGit。在进行更大的手动提交之前，你仍然可以检查每条笔记的当前差异、查看笔记历史以及浏览整个仓库的历史记录。
 
-## Use Small Commits
+## 使用小型提交
 
-Small commits make it easier to understand what changed, roll back safely, and review AI-generated edits.
+小型提交便于理解变更内容、安全地回滚以及审阅 AI 生成的编辑。

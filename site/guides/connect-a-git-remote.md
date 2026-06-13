@@ -1,23 +1,23 @@
-# Connect A Git Remote
+# 连接 Git 远程仓库
 
-Connect a remote when you want backup or sync beyond the current machine.
+当你需要当前机器之外的备份或同步功能时，请连接远程仓库。
 
-## Before You Start
+## 开始之前
 
-Make sure the remote repository exists and your system Git can authenticate to it. Tolaria uses system Git rather than storing provider-specific credentials.
+确保远程仓库已存在，并且系统 Git 能够通过身份验证访问它。Tolaria 使用系统 Git，而不是存储特定于提供商的凭据。
 
-## Steps
+## 步骤
 
-1. Open the bottom status bar remote chip, or run `Add Remote` from the command palette.
-2. Paste the remote URL.
-3. Confirm the remote name.
-4. Fetch or push according to the app prompt.
+1. 点击底部状态栏的远程仓库芯片，或从命令面板运行 `Add Remote`。
+2. 粘贴远程仓库 URL。
+3. 确认远程仓库名称。
+4. 根据应用提示执行拉取或推送操作。
 
-## Recommended Auth
+## 推荐的身份验证方式
 
-- SSH keys.
-- GitHub CLI authentication.
-- Existing Git credential helpers.
-- macOS Keychain credentials for HTTPS remotes on macOS.
+- SSH 密钥。
+- GitHub CLI 身份验证。
+- 现有的 Git 凭据助手。
+- macOS 上 HTTPS 远程仓库的 macOS 钥匙串凭据。
 
-If authentication fails, see [Git Authentication](/troubleshooting/git-auth).
+如果身份验证失败，请参阅 [Git 身份验证](/troubleshooting/git-auth)。

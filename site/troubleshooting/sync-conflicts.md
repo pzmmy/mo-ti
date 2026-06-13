@@ -1,20 +1,19 @@
-# Sync Conflicts
+# 同步冲突
 
-Sync conflicts happen when local and remote changes touch the same content.
+当本地和远程更改触及相同内容时，会发生同步冲突。
 
-## What To Do
+## 处理方法
 
-1. Stop editing the conflicted note.
-2. Open the conflict resolver if Tolaria presents it.
-3. Review both sides.
-4. Choose the correct content or merge manually.
-5. Commit the resolved file.
-6. Push again.
+1. 停止编辑有冲突的笔记。
+2. 如果 Tolaria 提供冲突解决器，请打开它。
+3. 检查双方的内容。
+4. 选择正确的内容或手动合并。
+5. 提交已解决的文件。
+6. 再次推送。
 
-## Prevent Conflicts
+## 预防冲突
 
-- Pull before starting work on another device.
-- Push after meaningful sessions.
-- Keep AI-generated edits in small commits.
-- Avoid editing the same note on multiple devices at the same time.
-
+- 在另一台设备上开始工作前先拉取。
+- 在有意义的会话结束后推送。
+- 将 AI 生成的编辑保持为小提交。
+- 避免同时在多台设备上编辑同一篇笔记。

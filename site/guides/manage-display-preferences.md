@@ -1,26 +1,26 @@
-# Manage Display Preferences
+# 管理显示偏好
 
-Display preferences live in local app settings unless a setting is intentionally stored in the note or vault.
+显示偏好保存在本地应用设置中，除非某个设置有意图地存储在笔记或仓库中。
 
-## Theme
+## 主题
 
-Choose Light, Dark, or System in Settings. System follows the operating system appearance at runtime.
+在设置中选择浅色、深色或跟随系统。跟随系统会在运行时跟随操作系统的外观。
 
-You can also switch theme mode from the command palette.
+你也可以从命令面板切换主题模式。
 
-## Note Width
+## 笔记宽度
 
-Set the default rich-editor width in Settings:
+在设置中设置默认的富编辑器宽度：
 
-- **Normal** for focused writing.
-- **Wide** for tables, diagrams, dense notes, and generated documents.
+- **正常**适合专注写作。
+- **宽**适合表格、图表、密集笔记和生成的文档。
 
-An individual note can override the default width from the editor toolbar. That override is stored as `_width` in the note frontmatter.
+单个笔记可以在编辑器工具栏中覆盖默认宽度。该覆盖值存储在笔记 frontmatter 的 `_width` 字段中。
 
-## Sidebar Labels
+## 侧边栏标签
 
-Tolaria can pluralize type names in the sidebar. Turn this off in Settings if your type names should be shown exactly as written, or use `_sidebar_label` on a type document for an explicit label.
+Tolaria 可以在侧边栏中自动生成类型名称的复数形式。如果你的类型名称应该按原样显示，或者你使用类型文档中的 `_sidebar_label` 来设置显式标签，可以在设置中关闭此功能。
 
-## Vault Content
+## 仓库内容
 
-Settings also control whether Gitignored files and non-Markdown file categories are visible in the app. Use these controls to keep generated or local-only files out of regular note workflows.
+设置还控制 Gitignored 文件和非 Markdown 文件类别是否在应用中可见。使用这些控制项可以将生成的或仅限本地的文件排除在常规笔记工作流之外。

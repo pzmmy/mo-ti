@@ -1,23 +1,23 @@
-# Inbox
+# 收件箱
 
-The Inbox is for notes that have been captured but not yet organized.
+收件箱用于存放已捕获但尚未整理的笔记。
 
-## Why It Exists
+## 为什么存在收件箱
 
-Fast capture should not require perfect structure. The Inbox gives you a place to put incomplete notes, then process them later.
+快速捕获不应要求完美的结构。收件箱为你提供了一个存放不完整笔记的地方，之后再进行整理。
 
-The Inbox workflow is optional. Turn it off in Settings > Workflow if you prefer every note to appear organized by default.
+收件箱工作流是可选的。如果你希望每个笔记默认以组织好的方式显示，可以在"设置 > 工作流"中关闭此功能。
 
-## Organizing Inbox Notes
+## 整理收件箱笔记
 
-When reviewing the Inbox:
+审查收件箱时：
 
-1. Give the note a clear H1.
-2. Set its `type`.
-3. Add status, dates, or URL if useful.
-4. Add relationships with wikilinks or frontmatter fields.
-5. Move it into a folder only if the folder adds value.
+1. 给笔记一个清晰的一级标题。
+2. 设置其 `type`（类型）。
+3. 如有需要，添加状态、日期或 URL。
+4. 使用维基链接或 frontmatter 字段添加关系。
+5. 仅在文件夹能增加价值时才将其移入文件夹。
 
-## Healthy Inbox Habit
+## 健康的收件箱习惯
 
-Keep the Inbox small enough that it can be reviewed in one focused pass. Tolaria works best when capture is fast and organization is deliberate.
+保持收件箱足够小，以便在一次专注的审查中完成处理。当捕获快速且整理有意识时，Tolaria 表现最佳。

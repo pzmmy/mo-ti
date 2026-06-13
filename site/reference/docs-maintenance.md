@@ -1,38 +1,38 @@
-# Docs Maintenance
+# 文档维护
 
-The public docs live in the app repo so documentation changes can ship with behavior changes.
+公共文档位于应用仓库中，以便文档变更与行为变更同步发布。
 
-## Update Docs When You Change
+## 以下变更需同步更新文档
 
-- A Tauri command.
-- A new component or hook that changes user behavior.
-- A data model or frontmatter convention.
-- Git, AI, onboarding, or release behavior.
-- Public release pages, download metadata, or updater channels.
-- Platform support.
-- Keyboard shortcuts.
+- Tauri 命令
+- 改变用户行为的新组件或钩子
+- 数据模型或 frontmatter 约定
+- Git、AI、引导流程或发布行为
+- 公开发布页面、下载元数据或更新通道
+- 平台支持
+- 键盘快捷键
 
-## Suggested Workflow
+## 建议的工作流程
 
-1. Make the code change.
-2. Update the matching concept, guide, or reference page.
-3. Add a troubleshooting page if the change creates a new failure mode.
-4. Run `pnpm docs:build`.
-5. Check the home page, search, release/download links, and changed docs pages in a browser.
+1. 进行代码变更。
+2. 更新对应的概念、指南或参考页面。
+3. 如果变更产生了新的故障模式，添加一个故障排查页面。
+4. 运行 `pnpm docs:build`。
+5. 在浏览器中检查首页、搜索、发布/下载链接以及变更过的文档页面。
 
-## Page Types
+## 页面类型
 
-| Type | Purpose |
+| 类型 | 用途 |
 | --- | --- |
-| Start | Helps a new user get into the app. |
-| Concepts | Explains mental models. |
-| Guides | Teaches workflows. |
-| Reference | Gives stable facts and tables. |
-| Troubleshooting | Starts from a symptom and ends with recovery. |
+| 入门 | 帮助新用户进入应用。 |
+| 概念 | 解释心智模型。 |
+| 指南 | 教学工作流程。 |
+| 参考 | 提供稳定的事实和表格。 |
+| 故障排查 | 从症状出发，最终实现恢复。 |
 
-## Review Checklist
+## 审查清单
 
-- Does the page describe current behavior?
-- Does it mention macOS primary and Windows/Linux supported-early status when platform support matters?
-- Are links relative and VitePress-compatible?
-- Can a user discover the page with local search?
+- 页面是否描述当前行为？
+- 在涉及平台支持时，是否提及 macOS 为主要平台，Windows/Linux 为早期支持状态？
+- 链接是否为相对路径且兼容 VitePress？
+- 用户能否通过本地搜索发现该页面？

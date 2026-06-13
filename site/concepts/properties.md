@@ -1,26 +1,26 @@
-# Properties
+# 属性
 
-Properties are frontmatter fields that Tolaria can display, filter, and edit.
+属性是 Tolaria 可以显示、筛选和编辑的 frontmatter 字段。
 
-## Suggested Properties
+## 建议属性
 
-Suggested properties are the fields Tolaria knows how to create quickly from the Properties panel. When a suggested property is missing, the panel shows a shortcut to add it with the right editor.
+建议属性是 Tolaria 知道如何从属性面板快速创建的字段。当某个建议属性缺失时，面板会显示一个快捷方式，使用正确的编辑器添加它。
 
-| Field | Purpose |
+| 字段 | 用途 |
 | --- | --- |
-| `type` | Groups the note into a type such as Project, Person, or Topic. |
-| `status` | Tracks lifecycle state such as Active, Done, or Blocked. |
-| `url` | Stores a canonical external link. |
-| `date` | Represents a single date. |
+| `type` | 将笔记归入某一类型，如项目、人物或主题。 |
+| `status` | 跟踪生命周期状态，如活跃、已完成或受阻。 |
+| `url` | 存储规范的外部链接。 |
+| `date` | 表示单个日期。 |
 
-## System Properties
+## 系统属性
 
-Fields that start with `_` are system properties. They remain in plain text but are hidden from normal property editing.
+以 `_` 开头的字段是系统属性。它们保留在纯文本中，但会从常规属性编辑中隐藏。
 
-Examples include `_icon`, `_color`, `_order`, `_sidebar_label`, `_width`, and `_pinned_properties` on type documents or notes.
+示例包括类型文档或笔记上的 `_icon`、`_color`、`_order`、`_sidebar_label`、`_width` 和 `_pinned_properties`。
 
-## Property Editing
+## 属性编辑
 
-The Properties panel is the safest place to edit structured properties. Toggle it with `Cmd+Shift+I` on macOS or `Ctrl+Shift+I` on Windows and Linux.
+属性面板是编辑结构化属性最安全的地方。在 macOS 上使用 `Cmd+Shift+I`，在 Windows 和 Linux 上使用 `Ctrl+Shift+I` 切换显示。
 
-Date fields use Tolaria's picker, relationship fields can use wikilinks, and raw Markdown mode is available when you need direct control over YAML.
+日期字段使用 Tolaria 的日期选择器，关系字段可以使用维基链接，当你需要直接控制 YAML 时，原始 Markdown 模式也可用。

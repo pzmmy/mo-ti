@@ -1,24 +1,24 @@
-# Keyboard Shortcuts
+# 键盘快捷键
 
-| Shortcut | Action |
+| 快捷键 | 操作 |
 | --- | --- |
-| `Cmd+K` / `Ctrl+K` | Open command palette. |
-| `Cmd+P` / `Ctrl+P` | Quick open notes and files. |
-| `Cmd+N` / `Ctrl+N` | Create a new note. |
-| `Cmd+S` / `Ctrl+S` | Save current note. |
-| `Cmd+F` / `Ctrl+F` | Find in the current note. |
-| `Cmd+Shift+F` / `Ctrl+Shift+F` | Search the vault. |
-| `Cmd+Shift+V` / `Ctrl+Shift+V` | Paste without formatting. |
-| `Cmd+\` / `Ctrl+\` | Toggle raw Markdown mode. |
-| `Cmd+Shift+T` / `Ctrl+Shift+T` | Toggle table of contents. |
-| `Cmd+Shift+I` / `Ctrl+Shift+I` | Toggle Properties panel. |
-| `Cmd+Shift+L` / `Ctrl+Shift+L` | Toggle AI panel. |
-| `Cmd+[` / `Alt+Left` | Navigate back when available. |
-| `Cmd+]` / `Alt+Right` | Navigate forward when available. |
-| `Cmd+Shift+O` / `Ctrl+Shift+O` | Open current note in a new window. |
-| `Cmd+D` / `Ctrl+D` | Toggle favorite for the current note. |
-| `Cmd+E` / `Ctrl+E` | Mark the current Inbox note organized. |
+| `Cmd+K` / `Ctrl+K` | 打开命令面板。 |
+| `Cmd+P` / `Ctrl+P` | 快速打开笔记和文件。 |
+| `Cmd+N` / `Ctrl+N` | 创建新笔记。 |
+| `Cmd+S` / `Ctrl+S` | 保存当前笔记。 |
+| `Cmd+F` / `Ctrl+F` | 在当前笔记中查找。 |
+| `Cmd+Shift+F` / `Ctrl+Shift+F` | 搜索整个库。 |
+| `Cmd+Shift+V` / `Ctrl+Shift+V` | 无格式粘贴。 |
+| `Cmd+\` / `Ctrl+\` | 切换原始 Markdown 模式。 |
+| `Cmd+Shift+T` / `Ctrl+Shift+T` | 切换目录。 |
+| `Cmd+Shift+I` / `Ctrl+Shift+I` | 切换属性面板。 |
+| `Cmd+Shift+L` / `Ctrl+Shift+L` | 切换 AI 面板。 |
+| `Cmd+[` / `Alt+左箭头` | 后退（可用时）。 |
+| `Cmd+]` / `Alt+右箭头` | 前进（可用时）。 |
+| `Cmd+Shift+O` / `Ctrl+Shift+O` | 在新窗口中打开当前笔记。 |
+| `Cmd+D` / `Ctrl+D` | 切换当前笔记的收藏状态。 |
+| `Cmd+E` / `Ctrl+E` | 将当前收件箱笔记标记为已整理。 |
 
-Some shortcuts vary by platform because macOS, Linux, and Windows reserve different key combinations.
+部分快捷键因平台而异，因为 macOS、Linux 和 Windows 保留了不同的按键组合。
 
-Use the command palette to discover the current command set.
+使用命令面板查看当前可用的命令集。

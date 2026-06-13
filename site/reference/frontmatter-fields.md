@@ -1,26 +1,26 @@
-# Frontmatter Fields
+# Frontmatter 字段
 
-Tolaria uses conventions instead of a required schema.
+Tolaria 使用约定而非强制模式。
 
-| Field | Meaning |
+| 字段 | 含义 |
 | --- | --- |
-| `type` | The note's entity type. |
-| `status` | Lifecycle state. |
-| `icon` | Per-note icon. |
-| `url` | External URL. |
-| `date` | Single date. |
-| `belongs_to` | Parent relationship. |
-| `related_to` | Lateral relationship. |
-| `has` | Contained relationship. |
-| `_width` | Per-note editor width override. |
-| `_icon`, `_color` | Type or note appearance metadata. |
-| `_sidebar_label`, `_order` | Type sidebar label and order. |
-| `_pinned_properties` | Properties pinned for a type. |
+| `type` | 笔记的实体类型。 |
+| `status` | 生命周期状态。 |
+| `icon` | 每笔记图标。 |
+| `url` | 外部 URL。 |
+| `date` | 单个日期。 |
+| `belongs_to` | 父级关系。 |
+| `related_to` | 横向关系。 |
+| `has` | 包含关系。 |
+| `_width` | 每笔记编辑器宽度覆盖。 |
+| `_icon`, `_color` | 类型或笔记外观元数据。 |
+| `_sidebar_label`, `_order` | 类型侧边栏标签和顺序。 |
+| `_pinned_properties` | 为类型固定的属性。 |
 
-## Custom Fields
+## 自定义字段
 
-You can add your own fields. If a field contains wikilinks, Tolaria can treat it as a relationship.
+你可以添加自己的字段。如果字段包含维基链接，Tolaria 可以将其视为关系。
 
-## System Fields
+## 系统字段
 
-Fields starting with `_` are reserved for system behavior and hidden from standard property editing. They remain plain YAML, so they can still be inspected or changed in raw mode when needed.
+以 `_` 开头的字段保留给系统行为，并在标准属性编辑中隐藏。它们仍然是纯 YAML，因此在需要时仍可在原始模式下检查或修改。

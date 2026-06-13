@@ -1,30 +1,30 @@
-# Open Or Create A Vault
+# 打开或创建知识库
 
-A Tolaria vault is a folder on disk. The folder can contain Markdown notes, attachments, type definitions, saved views, and Git metadata.
+Tolaria 知识库是磁盘上的一个文件夹。该文件夹可以包含 Markdown 笔记、附件、类型定义、保存的视图和 Git 元数据。
 
-## Open An Existing Folder
+## 打开已有文件夹
 
-Choose an existing folder if you already have Markdown notes. Tolaria scans `.md` files and uses frontmatter when it exists.
+如果你已有 Markdown 笔记，请选择一个已有文件夹。Tolaria 会扫描 `.md` 文件，并在存在 frontmatter 时使用它。
 
-Good starting points:
+合适的起点：
 
-- A folder of plain Markdown files.
-- An Obsidian-style vault.
-- A Git repository containing notes.
-- A copy of the Getting Started vault.
+- 一个包含纯 Markdown 文件的文件夹。
+- 一个 Obsidian 风格的知识库。
+- 一个包含笔记的 Git 仓库。
+- 入门知识库的副本。
 
-## Create A New Vault
+## 创建新知识库
 
-Choose a new empty folder if you want Tolaria conventions from the start. New notes and optional type definitions are created as Markdown files.
+如果你希望从一开始就使用 Tolaria 的约定，请选择一个新的空文件夹。新建的笔记和可选的类型定义将以 Markdown 文件的形式创建。
 
-## Use More Than One Vault
+## 使用多个知识库
 
-You do not have to merge everything into one folder. Register each local folder as its own vault, then turn on `Use multiple vaults at the same time` in `Settings` -> `Vaults`.
+你不必将所有内容合并到一个文件夹中。将每个本地文件夹注册为独立的知识库，然后在"设置" -> "知识库"中开启"同时使用多个知识库"。
 
-Once enabled, the bottom-left vault menu lets you include vaults in the unified graph. Search, quick open, wikilinks, and note lists can span the included vaults, while Git sync and commits remain tied to each vault's own repository.
+开启后，左下角的知识库菜单允许你将知识库包含在统一图谱中。搜索、快速打开、Wiki 链接和笔记列表可以跨越包含的知识库，而 Git 同步和提交仍然与每个知识库自己的仓库绑定。
 
-## Git Is Recommended, Not Required
+## Git 是推荐的，但不是必须的
 
-Tolaria works well with a plain folder of Markdown files. You can open, edit, organize, and search notes without making the vault a Git repository.
+Tolaria 在使用纯 Markdown 文件文件夹时也能很好地工作。你可以在不将知识库设为 Git 仓库的情况下打开、编辑、组织和搜索笔记。
 
-Git is recommended when you want local history, diff views, recovery, pull, push, and remote sync without a proprietary backend. If a vault is not already a repository, Tolaria can initialize one when you explicitly ask it to.
+当你需要本地历史记录、差异视图、恢复、拉取、推送和远程同步时，推荐使用 Git，且无需专有后端。如果知识库还不是仓库，Tolaria 可以在你明确要求时初始化一个。

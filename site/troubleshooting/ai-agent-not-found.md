@@ -1,23 +1,22 @@
-# AI Agent Not Found
+# 未找到 AI 代理
 
-Tolaria can only launch local CLI agents that are installed and discoverable.
+Tolaria 只能启动已安装且可发现的本地 CLI 代理。
 
-## Symptoms
+## 症状
 
-- The AI panel says no supported agent is available.
-- Claude Code or another agent works in one shell but not in Tolaria.
+- AI 面板显示没有可用的受支持代理。
+- Claude Code 或其他代理在某个 shell 中正常，但在 Tolaria 中不行。
 
-## Checks
+## 检查步骤
 
-Open a terminal and run the agent command directly. For Claude Code:
+打开一个终端，直接运行代理命令。对于 Claude Code：
 
 ```bash
 claude --version
 ```
 
-If the command fails, install or repair the agent first.
+如果命令执行失败，请先安装或修复该代理。
 
-## Path Issues
+## 路径问题
 
-Desktop apps can inherit a different `PATH` from your interactive shell. Tolaria checks common install locations, but shell setup can still vary. Prefer installing CLI tools in standard locations or making them available from your login shell.
-
+桌面应用可能继承与交互式 shell 不同的 `PATH`。Tolaria 会检查常见的安装位置，但 shell 配置仍可能有差异。建议将 CLI 工具安装到标准位置，或使其可从登录 shell 中使用。

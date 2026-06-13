@@ -1,26 +1,25 @@
-# Git Authentication
+# Git 认证
 
-Tolaria uses system Git authentication. It does not manage provider passwords directly.
+Tolaria 使用系统 Git 认证。它不直接管理提供商密码。
 
-## Symptoms
+## 症状
 
-- Push fails.
-- Pull asks for credentials repeatedly.
-- Remote fetch works in one terminal but not in Tolaria.
+- 推送失败。
+- 拉取时反复要求输入凭据。
+- 远程拉取在某个终端中正常，但在 Tolaria 中不行。
 
-## Checks
+## 检查步骤
 
-1. Open a terminal.
-2. `cd` into the vault.
-3. Run `git remote -v`.
-4. Run `git fetch`.
+1. 打开一个终端。
+2. `cd` 进入保险库目录。
+3. 运行 `git remote -v`。
+4. 运行 `git fetch`。
 
-If `git fetch` fails in the terminal, fix system Git auth first.
+如果在终端中 `git fetch` 失败，请先修复系统 Git 认证。
 
-## Common Fixes
+## 常见修复方法
 
-- Sign in with GitHub CLI.
-- Configure SSH keys.
-- Update the remote URL.
-- Check your credential helper.
-
+- 使用 GitHub CLI 登录。
+- 配置 SSH 密钥。
+- 更新远程 URL。
+- 检查凭据助手设置。

@@ -1,10 +1,10 @@
-# Relationships
+# 关系
 
-Relationships make a vault feel like a graph instead of a pile of documents.
+关系让 vault 感觉像一张图，而不是一堆文档。
 
-## Relationship Fields
+## 关系字段
 
-Any frontmatter field containing wikilinks can become a relationship. Relationship fields can point to one note or to an array of notes.
+任何包含维基链接的 frontmatter 字段都可以成为关系字段。关系字段可以指向单个笔记或一组笔记。
 
 ```yaml
 belongs_to:
@@ -17,16 +17,16 @@ blocked_by:
   - "[[sync-conflicts]]"
 ```
 
-Tolaria supports default relationship fields out of the box: `belongs_to`, `has`, and `related_to`. It also detects custom relationship fields dynamically when they contain wikilinks.
+Tolaria 开箱即用地支持默认关系字段：`belongs_to`、`has` 和 `related_to`。当自定义关系字段包含维基链接时，它也会动态检测到它们。
 
-Default relationships have automatically computed inverses. If a note says it `belongs_to` a project, the project can show that note under its inverse `has` relationship without you writing the reverse link by hand. `related_to` works as a lateral relationship in both directions.
+默认关系具有自动计算的逆关系。如果一条笔记声明它 `belongs_to`（属于）某个项目，该项目可以在其逆关系 `has`（拥有）下显示该笔记，而无需你手动编写反向链接。`related_to`（关联到）作为双向的横向关系工作。
 
-These outgoing and inverse relationships appear in the Properties panel and in Neighborhood mode, where the note list becomes a graph view around the selected note.
+这些出向和逆关系显示在属性面板和邻域模式中，在邻域模式下，笔记列表变为围绕所选笔记的图形视图。
 
-## Body Links Versus Relationship Fields
+## 正文链接与关系字段
 
-Use body links when the relationship appears naturally in writing. Use frontmatter relationships when the connection is important enough to show in navigation, filters, Neighborhood mode, or the Properties panel.
+当关系在写作中自然出现时，使用正文链接。当连接足够重要，需要在导航、筛选器、邻域模式或属性面板中显示时，使用 frontmatter 关系。
 
-## Backlinks
+## 反向链接
 
-Tolaria can show incoming links and inverse relationships, making it easier to navigate from a note to the rest of its context.
+Tolaria 可以显示入向链接和逆关系，使你更容易从一条笔记导航到其上下文的其他部分。

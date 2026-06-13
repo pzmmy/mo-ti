@@ -1,45 +1,45 @@
-# Vaults
+# Vault
 
-A vault is the folder Tolaria reads and writes. The filesystem is the source of truth; the app state and cache are derived from files.
+Vault 是 Tolaria 读取和写入的文件夹。文件系统是真实数据来源；应用状态和缓存都是从文件派生出来的。
 
-## Core Rules
+## 核心规则
 
-- Notes are Markdown files.
-- YAML frontmatter provides structure.
-- Attachments are normal files inside the vault.
-- Type definitions and saved views are also files.
-- Git can track history and support remote sync.
+- 笔记是 Markdown 文件。
+- YAML frontmatter 提供结构化数据。
+- 附件是 vault 内的普通文件。
+- 类型定义和保存的视图也是文件。
+- Git 可以跟踪历史记录并支持远程同步。
 
-## Why Local Files Matter
+## 为什么本地文件很重要
 
-Local files keep your notes inspectable. You can open them in another editor, search with command-line tools, back them up with your own system, and version them with Git.
+本地文件让你的笔记可审查。你可以在其他编辑器中打开它们，使用命令行工具搜索，用自己的系统备份，以及用 Git 进行版本管理。
 
-Tolaria should never become the only way to read your data.
+Tolaria 绝不应成为读取你数据的唯一途径。
 
-## Git Is A Capability
+## Git 是一种能力
 
-A plain folder of Markdown files can open as a vault. Git-backed vaults unlock history, changes, commits, pull, push, conflict handling, and remote setup.
+一个纯 Markdown 文件文件夹可以作为 vault 打开。基于 Git 的 vault 解锁了历史记录、变更、提交、拉取、推送、冲突处理和远程设置。
 
-If a folder is not a Git repository, Tolaria can initialize Git when you explicitly ask it to. It avoids initializing broad personal folders such as Desktop, Documents, or Downloads unless they are clearly dedicated vault folders.
+如果某个文件夹不是 Git 仓库，Tolaria 可以在你明确要求时初始化 Git。它会避免初始化桌面、文档或下载等宽泛的个人文件夹，除非它们显然是专用的 vault 文件夹。
 
-## Multiple Vaults At The Same Time
+## 同时管理多个 Vault
 
-Tolaria can load multiple registered vaults into one unified graph. Enable this from `Settings` -> `Vaults` -> `Use multiple vaults at the same time`.
+Tolaria 可以将多个注册的 vault 加载到一个统一的图中。从"设置 > Vault > 同时使用多个 Vault"启用此功能。
 
-After the option is enabled, open the bottom-left vault menu to include or exclude vaults from the graph. Included vaults appear together in note lists, search, quick open, backlinks, and wikilink navigation. Each note keeps a compact vault badge when Tolaria needs to disambiguate where it lives.
+启用该选项后，打开左下角的 vault 菜单，在图中包含或排除 vault。被包含的 vault 会一起出现在笔记列表、搜索、快速打开、反向链接和维基链接导航中。当 Tolaria 需要区分笔记所属的 vault 时，每条笔记会带有一个紧凑的 vault 徽章。
 
-The selected vault still matters. Git status, commits, sync, folder navigation, saved views, and vault repair actions stay scoped to the current repository. Use `Manage vaults` from the vault menu or the Vaults settings section to rename vaults, choose colors, and set the default destination for new notes.
+选中的 vault 仍然重要。Git 状态、提交、同步、文件夹导航、保存的视图和 vault 修复操作都限定在当前仓库范围内。使用 vault 菜单或 Vault 设置部分中的"管理 Vault"来重命名 vault、选择颜色以及设置新笔记的默认目标。
 
-Cross-vault wikilinks use the target vault's stable alias when needed, for example `[[team/projects/alpha]]`. Links inside the same vault stay normal vault-relative links.
+跨 vault 的维基链接在需要时使用目标 vault 的稳定别名，例如 `[[team/projects/alpha]]`。同一 vault 内的链接保持普通的 vault 相对链接。
 
-## App State Versus Vault State
+## 应用状态与 Vault 状态
 
-Vault-level information should travel with the vault. Machine-specific preferences stay with the app installation.
+vault 级别的信息应随 vault 一起迁移。特定于机器的偏好设置保留在应用安装中。
 
-| Vault state | App state |
+| Vault 状态 | 应用状态 |
 | --- | --- |
-| Type icons and colors | Editor zoom |
-| Saved views | Window size |
-| Pinned properties | Recent vault list |
-| Relationship conventions | Local cache |
-| Vault AI guidance files | AI target selection |
+| 类型图标和颜色 | 编辑器缩放 |
+| 保存的视图 | 窗口大小 |
+| 固定属性 | 最近 vault 列表 |
+| 关系约定 | 本地缓存 |
+| Vault AI 指导文件 | AI 目标选择 |
