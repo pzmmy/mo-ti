@@ -159,6 +159,33 @@ pnpm tauri build
 
 ---
 
+## 🛠 开发指南
+
+### OSS 镜像配置
+
+Release 构建流程会自动将安装包同步到阿里云 OSS，实现国内加速下载。如果希望使用自己的 OSS bucket，请在 GitHub 仓库设置以下 Secrets：
+
+| Secret 名称 | 说明 | 是否必填 |
+|------------|------|---------|
+| `OSS_ACCESS_KEY_ID` | 阿里云 RAM 子用户的 AccessKey ID | 是 |
+| `OSS_ACCESS_KEY_SECRET` | 对应的 AccessKey Secret | 是 |
+| `OSS_ENDPOINT` | OSS 地域节点，默认 `oss-cn-hangzhou.aliyuncs.com` | 否 |
+| `OSS_BUCKET` | OSS Bucket 名称，默认 `mo-ti` | 否 |
+
+**最小权限策略**：RAM 子用户只需以下权限即可正常工作：
+
+```json
+{
+  "Effect": "Allow",
+  "Action": "oss:PutObject",
+  "Resource": "acs:oss:*:*:mo-ti/*"
+}
+```
+
+> 不配置这些 Secrets 不影响 Release 构建流程——仅会跳过 OSS 同步步骤，GitHub Releases 仍会正常发布。
+
+---
+
 ## 📄 许可证
 
 本项目的原始代码基于 **AGPL-3.0-or-later** 许可证开源。
