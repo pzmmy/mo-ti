@@ -230,6 +230,7 @@
   "settings.dateDisplay.european": "European (11/5/2026)",
   "settings.dateDisplay.friendly": "Friendly (May 11, 2026)",
   "settings.dateDisplay.iso": "ISO (2026-05-11)",
+  "settings.dateDisplay.zh-cn": "Chinese (2026年6月13日 周三)",
   "settings.noteWidth.default": "Default note width",
   "settings.noteWidth.defaultDescription": "Choose the rich-editor width for notes without an explicit note width.",
   "settings.noteWidth.normal": "Normal",

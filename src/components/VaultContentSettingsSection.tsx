@@ -39,6 +39,7 @@ const DATE_DISPLAY_LABEL_KEYS: Record<DateDisplayFormat, TranslationKey> = {
   european: 'settings.dateDisplay.european',
   friendly: 'settings.dateDisplay.friendly',
   iso: 'settings.dateDisplay.iso',
+  'zh-cn': 'settings.dateDisplay.zh-cn',
 }
 
 function buildNoteWidthOptions(t: Translate): Array<{ value: NoteWidthMode; label: string }> {

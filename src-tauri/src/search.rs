@@ -1,5 +1,5 @@
+use pinyin::ToPinyin;
 use serde::Serialize;
-use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 use std::time::Instant;
 use walkdir::WalkDir;
@@ -45,6 +45,10 @@ struct MatchScoreRequest<'a> {
     query_lower: &'a str,
     /// CJK bigrams of the query (empty if query has no CJK)
     query_bigrams: &'a [String],
+    /// Pinyin version of title (empty string if not applicable)
+    title_pinyin: &'a str,
+    /// Pinyin version of content (empty string if not applicable)
+    content_pinyin: &'a str,
 }
 
 impl Utf8Boundary<'_> {
@@ -138,6 +142,29 @@ fn is_cjk(c: char) -> bool {
     || (cat >= 0xAC00 && cat <= 0xD7AF)
 }
 
+/// Check if a string contains Latin letters (a-z).
+fn has_latin(s: &str) -> bool {
+    s.chars().any(|c| c.is_ascii_alphabetic())
+}
+
+/// Convert Chinese characters in text to their pinyin representation (without tones).
+/// Non-Chinese characters are preserved (lowercased).
+/// Example: "北京大学" → "beijingdaxue"
+fn text_to_pinyin(text: &str) -> String {
+    let mut result = String::with_capacity(text.len());
+    for c in text.chars() {
+        match c.to_pinyin() {
+            Some(p) => result.push_str(p.plain()),
+            None => {
+                for lower_c in c.to_lowercase() {
+                    result.push(lower_c);
+                }
+            }
+        }
+    }
+    result
+}
+
 /// Count how many bigrams from `query_bigrams` appear in `content_bigrams`.
 fn cjk_bigram_overlap(query_bigrams: &[String], content_bigrams: &[String]) -> usize {
     query_bigrams.iter()
@@ -187,6 +214,18 @@ impl MatchScoreRequest<'_> {
             // Boost files that match ALL query bigrams (perfect match)
             if content_overlap >= self.query_bigrams.len() {
                 score += 5.0;
+            }
+        }
+
+        // --- Pinyin fuzzy matching ---
+        // When the query has Latin letters, check if it matches the pinyin of Chinese text.
+        // This enables searches like "beijing" matching "北京" / "北京大学".
+        if has_latin(self.query_lower) {
+            if !self.title_pinyin.is_empty() && self.title_pinyin.contains(self.query_lower) {
+                score += 4.0;
+            }
+            if !self.content_pinyin.is_empty() && self.content_pinyin.contains(self.query_lower) {
+                score += 2.0;
             }
         }
 
@@ -264,6 +303,8 @@ pub fn search_vault_with_options(options: SearchOptions<'_>) -> Result<SearchRes
     };
     // Single-character CJK fallback: when query has CJK but bigrams are empty (e.g. "京")
     let query_has_single_cjk = has_cjk(&query_lower) && query_lower.chars().filter(|&c| is_cjk(c)).count() == 1;
+    // Flag for pinyin search: query contains Latin letters → potential pinyin match
+    let query_has_latin = has_latin(&query_lower);
 
     let mut results: Vec<SearchResult> = Vec::new();
 
@@ -281,6 +322,17 @@ pub fn search_vault_with_options(options: SearchOptions<'_>) -> Result<SearchRes
             .unwrap_or("");
         let title = crate::vault::derive_markdown_title_from_content(&content, filename);
         let title_lower = title.to_lowercase();
+
+        // Pre-compute pinyin versions for Chinese text when query has Latin letters
+        let title_pinyin: String;
+        let content_pinyin: String;
+        if query_has_latin {
+            title_pinyin = text_to_pinyin(&title_lower);
+            content_pinyin = text_to_pinyin(searchable_content);
+        } else {
+            title_pinyin = String::new();
+            content_pinyin = String::new();
+        }
 
         // Standard match check
         let standard_match = title_lower.contains(&query_lower) || content_lower.contains(&query_lower);
@@ -303,7 +355,15 @@ pub fn search_vault_with_options(options: SearchOptions<'_>) -> Result<SearchRes
             false
         };
 
-        if !standard_match && !bigram_match && !single_cjk_match {
+        // Pinyin fuzzy match: query has Latin letters and Chinese text's pinyin contains the query
+        let pinyin_match = if query_has_latin {
+            (!title_pinyin.is_empty() && title_pinyin.contains(&query_lower))
+                || (!content_pinyin.is_empty() && content_pinyin.contains(&query_lower))
+        } else {
+            false
+        };
+
+        if !standard_match && !bigram_match && !single_cjk_match && !pinyin_match {
             continue;
         }
 
@@ -312,6 +372,8 @@ pub fn search_vault_with_options(options: SearchOptions<'_>) -> Result<SearchRes
             content_lower: &content_lower,
             query_lower: &query_lower,
             query_bigrams: &query_bigrams,
+            title_pinyin: &title_pinyin,
+            content_pinyin: &content_pinyin,
         }
         .score();
 
@@ -388,6 +450,8 @@ mod tests {
                 content_lower: $content_lower,
                 query_lower: $query_lower,
                 query_bigrams: &[],
+                title_pinyin: "",
+                content_pinyin: "",
             }
             .score()
         };
@@ -515,6 +579,8 @@ mod tests {
             content_lower: content,
             query_lower: query,
             query_bigrams: &query_bigrams,
+            title_pinyin: "",
+            content_pinyin: "",
         }.score();
         assert!(score > 0.0, "CJK bigram match should produce a positive score");
     }
@@ -637,5 +703,63 @@ mod tests {
 
         assert_eq!(response.results.len(), 1);
         assert_eq!(response.results[0].title, "北京大学");
+    }
+
+    #[test]
+    fn test_pinyin_search_matches_chinese_text() {
+        let dir = Builder::new()
+            .prefix("pinyin-search-")
+            .tempdir_in(std::env::current_dir().unwrap())
+            .unwrap();
+        fs::write(
+            dir.path().join("beijing.md"),
+            "# 北京大学\n\n北京大学位于北京海淀区。",
+        )
+        .unwrap();
+        fs::write(
+            dir.path().join("shanghai.md"),
+            "# 上海大学\n\n上海大学位于上海市。",
+        )
+        .unwrap();
+
+        let response =
+            search_vault(dir.path().to_str().unwrap(), "beijing", "keyword", 10).unwrap();
+
+        assert_eq!(response.results.len(), 1);
+        assert_eq!(response.results[0].title, "北京大学");
+    }
+
+    #[test]
+    fn test_text_to_pinyin_conversion() {
+        let pinyin = text_to_pinyin("北京大学");
+        assert_eq!(pinyin, "beijingdaxue");
+    }
+
+    #[test]
+    fn test_pinyin_score_title() {
+        let score = MatchScoreRequest {
+            title_lower: "北京大学",
+            content_lower: "",
+            query_lower: "beijing",
+            query_bigrams: &[],
+            title_pinyin: "beijingdaxue",
+            content_pinyin: "",
+        }
+        .score();
+        assert!(score >= 4.0, "Pinyin title match should score at least 4.0");
+    }
+
+    #[test]
+    fn test_pinyin_score_content() {
+        let score = MatchScoreRequest {
+            title_lower: "无关标题",
+            content_lower: "北京大学欢迎你",
+            query_lower: "beijing",
+            query_bigrams: &[],
+            title_pinyin: "wuguanbiaoti",
+            content_pinyin: "beijingdaxuehuanyingni",
+        }
+        .score();
+        assert!(score >= 2.0, "Pinyin content match should score at least 2.0");
     }
 }

@@ -230,6 +230,7 @@
   "settings.dateDisplay.european": "欧洲格式 (11/5/2026)",
   "settings.dateDisplay.friendly": "友好格式（2026 年 5 月 11 日）",
   "settings.dateDisplay.iso": "ISO (2026-05-11)",
+  "settings.dateDisplay.zh-cn": "中文格式（2026年6月13日 周三）",
   "settings.noteWidth.default": "默认笔记宽度",
   "settings.noteWidth.defaultDescription": "对于没有明确指定笔记宽度的笔记，选择富文本编辑器宽度。",
   "settings.noteWidth.normal": "正常",
