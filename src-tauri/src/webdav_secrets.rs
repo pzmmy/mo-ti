@@ -69,8 +69,10 @@ fn read_encrypted_store() -> Result<serde_json::Map<String, serde_json::Value>, 
 
     let plaintext = match cipher.decrypt(nonce, ciphertext) {
         Ok(pt) => pt,
-        Err(_) => {
+        Err(e) => {
             // Decryption failed (machine changed or data corrupted)
+            warn!("WebDAV 密码解密失败（可能是主机变更或数据损坏）: {e}");
+            // Return empty map so user re-enters password, rather than silently losing data
             return Ok(serde_json::Map::new());
         }
     };

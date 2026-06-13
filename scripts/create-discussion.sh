@@ -51,7 +51,7 @@ gh api graphql -f query='
 
 ### 📦 下载方式
 
-- **OSS 镜像（国内高速）** -> https://mo-ti.oss-cn-beijing.aliyuncs.com
+- **OSS 镜像（国内高速）** -> https://mo-ti.oss-cn-hangzhou.aliyuncs.com
 - **GitHub Releases** -> https://github.com/pzmmy/mo-ti/releases
 
 ### 📖 文档站
