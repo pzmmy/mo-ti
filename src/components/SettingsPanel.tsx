@@ -310,7 +310,7 @@ function buildSettingsFromDraft(settings: Settings, draft: SettingsDraft): Setti
     webdav_enabled: draft.webdavEnabled,
     webdav_url: draft.webdavUrl || null,
     webdav_username: draft.webdavUsername || null,
-    webdav_password: draft.webdavPassword || null,
+    webdav_password: null, // Password stored in system keychain
     webdav_remote_path: draft.webdavRemotePath || null,
   }
   return settingsWithAllNotesFileVisibility(nextSettings, draft.allNotesFileVisibility)
@@ -400,8 +400,32 @@ function SettingsPanelInner({
     setDraft(createSettingsDraft(settings, explicitOrganizationEnabled))
   }, [explicitOrganizationEnabled, settings])
 
+  // Reset password tracking when settings (re-)load
+  useEffect(() => {
+    setPrevWebdavUsername((settings as any).webdav_username ?? '')
+  }, [settings])
+
   useSettingsPanelAutofocus(panelRef)
   useSettingsPanelFocusTrap(panelRef)
+
+  // Load WebDAV password from secure storage when username changes
+  const [prevWebdavUsername, setPrevWebdavUsername] = useState(draft.webdavUsername)
+  useEffect(() => {
+    const username = draft.webdavUsername
+    if (!username) return
+
+    // Skip if password was just set by user input (not from keychain reload)
+    if (username === prevWebdavUsername && draft.webdavPassword) return
+
+    setPrevWebdavUsername(username)
+    invoke<string>('get_webdav_password', { username })
+      .then((password) => {
+        if (password) updateDraft('webdavPassword', password)
+      })
+      .catch(() => {
+        // No stored password — that's fine
+      })
+  }, [draft.webdavUsername])
 
   useEffect(() => {
     if (!initialSectionId) return
@@ -436,6 +460,24 @@ function SettingsPanelInner({
   }, [onSave, settings, updateDraft])
 
   const handleSave = useCallback(() => {
+    // Store WebDAV password in keychain before saving settings
+    if (draft.webdavUsername) {
+      if (draft.webdavPassword) {
+        invoke('store_webdav_password', {
+          username: draft.webdavUsername,
+          password: draft.webdavPassword,
+        }).catch((err: unknown) => {
+          console.warn('[WebDAV] Failed to store password in keychain:', err)
+        })
+      } else {
+        // Password cleared — remove from keychain
+        invoke('delete_webdav_password', {
+          username: draft.webdavUsername,
+        }).catch(() => {
+          // No stored password — that's fine
+        })
+      }
+    }
     trackTelemetryConsentChange(settings.analytics_enabled === true, draft.analytics)
     trackSettingsPreferenceChanges(settings, draft)
     onSave(buildSettingsFromDraft(settings, draft))

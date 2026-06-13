@@ -35,6 +35,7 @@ pub mod telemetry;
 pub mod vault;
 pub mod vault_list;
 pub mod vault_watcher;
+mod webdav_secrets;
 #[cfg(desktop)]
 mod window_state;
 
@@ -577,6 +578,9 @@ macro_rules! app_invoke_handler {
             commands::test_webdav_connection,
             commands::sync_webdav,
             commands::sync_webdav_with_progress,
+            commands::store_webdav_password,
+            commands::get_webdav_password,
+            commands::delete_webdav_password,
             vault_watcher::start_vault_watcher,
             vault_watcher::stop_vault_watcher
         ]

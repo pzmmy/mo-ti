@@ -143,13 +143,51 @@ function NoteTypeIndicator({
 function NoteSnippet({ snippet }: { snippet?: string | null }) {
   if (!snippet) return null
 
+  // Fast path: no highlight markers, render as plain text (zero overhead)
+  if (!snippet.includes('[[HIGHLIGHT]]')) {
+    return (
+      <div
+        className="text-[12px] leading-[1.5] text-muted-foreground"
+        data-testid="note-snippet"
+        style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+      >
+        {snippet}
+      </div>
+    )
+  }
+
+  // Parse [[HIGHLIGHT]]...[[END_HIGHLIGHT]] markers into <mark> elements
+  const parts: ReactNode[] = []
+  let lastIndex = 0
+  const regex = /\[\[HIGHLIGHT\]\](.*?)\[\[END_HIGHLIGHT\]\]/gs
+
+  let match: RegExpExecArray | null
+  while ((match = regex.exec(snippet)) !== null) {
+    // Add text before this match
+    if (match.index > lastIndex) {
+      parts.push(snippet.slice(lastIndex, match.index))
+    }
+    // Add highlighted text wrapped in <mark>
+    parts.push(
+      <mark key={match.index} className="bg-yellow-200 dark:bg-yellow-800 rounded-sm px-0.5">
+        {match[1]}
+      </mark>,
+    )
+    lastIndex = regex.lastIndex
+  }
+
+  // Add remaining text after the last match
+  if (lastIndex < snippet.length) {
+    parts.push(snippet.slice(lastIndex))
+  }
+
   return (
     <div
       className="text-[12px] leading-[1.5] text-muted-foreground"
       data-testid="note-snippet"
       style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
     >
-      {snippet}
+      {parts}
     </div>
   )
 }
