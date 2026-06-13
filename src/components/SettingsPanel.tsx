@@ -1,4 +1,5 @@
 import { CloudArrowUp, Copy, Cube, Monitor, Moon, Sun, X } from '@phosphor-icons/react'
+import { invoke } from '@tauri-apps/api/core'
 import {
   AI_AGENT_DEFINITIONS,
   createMissingAiAgentsStatus,
@@ -640,8 +641,19 @@ function SettingsBodyFromDraft({
       webdavRemotePath={draft.webdavRemotePath}
       setWebdavRemotePath={(value) => updateDraft('webdavRemotePath', value)}
       webdavSyncStatus={draft.webdavSyncStatus}
-      onTestWebdavConnection={() => Promise.resolve(null)}
-      onWebdavSyncNow={() => Promise.resolve(null)}
+      onTestWebdavConnection={() => invoke('test_webdav_connection', {
+        url: draft.webdavUrl,
+        username: draft.webdavUsername,
+        password: draft.webdavPassword,
+        remotePath: draft.webdavRemotePath,
+      })}
+      onWebdavSyncNow={() => invoke('sync_webdav', {
+        vaultPath: 'current_vault_path', // Will be replaced with actual vault path
+        url: draft.webdavUrl,
+        username: draft.webdavUsername,
+        password: draft.webdavPassword,
+        remotePath: draft.webdavRemotePath,
+      })}
     />
   )
 }

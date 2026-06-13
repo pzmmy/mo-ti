@@ -238,6 +238,8 @@ async function connect() {
     
     // Save config to sessionStorage (not localStorage — password not persisted)
     sessionStorage.setItem('mo_ti_webdav', JSON.stringify(STATE.config))
+    // Clean up old localStorage entry
+    localStorage.removeItem('mo_ti_webdav')
     
     status.className = 'connection-status success'
     status.textContent = '✅ 连接成功！正在加载笔记列表...'
