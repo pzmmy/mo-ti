@@ -34,9 +34,12 @@ impl ConnectStatus {
     }
 }
 
+/// Result of adding a git remote to a vault.
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct GitAddRemoteResult {
-    pub status: String, // "connected" | "already_configured" | "incompatible_history" | "auth_error" | "network_error" | "error"
+    /// Status: "connected" | "already_configured" | "incompatible_history" | "auth_error" | "network_error" | "error"
+    pub status: String,
+    /// Human-readable result message.
     pub message: String,
 }
 
@@ -69,6 +72,7 @@ impl RemoteConnection {
     }
 }
 
+/// Remove all configured git remotes from a vault and unset upstream tracking.
 pub fn disconnect_all_remotes(vault_path: &str) -> Result<(), String> {
     let vault = Path::new(vault_path);
 
@@ -80,6 +84,11 @@ pub fn disconnect_all_remotes(vault_path: &str) -> Result<(), String> {
     Ok(())
 }
 
+/// Connect a vault to a remote git repository.
+///
+/// Configures the origin remote, fetches remote refs, checks compatibility
+/// of the remote history, and pushes local commits with upstream tracking
+/// if the remote is empty or compatible. Rolls back the remote config on failure.
 pub fn git_add_remote(vault_path: &str, remote_url: &str) -> Result<GitAddRemoteResult, String> {
     let vault = Path::new(vault_path);
 

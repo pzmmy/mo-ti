@@ -8,6 +8,10 @@ use std::process::Stdio;
 #[cfg(target_os = "macos")]
 use super::git_command;
 
+/// Pre-populate the macOS git credential helper so git doesn't prompt interactively.
+///
+/// On macOS, sends a `git credential fill` request for the given remote URL,
+/// prompting the keychain to return cached credentials. No-op on other platforms.
 #[cfg(target_os = "macos")]
 pub(super) fn request_remote_credentials(vault: &Path, remote_url: &str) {
     let Some(input) = credential_fill_input(remote_url) else {
@@ -33,9 +37,11 @@ pub(super) fn request_remote_credentials(vault: &Path, remote_url: &str) {
     let _ = child.wait();
 }
 
+/// No-op credentials request on non-macOS platforms.
 #[cfg(not(target_os = "macos"))]
 pub(super) fn request_remote_credentials(_vault: &Path, _remote_url: &str) {}
 
+/// Parsed components of a remote URL for credential helper input.
 #[cfg(any(test, target_os = "macos"))]
 struct CredentialTarget<'a> {
     protocol: &'a str,
@@ -44,6 +50,7 @@ struct CredentialTarget<'a> {
     path: Option<&'a str>,
 }
 
+/// Build the stdin input for `git credential fill` from a remote URL.
 #[cfg(any(test, target_os = "macos"))]
 fn credential_fill_input(remote_url: &str) -> Option<String> {
     let target = credential_target(remote_url)?;
@@ -63,6 +70,7 @@ fn credential_fill_input(remote_url: &str) -> Option<String> {
     Some(format!("{}\n\n", lines.join("\n")))
 }
 
+/// Parse a remote URL into structured credential target components.
 #[cfg(any(test, target_os = "macos"))]
 fn credential_target(remote_url: &str) -> Option<CredentialTarget<'_>> {
     let (protocol, rest) = remote_url.trim().split_once("://")?;

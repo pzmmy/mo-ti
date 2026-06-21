@@ -3,16 +3,23 @@ use serde::Serialize;
 use std::collections::HashMap;
 use std::path::Path;
 
+/// A file with uncommitted changes in the vault.
 #[derive(Debug, Serialize, Clone)]
 pub struct ModifiedFile {
+    /// Absolute filesystem path to the file.
     pub path: String,
+    /// Path relative to the vault root.
     #[serde(rename = "relativePath")]
     pub relative_path: String,
+    /// Change status: "modified", "added", "deleted", "untracked", or "renamed".
     pub status: String,
+    /// Number of lines added (if stats are requested and available).
     #[serde(rename = "addedLines")]
     pub added_lines: Option<usize>,
+    /// Number of lines deleted (if stats are requested and available).
     #[serde(rename = "deletedLines")]
     pub deleted_lines: Option<usize>,
+    /// Whether the file is binary.
     pub binary: bool,
 }
 
@@ -264,6 +271,9 @@ fn restore_tracked_file(vault: &Path, relative_path: &Path) -> Result<(), String
 }
 
 /// Get list of modified/added/deleted files in the vault (uncommitted changes).
+///
+/// Only returns `.md` files. Stats (lines added/deleted) are not included;
+/// use [`get_modified_files_with_stats`] for line-level data.
 pub fn get_modified_files(vault_path: impl AsRef<Path>) -> Result<Vec<ModifiedFile>, String> {
     get_modified_files_impl(vault_path.as_ref(), false)
 }

@@ -3,32 +3,49 @@ use std::path::Path;
 
 use super::{command, git_command, parse_github_repo_path};
 
+/// A single file changed in a pulse commit.
 #[derive(Debug, Serialize, Clone)]
 pub struct PulseFile {
+    /// Relative path of the file within the vault.
     pub path: String,
+    /// Change status: "added", "modified", or "deleted".
     pub status: String,
+    /// Display title derived from the file path (filename without extension, hyphens replaced).
     pub title: String,
 }
 
+/// A single commit entry in the vault activity pulse feed.
 #[derive(Debug, Serialize, Clone)]
 pub struct PulseCommit {
+    /// Full SHA-1 hash.
     pub hash: String,
+    /// Abbreviated 7-character hash.
     #[serde(rename = "shortHash")]
     pub short_hash: String,
+    /// Commit message.
     pub message: String,
+    /// Unix timestamp of the commit author date.
     pub date: i64,
+    /// Optional link to the commit on GitHub (if remote is GitHub).
     #[serde(rename = "githubUrl")]
     pub github_url: Option<String>,
+    /// Files changed in this commit (only `.md` files).
     pub files: Vec<PulseFile>,
+    /// Number of added files.
     pub added: usize,
+    /// Number of modified files.
     pub modified: usize,
+    /// Number of deleted files.
     pub deleted: usize,
 }
 
+/// Brief information about the most recent commit.
 #[derive(Debug, Serialize, Clone)]
 pub struct LastCommitInfo {
+    /// Abbreviated 7-character hash of the last commit.
     #[serde(rename = "shortHash")]
     pub short_hash: String,
+    /// Optional link to the commit on GitHub.
     #[serde(rename = "commitUrl")]
     pub commit_url: Option<String>,
 }

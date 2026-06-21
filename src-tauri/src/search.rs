@@ -4,20 +4,31 @@ use std::path::{Path, PathBuf};
 use std::time::Instant;
 use walkdir::WalkDir;
 
+/// A single search result from the full-text search engine.
 #[derive(Debug, Serialize, Clone)]
 pub struct SearchResult {
+    /// The note title (from frontmatter or filename).
     pub title: String,
+    /// Absolute filesystem path to the note.
     pub path: String,
+    /// A text snippet around the matched keywords.
     pub snippet: String,
+    /// Relevance score (higher = more relevant).
     pub score: f64,
+    /// Optional note type from frontmatter.
     pub note_type: Option<String>,
 }
 
+/// Response wrapper for a full-text search query.
 #[derive(Debug, Serialize)]
 pub struct SearchResponse {
+    /// Matched search results, sorted by relevance.
     pub results: Vec<SearchResult>,
+    /// Time taken for the search in milliseconds.
     pub elapsed_ms: u64,
+    /// The original query string.
     pub query: String,
+    /// Search mode identifier (e.g. "fulltext", "filename").
     pub mode: String,
 }
 

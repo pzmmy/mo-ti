@@ -8,6 +8,74 @@
 
 ---
 
+## 🏗 项目架构
+
+墨屉是一个 **Tauri v2 + React** 桌面应用，采用前后端分离的混合架构。
+
+### 技术栈
+
+| 层 | 技术 | 说明 |
+|---|------|------|
+| **桌面壳** | [Tauri v2](https://v2.tauri.app/) | 跨平台桌面容器（macOS / Windows / Linux） |
+| **后端 (Rust)** | `src-tauri/` | Tauri 命令、Git 操作、全文搜索、文件系统监控、WebDAV 同步 |
+| **前端 (React)** | `src/` | Vite + React + TypeScript 界面 |
+| **UI 组件库** | [shadcn/ui](https://ui.shadcn.com/) | Radix UI 原生的可访问组件 |
+| **状态 / 数据流** | React Context + hooks | 无全局状态管理库，保持简洁 |
+
+### 后端模块 (Rust)
+
+```
+src-tauri/src/
+├── main.rs              # 应用入口
+├── lib.rs               # 模块声明、Tauri 命令注册、全局辅助函数
+├── commands/            # Tauri IPC 命令处理器
+├── git/                 # Git 版本控制集成
+│   ├── mod.rs           # 核心 git_command()、init_repo()、ensure_gitignore()
+│   ├── author.rs        # 作者身份解析与配置修复
+│   ├── clone.rs         # 克隆远程仓库
+│   ├── command.rs       # 带超时的 git 子进程管理
+│   ├── commit.rs        # 提交（含 GPG 签名回退）
+│   ├── conflict.rs      # 合并/变基冲突检测与解决
+│   ├── connect.rs       # 远程仓库连接与历史兼容性检查
+│   ├── credentials.rs   # macOS 钥匙串凭据请求
+│   ├── dates.rs         # 从 Git 历史提取文件时间戳
+│   ├── file_url.rs      # 生成远程托管服务的文件 URL
+│   ├── pulse.rs         # 仓库活动动态（commit feed）
+│   ├── remote.rs        # push/pull/remote status
+│   ├── remote_config.rs # 远程配置读写
+│   └── status.rs        # 未提交变更的检测与丢弃
+├── vault/               # 知识库核心逻辑（视图、筛选、回收站等）
+├── vault_list.rs        # 用户 vault 列表的持久化与加载
+├── search.rs            # CJK 中文全文搜索引擎
+├── sync.rs              # WebDAV 同步
+├── vault_watcher.rs     # 文件系统变更监控
+├── telemetry.rs         # 遥测与事件埋点
+├── mcp/                 # MCP 协议支持（AI Agent 集成）
+├── pi_cli.rs / opencode_cli.rs  # AI CLI 集成
+└── window_state.rs      # 窗口状态持久化
+```
+
+### 前端模块 (TypeScript)
+
+```
+src/
+├── components/          # React UI 组件（基于 shadcn/ui）
+├── hooks/               # React 自定义 hooks
+├── lib/                 # 国际化、AI 代理配置等
+├── utils/               # 工具函数（日期、过滤、排序、Git 仓库等）
+├── types/               # TypeScript 类型定义
+└── App.tsx              # 根组件
+```
+
+### 数据流
+
+1. **IPC 通信**：前端通过 `@tauri-apps/api/core` 的 `invoke()` 调用后端 Rust 命令
+2. **文件系统监听**：`vault_watcher.rs` 监听文件变更，通过 Tauri 事件推送到前端
+3. **Git 操作**：所有 Git 调用通过 `git/mod.rs` 的 `git_command()` 创建标准化的 `Command`（注入 shell 环境变量、AppImage 兼容）
+4. **搜索**：CJK 分词引擎在 `search.rs` 中构建倒排索引，支持毫秒级全文检索
+
+---
+
 ## 📊 与同类产品的差异
 
 | 维度 | 墨屉 | Obsidian | 思源笔记 | 飞书文档 |

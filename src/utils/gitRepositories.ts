@@ -1,9 +1,13 @@
 import type { VaultOption } from '../components/status-bar/types'
 import { labelFromWorkspacePath, workspaceLabelFromVault } from './workspaces'
 
+/** A git repository option shown in the UI, representing a vault with git tracking. */
 export interface GitRepositoryOption {
+  /** Absolute path to the git repository/vault directory. */
   path: string
+  /** Human-readable display label (e.g. vault name). */
   label: string
+  /** Whether this repository is the default target for new notes. */
   defaultForNewNotes: boolean
 }
 
@@ -13,10 +17,12 @@ interface GitRepositoryOptionsInput {
   vaults: VaultOption[]
 }
 
+/** Derive a display label from a vault entry. */
 function repositoryLabel(vault: Pick<VaultOption, 'label' | 'path'>): string {
   return workspaceLabelFromVault(vault)
 }
 
+/** Check whether a vault should be included as an active git repository. */
 function includeVaultAsActiveRepository(
   vault: Pick<VaultOption, 'available' | 'managedDefault' | 'mounted' | 'path'>,
   defaultVaultPath: string,
@@ -27,6 +33,7 @@ function includeVaultAsActiveRepository(
   return vault.mounted !== false
 }
 
+/** Add a vault to the repositories map if not already present. */
 function addRepository(
   repositories: Map<string, GitRepositoryOption>,
   vault: Pick<VaultOption, 'label' | 'path'>,
@@ -40,6 +47,12 @@ function addRepository(
   })
 }
 
+/**
+ * Build the list of active git repositories from the user's vaults.
+ *
+ * If multi-workspace is disabled, only the default vault is included.
+ * Otherwise, all mounted/available vaults are included.
+ */
 export function activeGitRepositories({
   defaultVaultPath,
   multiWorkspaceEnabled,
@@ -62,6 +75,11 @@ export function activeGitRepositories({
   return [...repositories.values()]
 }
 
+/**
+ * Validate and return a git repository path, falling back through alternatives.
+ *
+ * Priority: provided path → fallbackPath → first available repository → fallbackPath.
+ */
 export function validGitRepositoryPath(
   path: string | null | undefined,
   repositories: readonly GitRepositoryOption[],
@@ -72,6 +90,7 @@ export function validGitRepositoryPath(
   return repositories[0]?.path ?? fallbackPath
 }
 
+/** Look up the display label for a git repository path. */
 export function gitRepositoryLabel(
   path: string,
   repositories: readonly GitRepositoryOption[],

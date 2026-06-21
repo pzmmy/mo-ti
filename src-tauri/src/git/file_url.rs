@@ -37,6 +37,11 @@ struct RemoteHost(String);
 
 struct RepoPath(String);
 
+/// Build a web URL for a file in a git vault, linking to the remote hosting service.
+///
+/// Supports GitHub, GitLab, Bitbucket, Gitea/Forgejo, and codeberg.org.
+/// Falls back to a generic git-fragment URL for unknown hosts.
+/// Returns `None` if no remote is configured or the file is outside the vault.
 pub fn git_file_url(vault_path: &str, file_path: &str) -> Result<Option<String>, String> {
     let vault = Path::new(vault_path);
     let file = Path::new(file_path);

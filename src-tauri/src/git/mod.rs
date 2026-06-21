@@ -51,13 +51,19 @@ pub use status::{
 
 use serde::Serialize;
 
+/// A single git commit in a vault's history.
 #[derive(Debug, Serialize, Clone)]
 pub struct GitCommit {
+    /// Full SHA-1 hash of the commit.
     pub hash: String,
+    /// Abbreviated 7-character hash for UI display.
     #[serde(rename = "shortHash")]
     pub short_hash: String,
+    /// Commit message subject line.
     pub message: String,
+    /// Author name.
     pub author: String,
+    /// Unix timestamp (seconds since epoch) of the commit author date.
     pub date: i64,
 }
 
@@ -305,6 +311,11 @@ fn linux_appimage_env_present() -> bool {
 
 /// Ensure a `.gitignore` with sensible defaults exists in the vault directory.
 /// Creates the file if missing; leaves existing `.gitignore` files untouched.
+///
+/// The default ignore rules cover:
+/// - Machine-specific app settings (`.laputa/settings.json`)
+/// - macOS metadata files (`.DS_Store`, `._*`, etc.)
+/// - Common editor temporary files (`.vscode/`, `*.swp`, etc.)
 pub fn ensure_gitignore(path: impl AsRef<Path>) -> Result<(), String> {
     let gitignore_path = path.as_ref().join(".gitignore");
     if !gitignore_path.exists() {
@@ -315,6 +326,10 @@ pub fn ensure_gitignore(path: impl AsRef<Path>) -> Result<(), String> {
 }
 
 /// Initialize a new git repository, stage all files, and create an initial commit.
+///
+/// Creates a `.gitignore` with sensible defaults before staging so that
+/// machine-specific files are never tracked. Sets a local author identity
+/// if neither global nor local identity exists.
 pub fn init_repo(path: impl AsRef<Path>) -> Result<(), String> {
     let dir = path.as_ref();
 

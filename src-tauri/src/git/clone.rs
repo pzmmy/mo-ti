@@ -10,6 +10,9 @@ struct CloneRequest<'a> {
 }
 
 /// Clone a git repository to a local path using the system git configuration.
+///
+/// Validates that the destination is either non-existent (creates parent dirs)
+/// or an empty directory. Cleans up the destination on clone failure.
 pub fn clone_repo(url: &str, local_path: &str) -> Result<String, String> {
     let dest = Path::new(local_path);
     let request = CloneRequest { url, dest };

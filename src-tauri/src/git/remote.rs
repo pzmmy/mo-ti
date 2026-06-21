@@ -8,17 +8,24 @@ use super::remote_config::has_configured_remote;
 const NO_REMOTE_STATUS: &str = "no_remote";
 const NO_REMOTE_MESSAGE: &str = "No remote configured";
 
+/// Result of a `git pull` operation.
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct GitPullResult {
-    pub status: String, // "up_to_date" | "updated" | "conflict" | "no_remote" | "error"
+    /// Result status: "up_to_date" | "updated" | "conflict" | "no_remote" | "error"
+    pub status: String,
+    /// Human-readable status message.
     pub message: String,
+    /// Files that were updated by the pull.
     #[serde(rename = "updatedFiles")]
     pub updated_files: Vec<String>,
+    /// Files with merge conflicts.
     #[serde(rename = "conflictFiles")]
     pub conflict_files: Vec<String>,
 }
 
 /// Check whether the vault repo has at least one remote configured.
+///
+/// Returns `true` if any named remote has a valid URL configured.
 pub fn has_remote(vault_path: &str) -> Result<bool, String> {
     let vault = Path::new(vault_path);
     has_configured_remote(vault)
@@ -105,16 +112,24 @@ fn parse_updated_files(stdout: &str) -> Vec<String> {
         .collect()
 }
 
+/// Status of the vault repository relative to its remote.
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct GitRemoteStatus {
+    /// Current branch name.
     pub branch: String,
+    /// Number of commits ahead of the upstream.
     pub ahead: u32,
+    /// Number of commits behind the upstream.
     pub behind: u32,
+    /// Whether a remote is configured.
     #[serde(rename = "hasRemote")]
     pub has_remote: bool,
 }
 
 /// Get the current branch name, and how many commits ahead/behind the upstream.
+///
+/// Performs a silent `git fetch` first to update remote refs.
+/// Returns 0/0 for ahead/behind if no upstream is configured.
 pub fn git_remote_status(vault_path: &str) -> Result<GitRemoteStatus, String> {
     let vault = Path::new(vault_path);
 
@@ -167,13 +182,19 @@ fn current_branch(vault: &Path) -> Result<String, String> {
     Ok(stdout_text(&output))
 }
 
+/// Result of a `git push` operation.
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct GitPushResult {
-    pub status: String, // "ok" | "rejected" | "auth_error" | "network_error" | "no_remote" | "error"
+    /// Result status: "ok" | "rejected" | "auth_error" | "network_error" | "no_remote" | "error"
+    pub status: String,
+    /// Human-readable status message.
     pub message: String,
 }
 
 /// Classify a git push stderr message into a user-friendly status and message.
+///
+/// Detects common failure modes: non-fast-forward rejection, authentication
+/// errors, network errors, and missing remote.
 pub fn classify_push_error(stderr: &str) -> GitPushResult {
     let lower = stderr.to_lowercase();
 
@@ -283,7 +304,10 @@ fn push_error_detail(stderr: &str) -> String {
     }
 }
 
-/// Push to remote.
+/// Push local commits to the remote.
+///
+/// Returns a structured result with status classification on failure. If no
+/// remote is configured, returns a `no_remote` status immediately.
 pub fn git_push(vault_path: &str) -> Result<GitPushResult, String> {
     let vault = Path::new(vault_path);
 

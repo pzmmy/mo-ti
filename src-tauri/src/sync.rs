@@ -6,14 +6,20 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tauri::{Emitter, State};
 use crate::settings;
 
-/// WebDAV sync configuration stored in app settings
+/// WebDAV sync configuration stored in app settings.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct WebdavConfig {
+    /// WebDAV server URL (e.g. `https://example.com/dav/`).
     pub url: String,
+    /// Username for WebDAV authentication.
     pub username: String,
+    /// Password for WebDAV authentication.
     pub password: String,
+    /// Remote path prefix within the WebDAV server.
     pub remote_path: String,
+    /// Whether automatic sync is enabled.
     pub enabled: bool,
+    /// Unix timestamp of the last successful sync.
     pub last_sync_at: Option<u64>,
 }
 

@@ -7,7 +7,11 @@ struct CommitFailure {
     stderr: String,
 }
 
-/// Commit all changes with a message.
+/// Commit all staged changes with a message.
+///
+/// Stages all changes (`git add -A`), ensures an author identity is configured,
+/// then commits. If the initial commit fails due to gpg signing misconfiguration,
+/// retries without signing.
 pub fn git_commit(vault_path: &str, message: &str) -> Result<String, String> {
     let vault = Path::new(vault_path);
 

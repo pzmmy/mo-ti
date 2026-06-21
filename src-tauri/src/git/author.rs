@@ -27,11 +27,16 @@ enum ConfigScope {
     Global,
 }
 
+/// The resolved git author identity for a vault: name, email, config source, and warnings.
 #[derive(Debug, Serialize, Clone, PartialEq, Eq)]
 pub struct GitAuthorIdentity {
+    /// The resolved author name.
     pub name: String,
+    /// The resolved author email.
     pub email: String,
+    /// The config scope the identity was resolved from: "repository", "global", "system", "environment", or "fallback".
     pub source: String,
+    /// An optional warning, e.g. "local_overrides_global" when local config shadows global.
     pub warning: Option<String>,
 }
 
@@ -47,6 +52,12 @@ struct ScopedConfigValue {
     value: String,
 }
 
+/// Resolve the git author identity for the given vault.
+///
+/// Ensures an author config exists (healing legacy setups), then queries
+/// `git var GIT_AUTHOR_IDENT` to get the resolved identity. Returns the
+/// name, email, config source (repository/global/system/environment/fallback),
+/// and a warning if local config overrides global.
 pub fn git_author_identity(vault_path: &str) -> Result<GitAuthorIdentity, String> {
     let dir = Path::new(vault_path);
 

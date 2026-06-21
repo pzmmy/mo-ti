@@ -1,4 +1,6 @@
-# AGENTS.md — Tolaria App
+# AGENTS.md — 墨屉 (Mo-Ti)
+
+> 本文件源自上游 Tolaria 项目，部分流程（如 CodeScene、PostHog、Todoist）可能不适用于此 Fork。如有冲突，以项目实际情况为准。
 
 ## 1. 开发流程
 
@@ -144,7 +146,7 @@ ADR 存放在 `docs/adr/` 中。在与代码相同的提交中创建。切勿编
 - 在宣布任务完成之前，确保 `git status --short -- demo-vault demo-vault-v2` 为空，除非演示测试数据变更是任务的一部分
 - 如果开始新的运行且唯一的本地脏文件位于 `demo-vault/` 或 `demo-vault-v2/` 内，请先清理这些路径然后继续。这种情况是可恢复的 QA 残留，不是阻塞项
 
-### 用户仓库（`~/Laputa/`）
+### 用户仓库（`~/Laputa/` 或对应 vault 路径）
 
 默认使用 `demo-vault-v2/`。如果你必须使用 `~/Laputa/` 进行测试：
 - **切勿提交或推送**任何测试笔记到远程仓库

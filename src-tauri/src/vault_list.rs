@@ -7,29 +7,48 @@ use crate::commands::expand_tilde;
 const APP_CONFIG_DIR: &str = "com.tolaria.app";
 const LEGACY_APP_CONFIG_DIR: &str = "com.laputa.app";
 
+/// A single vault entry in the user's vault list.
+///
+/// Each entry represents a knowledge base (vault) the user has configured,
+/// with an optional display alias, short label, color, and icon.
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]
 pub struct VaultEntry {
+    /// Human-readable display label (e.g. "My Notes").
     pub label: String,
+    /// Absolute or tilde-expanded filesystem path to the vault directory.
     pub path: String,
+    /// Optional alias for referencing this vault in multi-vault contexts.
     #[serde(default)]
     pub alias: Option<String>,
+    /// Short label shown in compact UI elements (e.g. in tabs).
     #[serde(default)]
     #[serde(rename = "shortLabel")]
     pub short_label: Option<String>,
+    /// Theme color hint for UI display.
     #[serde(default)]
     pub color: Option<String>,
+    /// Icon name (emoji or Phosphor icon identifier) for the vault.
     #[serde(default)]
     pub icon: Option<String>,
+    /// Whether the vault is currently mounted/available.
     #[serde(default)]
     pub mounted: Option<bool>,
 }
 
+/// The persisted vault list containing all configured vaults and metadata.
+///
+/// Stored as `vaults.json` under the app config directory
+/// (`com.tolaria.app` or legacy `com.laputa.app`).
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct VaultList {
+    /// All configured vault entries.
     pub vaults: Vec<VaultEntry>,
+    /// Path of the currently active vault (tilde may be unexpanded).
     pub active_vault: Option<String>,
+    /// Default workspace path for multi-workspace setups.
     #[serde(default)]
     pub default_workspace_path: Option<String>,
+    /// Paths of default vaults the user has chosen to hide from the UI.
     #[serde(default)]
     pub hidden_defaults: Vec<String>,
 }
@@ -99,10 +118,17 @@ fn expand_vault_list_paths(mut list: VaultList) -> VaultList {
     list
 }
 
+/// Load the vault list from disk (either the new `com.tolaria.app` or legacy `com.laputa.app` config directory).
+///
+/// Expands `~` in all paths before returning. Returns a default empty list if
+/// no vaults file exists on disk.
 pub fn load_vault_list() -> Result<VaultList, String> {
     load_at(&vault_list_path()?).map(expand_vault_list_paths)
 }
 
+/// Persist the vault list to disk under the preferred config directory.
+///
+/// Creates parent directories if they don't exist. Writes pretty-printed JSON.
 pub fn save_vault_list(list: &VaultList) -> Result<(), String> {
     save_at(&preferred_app_config_path("vaults.json")?, list)
 }

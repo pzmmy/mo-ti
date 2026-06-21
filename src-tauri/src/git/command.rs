@@ -36,10 +36,12 @@ pub(super) fn git_output_with_args(
     spawn_and_wait(cmd, dir, extra_args)
 }
 
+/// Run a git command and return stdout/stderr, converting I/O errors to `String`.
 pub(super) fn git_output_result(dir: &Path, args: &[&str]) -> Result<Output, String> {
     git_output(dir, args).map_err(|e| format!("Failed to run git {}: {e}", git_command_label(args)))
 }
 
+/// Run a git command, returning `Ok(())` on success or the stderr on failure.
 pub(super) fn run_git(dir: &Path, args: &[&str]) -> Result<(), String> {
     let output = git_output_result(dir, args)?;
 
@@ -50,10 +52,12 @@ pub(super) fn run_git(dir: &Path, args: &[&str]) -> Result<(), String> {
     Err(stderr_text(&output))
 }
 
+/// Extract trimmed stdout text from a process `Output`.
 pub(super) fn stdout_text(output: &Output) -> String {
     String::from_utf8_lossy(&output.stdout).trim().to_string()
 }
 
+/// Extract non-empty trimmed lines from stdout.
 pub(super) fn stdout_lines(output: &Output) -> Vec<String> {
     stdout_text(output)
         .lines()
@@ -63,10 +67,12 @@ pub(super) fn stdout_lines(output: &Output) -> Vec<String> {
         .collect()
 }
 
+/// Extract trimmed stderr text from a process `Output`.
 pub(super) fn stderr_text(output: &Output) -> String {
     String::from_utf8_lossy(&output.stderr).trim().to_string()
 }
 
+/// Return the stderr text if non-empty, otherwise a fallback "`{command} failed`" message.
 pub(super) fn stderr_or_failure(command: &str, output: &Output) -> String {
     let stderr = stderr_text(output);
     if stderr.is_empty() {
@@ -76,6 +82,7 @@ pub(super) fn stderr_or_failure(command: &str, output: &Output) -> String {
     }
 }
 
+/// Extract the git subcommand label from the argument list, skipping `-c` flags.
 pub(super) fn git_command_label<'a>(args: &'a [&'a str]) -> &'a str {
     if args.first() == Some(&"-c") {
         return args.get(2).copied().unwrap_or(args[0]);

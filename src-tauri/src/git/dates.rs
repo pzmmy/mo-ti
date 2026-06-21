@@ -6,7 +6,9 @@ use std::path::Path;
 /// Git-derived creation and modification timestamps for a file.
 #[derive(Debug, Clone)]
 pub struct GitDates {
+    /// Unix timestamp of the oldest commit touching the file (creation time).
     pub created_at: u64,
+    /// Unix timestamp of the most recent commit touching the file (modification time).
     pub modified_at: u64,
 }
 

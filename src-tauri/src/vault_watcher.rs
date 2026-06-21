@@ -3,12 +3,16 @@ use std::path::{Path, PathBuf};
 
 use serde::Serialize;
 
+/// Tauri event name emitted when vault files change on disk.
 pub const VAULT_CHANGED_EVENT: &str = "vault-changed";
 
+/// Payload sent with the `vault-changed` event.
 #[derive(Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct VaultChangedPayload {
+    /// Path to the vault that changed.
     vault_path: String,
+    /// Relative paths of the files that changed.
     paths: Vec<String>,
 }
 
