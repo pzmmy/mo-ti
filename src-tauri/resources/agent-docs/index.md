@@ -27,7 +27,6 @@ When users ask how to improve a knowledge base, structure notes, choose types, m
 - [Notes](pages/concepts/notes.md)
 - [Properties](pages/concepts/properties.md)
 - [Relationships](pages/concepts/relationships.md)
-- [Spreadsheets](pages/concepts/spreadsheets.md)
 - [Types](pages/concepts/types.md)
 - [Vaults](pages/concepts/vaults.md)
 
@@ -43,9 +42,7 @@ When users ask how to improve a knowledge base, structure notes, choose types, m
 - [Organize The Inbox](pages/guides/organize-inbox.md)
 - [Use The AI](pages/guides/use-ai-panel.md)
 - [Use The Command Palette](pages/guides/use-command-palette.md)
-- [Use HTML Blocks](pages/guides/use-html-blocks.md)
 - [Use Media Previews](pages/guides/use-media-previews.md)
-- [Use Spreadsheets](pages/guides/use-spreadsheets.md)
 - [Use The Table Of Contents](pages/guides/use-table-of-contents.md)
 - [Use Wikilinks](pages/guides/use-wikilinks.md)
 
@@ -61,10 +58,7 @@ When users ask how to improve a knowledge base, structure notes, choose types, m
 - [Frontmatter Fields](pages/reference/frontmatter-fields.md)
 - [Keyboard Shortcuts](pages/reference/keyboard-shortcuts.md)
 - [Release Channels](pages/reference/release-channels.md)
-- [Spreadsheet File Format](pages/reference/spreadsheet-format.md)
-- [Spreadsheet Formulas](pages/reference/spreadsheet-functions.md)
 - [Supported Platforms](pages/reference/supported-platforms.md)
-- [Vault Expressions](pages/reference/vault-expressions.md)
 - [View Filters](pages/reference/view-filters.md)
 
 ## Troubleshooting

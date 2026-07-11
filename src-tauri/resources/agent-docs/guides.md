@@ -168,7 +168,6 @@ Create a type when several notes share the same role in your system.
 3. Add optional icon, color, sidebar order, sidebar label, pinned properties, suggested fields, default values, or a new-note template.
 
 You can also right-click a type in the sidebar to change its icon and color.
-Type icons use Phosphor icon names in kebab-case, such as `briefcase` or `folder`.
 
 ```yaml
 ---
@@ -189,8 +188,6 @@ A type should represent a recurring category, not a one-off label. If you only n
 ## Templates
 
 Type documents can include a Markdown template for new notes of that type. Keep templates small and useful: a heading, a few expected fields, and the first checklist are usually enough.
-
-You can store the template in the Type document's `template` frontmatter field. When hand-editing the Type document body, content after the Type note's own `# TypeName` heading is also used as the new-note template if it looks like template structure such as field labels, secondary headings, or checklist starters. Plain descriptive body text is ignored.
 
 Type documents can also define fields for new notes. Empty properties and relationships become placeholders in new notes of that type. Properties with values become defaults for new notes of that type.
 
@@ -287,7 +284,7 @@ Tolaria gives you two ways to ask for AI help: open the AI panel for an ongoing 
 
 Open Settings and choose the default AI target:
 
-- **Coding agent** for tool-backed vault editing through Claude Code, Codex, OpenCode, Pi, or Antigravity CLI.
+- **Coding agent** for tool-backed vault editing through Claude Code, Codex, OpenCode, Pi, or Gemini CLI.
 - **Local model** for Ollama or LM Studio chat over note context.
 - **API model** for OpenAI, Anthropic, Gemini, OpenRouter, or an OpenAI-compatible endpoint.
 
@@ -349,100 +346,6 @@ Use the palette when you know what you want to do but do not want to hunt throug
 
 ---
 
-# Use HTML Blocks
-
-Source: guides/use-html-blocks.md
-URL: /guides/use-html-blocks
-
-# Use HTML Blocks
-
-HTML blocks render fenced `html` code as sandboxed previews inside a note. Use them for local dashboards, report fragments, small custom layouts, and presentation-oriented views that should stay in the vault as Markdown.
-
-## Create An HTML Block
-
-Insert an HTML block from the slash menu, or write a fenced `html` block in raw mode:
-
-````md
-```html height="360"
-<style>
-  .metric { font-weight: 700; }
-</style>
-
-<section>
-  <h2>Project status</h2>
-  <p class="metric">{{status}}</p>
-</section>
-```
-````
-
-The `height` attribute controls the preview height. You can also resize the block from the rich editor. Source editing happens in raw mode, so the rich editor preview stays read-only.
-
-## Add Live Vault Values
-
-HTML block source can include vault expressions inside `{{...}}`. Tolaria resolves them before the HTML is sanitized and rendered.
-
-```html
-<p>Status: {{status}}</p>
-<p>Published: {{formatDate(publish_date, "long")}}</p>
-<p>Owner: {{[[project-alpha]].owner}}</p>
-<p>Budget: {{formatCurrency([[project-budget]].B2, "USD", 0)}}</p>
-<p>Summary line: {{[[launch-brief]].2}}</p>
-```
-
-Use current-note properties directly, such as `{{status}}`, or use `{{this.status}}` when you want to be explicit. Use `[[note]].property`, `[[note]].A1`, or `[[note]].2` to read another note's property, sheet cell, or raw body line.
-
-See [Vault Expressions](/reference/vault-expressions) for the full syntax and formatting helpers.
-
-## Style The Preview
-
-Inline `style` attributes and `<style>` tags work. Tolaria places sanitized style blocks in the iframe head so CSS applies to the whole preview.
-
-Remote loading is intentionally blocked. External stylesheets, CSS `@import`, CSS `url(...)`, remote scripts, nested frames, workers, forms, and network requests are removed or blocked by the sandbox.
-
-## Run Local Script
-
-Scripts are blocked by default. Opt into an opaque-origin script sandbox only when the block needs local DOM rendering:
-
-````md
-```html height="520" scripts="sandboxed"
-<div id="notes"></div>
-
-<script type="application/json" id="notes-data">
-{{json([[essay]].has_notes)}}
-</script>
-
-<script>
-  const notes = JSON.parse(document.getElementById("notes-data").textContent || "[]");
-  const list = document.createElement("ul");
-
-  for (const note of notes) {
-    const item = document.createElement("li");
-    const link = document.createElement("a");
-    link.href = note.deepLink || "#";
-    link.textContent = note.title;
-    item.append(link);
-    list.append(item);
-  }
-
-  document.getElementById("notes").replaceChildren(list);
-</script>
-```
-````
-
-`json(...)` returns safely escaped JSON. When the value is a wikilink or a relationship list of wikilinks, Tolaria enriches it with note metadata such as `title`, `status`, `path`, `target`, `raw`, and `deepLink`.
-
-The script sandbox is still constrained. It can use standard DOM APIs inside the preview, but it cannot access the parent Tolaria window, Tauri APIs, same-origin storage, remote network data, external script files, workers, forms, or nested frames.
-
-## Troubleshooting
-
-If a `{{...}}` expression stays visible, Tolaria could not parse or resolve it. Check the note target, property name, function arguments, or whether the referenced note is ambiguous.
-
-If script code appears not to run, confirm the fence has `scripts="sandboxed"` and that the script is inline. External `src` scripts are not supported.
-
-If styling does not apply, put the CSS in a `<style>` tag or inline `style` attribute and avoid remote CSS imports or `url(...)` assets.
-
----
-
 # Use Media Previews
 
 Source: guides/use-media-previews.md
@@ -473,169 +376,6 @@ When you paste or drop an image into a note, Tolaria copies it into the vault an
 ## Troubleshooting
 
 If a preview does not render, open the file in the default app to confirm the file is valid, then check whether the file is inside the active vault and not blocked by operating-system permissions.
-
----
-
-# Use Spreadsheets
-
-Source: guides/use-spreadsheets.md
-URL: /guides/use-spreadsheets
-
-# Use Spreadsheets
-
-Tolaria spreadsheets are sheet notes: Markdown files with frontmatter and a CSV-like body that open in a spreadsheet editor when their `Display as` value is `Sheet`.
-
-Use a sheet note when a model needs rows, columns, calculations, or repeated numeric editing. Use a normal note when the main artifact is prose.
-
-## Create A Sheet
-
-Use the command palette action `New Sheet`, or create/open a note and set its `Display as` to `Sheet` from the Properties panel. `Type` remains separate and can still be `Note`, `Project`, `Responsibility`, or any other Tolaria type.
-
-When a note is a sheet:
-
-- the YAML frontmatter remains available for type, status, relationships, wikilinks, and custom properties
-- `_display: sheet` tells Tolaria to display the note with the spreadsheet editor
-- the body is the sheet itself
-- there is no rich-text body around the table
-- the editor switches from the text editor to the spreadsheet editor
-
-## Enter Values
-
-Click a cell and type a value. Non-formula values can be text, numbers, dates, or wikilinks.
-
-Press `Enter` on a selected cell to edit the cell. Press `Escape` while editing to leave cell editing and keep focus in the sheet.
-
-Use `Delete` or `Backspace` to clear the selected cell or range.
-
-## Enter Formulas
-
-Formulas start with `=`.
-
-```txt
-=B2+B3-B4
-=SUM(B2:D2)
-=ROUND(E6, 2)
-=IF(E6>0, "Up", "Down")
-```
-
-Tolaria shows inline formula autocomplete while you type. The autocomplete list is built from the implemented function catalog in the bundled IronCalc engine; formula evaluation is still handled by IronCalc.
-
-See [Spreadsheet Formulas](/reference/spreadsheet-functions) for syntax, supported examples, and links to the full IronCalc formula reference.
-
-## Select And Edit Ranges
-
-The sheet editor follows spreadsheet conventions:
-
-- arrow keys move the active cell
-- `Shift` plus arrow keys extends the selection
-- drag to select a range
-- copy and paste preserves formulas where possible
-- cut and paste moves formulas and shifts relative references
-- right-click a selected cell or range to apply formatting
-
-Right-click actions apply to the current selection. Keep a multi-cell selection active before opening the context menu when you want to format several cells together.
-
-## Format Cells
-
-Use the context menu for common formatting:
-
-- number formats such as plain numbers, currency, and percentages
-- decimal precision
-- bold and italic text
-- alignment and clearing formatting when available
-
-Formatting is stored as plain YAML under `_sheet`, not in an opaque workbook blob. For example, percentage formatting for `E6` is stored as:
-
-```yaml
-_sheet:
-  cells:
-    E6:
-      num_fmt: "0.00%"
-```
-
-See [Spreadsheet File Format](/reference/spreadsheet-format) for the full storage model.
-
-## Add Wikilinks
-
-Type `[[` in a cell to open note autocomplete.
-
-```csv
-Project,Owner,Status
-[[website-redesign]],[[person/alice]],Active
-[[sponsorship-pipeline]],[[person/matteo]],Review
-```
-
-When the cell is not being edited, Tolaria renders the wikilink like other note links. When you edit the cell, the raw `[[wikilink]]` syntax is shown again.
-
-Command-click a wikilink in a sheet cell to open the linked note.
-
-## Reference Another Note
-
-Formulas can read a cell from another sheet note with Tolaria's wikilink cell syntax:
-
-```txt
-=[[newsletter-revenue]].B5
-=SUM(B2:D2)+[[sponsorship-pipeline]].E12
-=ROUND([[business-plan]].$E$12, 2)
-```
-
-The part inside `[[...]]` resolves like a normal Tolaria wikilink. The part after the dot is an A1-style cell reference.
-
-Use absolute markers when copying formulas:
-
-| Reference | Copy behavior |
-| --- | --- |
-| `[[revenue]].B5` | row and column can shift |
-| `[[revenue]].$B$5` | row and column stay fixed |
-| `[[revenue]].B$5` | row fixed, column can shift |
-| `[[revenue]].$B5` | column fixed, row can shift |
-
-Cross-sheet references currently resolve single cells. Keep range formulas inside one sheet note.
-
-Formulas can read scalar frontmatter properties from a note with dot notation:
-
-```txt
-=[[device]].power.watts
-=[[project-alpha]].status
-=[[book-notes/the-design-of-everyday-things.md]].rating
-```
-
-Numbers, booleans, and text properties can be used in formulas. Missing or ambiguous note targets, missing properties, and non-scalar values such as lists or nested objects show as spreadsheet errors.
-
-Formulas can also read one raw Markdown body line from another note:
-
-```txt
-=[[launch-brief]].1
-=[[launch-brief]].2
-```
-
-Line references are 1-based and ignore YAML frontmatter. `[[note]].A1` keeps grid or cell semantics; `[[note]].1` returns the whole first body line, including commas.
-
-## Work With The Raw File
-
-A sheet file remains readable text:
-
-```md
----
-type: Project
-_display: sheet
-status: Draft
-belongs_to:
-  - "[[business-plan]]"
-_sheet:
-  frozen_rows: 1
-  columns:
-    A:
-      width: 180
----
-Metric,January,February,March,Q1 Total
-Subscriptions,1200,1350,1500,=SUM(B2:D2)
-Services,800,900,750,=SUM(B3:D3)
-Expenses,650,700,760,=SUM(B4:D4)
-Net,=B2+B3-B4,=C2+C3-C4,=D2+D3-D4,=SUM(B5:D5)
-```
-
-When editing this file with scripts or AI agents, parse the body as CSV and preserve formulas as formulas. Do not replace formulas with displayed values.
 
 ---
 
