@@ -109,6 +109,13 @@ describe('ai target provider contract', () => {
       'anthropic',
       'gemini',
       'open_router',
+      'deepseek',
+      'dashscope',
+      'zhipu',
+      'moonshot',
+      'ernie',
+      'baichuan',
+      'ark',
       'open_ai_compatible',
     ])
     expect(new Set(kinds).size).toBe(kinds.length)

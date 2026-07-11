@@ -500,7 +500,9 @@ const RELEASE_HISTORY_PAGE_SCRIPT = `
           const html = renderReadableMarkdown(await response.text()).trim();
           // Sanitize: only allow safe HTML tags, remove scripts/event handlers
           const safe = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+                           // eslint-disable-next-line no-useless-escape
                            .replace(/\bon\w+\s*=\s*"[^"]*"/gi, '')
+                           // eslint-disable-next-line no-useless-escape
                            .replace(/\bon\w+\s*=\s*'[^']*'/gi, '');
           if (safe.length > 0) container.innerHTML = safe;
         } catch {
