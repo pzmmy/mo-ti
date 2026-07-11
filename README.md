@@ -153,3 +153,10 @@ If you believe you have found a security issue, please report it privately as de
 ## License
 
 Tolaria is licensed under AGPL-3.0-or-later. The Tolaria name and logo remain covered by the project’s trademark policy.
+基于上游 [refactoringhq/tolaria](https://github.com/refactoringhq/tolaria) v2026-07 (commit 2d31a556)
+
+### 定制功能
+- 7 家国产 AI 提供商（DeepSeek / 通义千问 / 智谱 GLM / Kimi / 豆包 / 文心 / 百川）
+- WebDAV 同步
+- Gemini AI CLI
+- Chrome 剪藏扩展
