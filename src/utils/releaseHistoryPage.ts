@@ -498,7 +498,11 @@ const RELEASE_HISTORY_PAGE_SCRIPT = `
           if (!response.ok) return;
 
           const html = renderReadableMarkdown(await response.text()).trim();
-          if (html.length > 0) container.innerHTML = html;
+          // Sanitize: only allow safe HTML tags, remove scripts/event handlers
+          const safe = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+                           .replace(/\bon\w+\s*=\s*"[^"]*"/gi, '')
+                           .replace(/\bon\w+\s*=\s*'[^']*'/gi, '');
+          if (safe.length > 0) container.innerHTML = safe;
         } catch {
           // Keep the generated commit list when a readable note cannot be loaded.
         }
