@@ -69,7 +69,8 @@ export function useClipboardImagePaste({
     const currentVaultPath = vaultPathRef.current
     const insertUrl = onImageUrlRef.current
 
-    void uploadImageFile(imageFile, currentVaultPath).then((url) => {
+    void uploadImageFile(imageFile, currentVaultPath).then((result) => {
+      const url = typeof result === 'string' ? result : result?.props?.url ?? '';
       insertUrl?.(url)
     }).catch((error) => {
       console.warn('[clipboard-image-paste] Failed to upload pasted image:', error)
