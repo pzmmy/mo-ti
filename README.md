@@ -157,6 +157,7 @@ Tolaria is licensed under AGPL-3.0-or-later. The Tolaria name and logo remain co
 
 ### 定制功能
 - 7 家国产 AI 提供商（DeepSeek / 通义千问 / 智谱 GLM / Kimi / 豆包 / 文心 / 百川）
-- WebDAV 同步
-- Gemini AI CLI
-- Chrome 剪藏扩展
+- 🤖 **AI 知识库问答（RAG）** — 基于笔记内容提问，AI 自动检索并回答
+- 🔍 **拼音搜索** — 输入拼音即可搜索笔记
+- 🌐 **WebDAV 同步** — 多设备同步
+- 🧩 **Chrome 剪藏扩展** — 支持微信文章一键保存

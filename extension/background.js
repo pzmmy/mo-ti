@@ -257,6 +257,14 @@ chrome.runtime.onInstalled.addListener(() => {
     contexts: ['page']
   });
 
+  // WeChat article shortcut
+  chrome.contextMenus.create({
+    id: 'clip-to-moti-wechat',
+    title: '剪藏微信文章到墨屉',
+    contexts: ['page'],
+    documentUrlPatterns: ['*://mp.weixin.qq.com/*']
+  });
+
   chrome.contextMenus.create({
     id: 'clip-to-moti-selection',
     title: '剪藏选中文字到墨屉',
@@ -270,7 +278,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     let mode = 'full';
     if (info.menuItemId === 'clip-to-moti-selection' || info.menuItemId === 'clip-to-moti') {
       mode = info.menuItemId === 'clip-to-moti-selection' ? 'selection' : 'full';
-    } else if (info.menuItemId === 'clip-to-moti-full') {
+    } else if (info.menuItemId === 'clip-to-moti-full' || info.menuItemId === 'clip-to-moti-wechat') {
       mode = 'full';
     }
 
